@@ -1,0 +1,180 @@
+/* Keyframe Animations */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes fadeInBounce {
+    0% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+    80% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+/* 🔹 Navbar Sticky */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+}
+
+.navbar a {
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 20px;
+    transition: all 0.3s ease;
+}
+
+.navbar a:hover {
+    color: #667eea;
+}
+
+/* Login Card */
+.login-card {
+    background: white;
+    border-radius: 20px;
+    padding: 60px 50px;
+    margin: 80px auto;
+    max-width: 450px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeInBounce 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Logo Circle */
+.logo-circle {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    animation: bounce 0.9s ease-in-out;
+}
+
+/* Typography */
+.login-card h2 {
+    color: #333;
+    font-weight: 700;
+    font-size: 28px;
+    margin-bottom: 25px; /* 🔹 tambahkan jarak bawah agar tidak rapat */
+}
+
+.form-label {
+    color: #555;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* Form Controls */
+.form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    animation: bounce 0.3s ease-in-out;
+}
+
+.form-control:hover {
+    border-color: #764ba2;
+}
+
+/* Button */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    animation: bounce 0.3s ease-in-out;
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    animation: bounce 0.3s ease-in-out;
+}
+
+/* Checkbox */
+.form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.form-check-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Links */
+a {
+    color: #667eea;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #764ba2;
+    animation: bounce 0.3s ease-in-out;
+}
+
+/* Divider */
+hr {
+    opacity: 0.1;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .login-card {
+        padding: 40px 25px;
+        margin: 60px 15px;
+    }
+    
+    .login-card h2 {
+        font-size: 24px;
+    }
+}
