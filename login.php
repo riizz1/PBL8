@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -10,16 +11,9 @@
 </head>
 
 <body>
-        <!-- Navbar -->
-    <nav class="navbar navbar-light bg-light shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="homepage.php">
-                <img src="logopolibatam.png" alt="Logo" style="height: 40px; width: auto;"
-                    class="d-inline-block align-text-top">
-            </a>
-        </div>
-    </nav>
-
+<?php
+    include("header.php");
+?>
     <div class="container">
         <div class="row justify-content-center align-items-center min-vh-100">
             <div class="col-md-5 col-lg-4">
@@ -37,30 +31,22 @@
                         <p class="text-muted">Silakan login ke akun Anda</p>
                     </div>
 
-                    <form id="loginForm">
+                    <form action="controllers/login_aksi.php" method="POST">
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control form-control-lg" id="email"
-                                placeholder="nama@email.com" required>
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control form-control-lg" id="username"
+                                placeholder="Masukkan Username" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control form-control-lg" id="password"
-                                placeholder="Masukkan password" required>
+                            <input type="password" name="password" class="form-control form-control-lg" id="password"
+                                placeholder="Masukkan Password" required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
-                            Masuk
-                        </button>
-
-                        <div class="text-center">
-                            <a href="#" class="text-decoration-none">Lupa password?</a>
-                        </div>
-
-                        <hr class="my-4">
-
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Masuk</button>
                     </form>
+
                 </div>
             </div>
         </div>

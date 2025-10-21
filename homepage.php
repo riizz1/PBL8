@@ -12,23 +12,9 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar shadow-sm">
-        <div class="container">
-
-            <!-- Kiri: logo + menu -->
-            <div class="nav-left">
-                <a href="homepage.php">
-                    <img src="logopolibatam.png" alt="Logo Polibatam">
-                </a>
-                <a href="homepage.php" class="nav-link">Beranda</a>
-                <a href="about.php" class="nav-link">About Us</a>
-            </div>
-
-            <!-- Kanan: tombol login -->
-            <a href="login.php" class="btn-login">Login</a>
-
-        </div>
-    </nav>
+<?php
+    include("header.php");
+?>
 
 
 
