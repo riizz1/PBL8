@@ -7,16 +7,14 @@
     <title>Pengumuman Akademik Online</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="homepage.css">
+    <link rel="stylesheet" href="landingpage.css">
 </head>
 
 <body>
     <!-- Navbar -->
-<?php
+    <?php
     include("header.php");
-?>
-
-
+    ?>
 
     <!-- Main Content -->
     <div class="container my-5">
@@ -29,16 +27,16 @@
                         <div id="buildingCarousel" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner rounded-4 overflow-hidden" style="height: 250px;">
                                 <div class="carousel-item active">
-                                    <img src="assets/img/polibatam.jpg"
-                                        class="d-block w-100 h-100 object-fit-cover" alt="Gedung Kampus 1">
+                                    <img src="assets/img/polibatam.jpg" class="d-block w-100 h-100 object-fit-cover"
+                                        alt="Gedung Kampus 1">
                                 </div>
                                 <div class="carousel-item">
-                                    <img src="assets/img/polibatam.jpg"
-                                        class="d-block w-100 h-100 object-fit-cover" alt="Gedung Kampus 2">
+                                    <img src="assets/img/polibatam.jpg" class="d-block w-100 h-100 object-fit-cover"
+                                        alt="Gedung Kampus 2">
                                 </div>
                                 <div class="carousel-item">
-                                    <img src="assets/img/polibatam.jpg"
-                                        class="d-block w-100 h-100 object-fit-cover" alt="Gedung Kampus 3">
+                                    <img src="assets/img/polibatam.jpg" class="d-block w-100 h-100 object-fit-cover"
+                                        alt="Gedung Kampus 3">
                                 </div>
                             </div>
 
@@ -70,27 +68,20 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-4 mt-auto">
-        <div class="container">
-            <p class="mb-3">&copy; 2025 Politeknik Negeri Batam. All rights reserved.</p>
-            <div class="d-flex justify-content-center gap-4">
-                <a href="#" class="text-white fs-4" title="Facebook">
-                    <i class="bi bi-facebook"></i>
-                </a>
-                <a href="#" class="text-white fs-4" title="Instagram">
-                    <i class="bi bi-instagram"></i>
-                </a>
-                <a href="#" class="text-white fs-4" title="Twitter">
-                    <i class="bi bi-twitter"></i>
-                </a>
-                <a href="#" class="text-white fs-4" title="YouTube">
-                    <i class="bi bi-youtube"></i>
-                </a>
-            </div>
-        </div>
-    </footer>
+  <?php
+    include("footer.php");
+  ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="homepage.js"></script>
+    <script>
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
 
 </body>
 

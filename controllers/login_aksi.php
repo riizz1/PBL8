@@ -1,50 +1,77 @@
 <?php
 session_start();
-include 'config.php';
+include '../config/koneksi.php';
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Capture username and hashed password from form
-$username = $_POST['username'];
-$password = md5($_POST['password']); // MD5 for hashing (though consider using a more secure hash like password_hash in future)
-
-echo "Username: $username, Password: $password"; // Debugging output
-
-// Prepare the SQL statement to check username and password
-$stmt = $koneksi->prepare("SELECT * FROM user WHERE username=? AND password=?");
-$stmt->bind_param("ss", $username, $password);
-$stmt->execute();
-$result = $stmt->get_result();
-
-// Check if user exists
-$cek = $result->num_rows;
-echo "Rows found: $cek"; // Debugging output
-
-if ($cek > 0) {
-    $data = $result->fetch_assoc();
-    $_SESSION['username'] = $data['username'];
-    $_SESSION['userid'] = $data['userid'];
-    $_SESSION['status'] = 'login';
-    $_SESSION['level'] = $data['level'];
-
-    // Check if the user is admin or user based on the level from the database
-    if ($data['level'] === 'admin') {
+// Hanya proses jika method POST
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    
+    // Ambil data dari form
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
+    
+    // Validasi input kosong
+    if (empty($username) || empty($password)) {
         echo "<script>
-        alert('Login berhasil sebagai Admin!');
-        location.href='./admin/dashboard.php';
+        alert('Username dan password harus diisi!');
+        location.href='../login.php';
         </script>";
-    } else {
-        echo "<script>
-        alert('Login berhasil sebagai User!');
-        location.href='../users/dashboard.php';
-        </script>";
+        exit();
     }
+    
+    // Prepare statement untuk ambil data user
+    $stmt = $koneksi->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    // Cek apakah username ditemukan
+    if ($result->num_rows === 1) {
+        $data = $result->fetch_assoc();
+        
+        // Verifikasi password
+        if (password_verify($password, $data['password'])) {
+            
+            // Set session
+            $_SESSION['user_id'] = $data['user_id'];
+            $_SESSION['username'] = $data['username'];
+            $_SESSION['role'] = $data['role'];
+            $_SESSION['status'] = 'login';
+            
+            // Redirect berdasarkan role
+            if ($data['role'] === 'dosen') {
+                echo "<script>
+                alert('Login berhasil sebagai Dosen!');
+                location.href='../admin/dashboard.php';
+                </script>";
+            } else {
+                echo "<script>
+                alert('Login berhasil sebagai Mahasiswa!');
+                location.href='../user/dashboard.php';
+                </script>";
+            }
+            exit();
+            
+        } else {
+            // Password salah
+            echo "<script>
+            alert('Password salah!');
+            location.href='../login.php';
+            </script>";
+            exit();
+        }
+        
+    } else {
+        // Username tidak ditemukan
+        echo "<script>
+        alert('Username tidak ditemukan!');
+        location.href='../login.php';
+        </script>";
+        exit();
+    }
+    
 } else {
-    // Redirect back to login page with an error message
-    echo "<script>
-    alert('Username atau password salah!');
-    location.href='../login.php';
-    </script>";
+    // Jika bukan POST, redirect ke login
+    header("Location: ../login.php");
+    exit();
 }
 ?>

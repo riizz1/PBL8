@@ -21,13 +21,20 @@
       backdrop-filter: blur(12px) saturate(180%);
       -webkit-backdrop-filter: blur(12px) saturate(180%);
       border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      padding: 0 5px;
-      transition: background 0.3s ease, backdrop-filter 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 0 1px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      transition: all 0.3s ease;
     }
 
     .navbar-brand img {
       height: 55px;
+      transition: transform 0.3s ease;
+    }
+
+    .navbar-brand img:hover {
+      transform: scale(1.05);
     }
 
     .nav-link {
@@ -37,17 +44,64 @@
       align-items: center;
       font-weight: 600;
       font-size: 0.9rem;
-      transition: color 0.3s ease;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 12px 14px;
+      border-radius: 8px;
     }
 
     .nav-link svg {
       width: 24px;
       height: 24px;
       margin-bottom: 4px;
+      transition: transform 0.3s ease;
     }
 
     .nav-link:hover {
-      color: #0d6efd !important;
+      color: #667eea !important;
+      transform: translateY(-2px);
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .nav-link:hover svg {
+      transform: scale(1.1);
+    }
+
+    /* Active state - Highlight halaman yang sedang dikunjungi */
+    .nav-link.active {
+      color: #fff !important;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      position: relative;
+    }
+
+    .nav-link.active::before {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40%;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        width: 0%;
+        opacity: 0;
+      }
+      to {
+        width: 40%;
+        opacity: 1;
+      }
+    }
+
+    .nav-link.active svg {
+      filter: brightness(0) invert(1);
+      transform: scale(1.1);
     }
 
     /* Dropdown custom */
@@ -56,19 +110,26 @@
       left: auto;
       max-width: 90vw;
       word-wrap: break-word;
-      background: rgba(0, 0, 0, 0.6);
-      border: none;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
       transition: opacity 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
     .dropdown-item {
       color: #fff;
-      transition: background 0.2s;
+      transition: all 0.2s ease;
+      padding: 10px 20px;
+      border-radius: 6px;
+      margin: 4px 8px;
     }
 
     .dropdown-item:hover {
       background-color: #dc3545;
       color: #fff;
+      transform: translateX(5px);
     }
 
     /* Smooth dropdown show/hide */
@@ -78,10 +139,56 @@
       transform: translateY(0);
     }
 
+    /* Bell icon dengan notif badge effect */
+    .nav-link[href="#"]:has([data-lucide="bell"]) {
+      position: relative;
+    }
+
+    .nav-link[href="#"]:has([data-lucide="bell"])::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: #dc3545;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+      }
+    }
+
+    /* Profile dropdown icon */
+    #profileDropdown {
+      cursor: pointer;
+    }
+
+    #profileDropdown svg {
+      transition: transform 0.3s ease;
+    }
+
+    #profileDropdown:hover svg {
+      transform: rotate(10deg) scale(1.1);
+    }
+
     /* Tombol hamburger */
     .navbar-toggler {
       border: none;
       outline: none;
+      transition: transform 0.3s ease;
+    }
+
+    .navbar-toggler:hover {
+      transform: scale(1.1);
     }
 
     .navbar-toggler-icon {
@@ -120,6 +227,15 @@
       .nav-link svg {
         margin-bottom: 0;
       }
+
+      /* Active state di mobile */
+      .nav-link.active::before {
+        left: 0;
+        transform: translateX(0);
+        width: 3px;
+        height: 100%;
+        bottom: 0;
+      }
     }
   </style>
 </head>
@@ -130,7 +246,7 @@
     <div class="container d-flex align-items-center justify-content-between">
 
       <!-- Brand -->
-      <a class="navbar-brand fw-bold me-3" href="#">
+      <a class="navbar-brand fw-bold me-3" href="dashboard.php">
         <img src="../assets/img/logopolibatam.png" alt="Logo">
       </a>
 
@@ -144,52 +260,57 @@
       <div class="collapse navbar-collapse" id="navbarContent">
 
         <!-- Menu utama -->
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
-          <li class="nav-item me-3">
-            <a class="nav-link" href="#">
-              <i data-lucide="home"></i>
-              Dashboard
-            </a>
-          </li>
-          <li class="nav-item me-3">
-            <a class="nav-link" href="#">
-              <i data-lucide="megaphone"></i>
-              Pengumuman
-            </a>
-          </li>
-          <li class="nav-item me-3">
-            <a class="nav-link" href="#">
-              <i data-lucide="folder-open"></i>
-              Kategori
-            </a>
-          </li>
-          <li class="nav-item me-3">
-            <a class="nav-link" href="#">
-              <i data-lucide="users"></i>
-              Mahasiswa
-            </a>
-          </li>
-          <li class="nav-item me-3">
-            <a class="nav-link" href="#">
-              <i data-lucide="file-text"></i>
-              Laporan
-            </a>
-          </li>
-        </ul>
+       <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
+  <li class="nav-item me-3">
+    <a class="nav-link" href="dashboard.php" data-page="dashboard">
+      <i data-lucide="home"></i>
+      Dashboard
+    </a>
+  </li>
+
+  <li class="nav-item me-3">
+    <a class="nav-link" href="pengumuman.php" data-page="pengumuman">
+      <i data-lucide="megaphone"></i>
+      Pengumuman
+    </a>
+  </li>
+
+  <li class="nav-item me-3">
+    <a class="nav-link" href="kategori.php" data-page="kategori">
+      <i data-lucide="tags"></i>
+      Kategori
+    </a>
+  </li>
+
+  <li class="nav-item me-3">
+    <a class="nav-link" href="mahasiswa.php" data-page="mahasiswa">
+      <i data-lucide="users"></i>
+      Mahasiswa
+    </a>
+  </li>
+
+  <li class="nav-item me-3">
+    <a class="nav-link" href="laporan.php" data-page="laporan">
+      <i data-lucide="file-text"></i>
+      Laporan
+    </a>
+  </li>
+</ul>
+
 
         <!-- Icon kanan -->
         <ul class="navbar-nav align-items-center right-icons">
           <li class="nav-item">
-            <a class="nav-link" href="#"><i data-lucide="bell"></i></a>
+            <a class="nav-link" href="#" title="Notifikasi"><i data-lucide="bell"></i></a>
           </li>
 
           <!-- Dropdown Profile -->
           <li class="nav-item dropdown">
-            <a class="nav-link" href="#" id="profileDropdown" role="button">
+            <a class="nav-link" href="#" id="profileDropdown" role="button" title="Profile">
               <i data-lucide="user"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li><a class="dropdown-item" href="#">Log Out</a></li>
+              <li><a class="dropdown-item" href="logout.php">Log Out</a></li>
             </ul>
           </li>
         </ul>
@@ -218,6 +339,30 @@
 
     // Aktifkan Lucide Icons
     lucide.createIcons();
+
+    // ===== ACTIVE STATE OTOMATIS =====
+    // Deteksi halaman saat ini dan beri highlight
+    function setActivePage() {
+      // Dapatkan nama file halaman saat ini (misal: dashboard.php, pengumuman.php)
+      const currentPage = window.location.pathname.split('/').pop().replace('.php', '');
+      
+      // Hapus semua class active
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      
+      // Tambahkan class active ke link yang sesuai
+      const activeLink = document.querySelector(`.nav-link[data-page="${currentPage}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+
+    // Jalankan saat halaman dimuat
+    setActivePage();
+
+    // Optional: Update active state saat navigasi (untuk SPA)
+    window.addEventListener('popstate', setActivePage);
   </script>
 </body>
 
