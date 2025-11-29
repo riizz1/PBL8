@@ -7,95 +7,122 @@
     <title>Mahasiswa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
     <style>
-/* Tabel Mahasiswa */
-.col-nama {
-    background-color: #cfcfcf;
-}
+        /* ================= HEADER TABEL BIRU ================= */
+        table.table thead th {
+            background-color: #2193b0 !important;
+            color: white !important;
+            text-align: center !important;
+        }
 
-.col-nim {
-    background-color: #4B2D2D;
-    color: white;
-    text-align: center;
-}
+        table.table thead th:first-child {
+            text-align: left !important;
+        }
 
-.col-prodi {
-    background-color: #240202;
-    color: white;
-    text-align: center;
-}
+        table.table thead th:nth-child(1) {
+            width: 50%;
+        }
 
-.col-aksi {
-    background-color: #450503;
-    color: white;
-    text-align: center;
-}
+        table.table thead th:nth-child(2) {
+            width: 20%;
+        }
 
-/* Modal Mahasiswa */
-.modal-content {
-    background-color: #2b2b2b;
-    color: white;
-    border-radius: 10px;
-    padding: 20px;
-}
+        table.table thead th:nth-child(3) {
+            width: 20%;
+        }
 
-.modal-content input,
-.modal-content textarea {
-    background-color: #3a3a3a;
-    color: white;
-    border: none;
-}
+        table.table thead th:nth-child(4) {
+            width: 10%;
+        }
 
-.modal-content input:focus,
-.modal-content textarea:focus {
-    background-color: #444;
-    color: white;
-    box-shadow: none;
-    border: 1px solid #0d6efd;
-}
+        /* Zebra stripe baris tabel */
+        table.table tbody tr:nth-child(odd) td {
+            background-color: #ffffff !important;
+            /* putih */
+        }
 
-.btn-close {
-    filter: invert(1);
-}
+        table.table tbody tr:nth-child(even) td {
+            background-color: #0000004f !important;
+            /* abu-abu */
+        }
 
-/* Placeholder putih */
-input::placeholder {
-    color: #ffffff;
-}
+        /* Baris ganjil – putih */
+        .table tbody tr:nth-child(odd) .col-nama {
+            background-color: #ffffff !important;
+            color: #000000d8;
+        }
 
-input {
-    color: #ffffff;
-}
+        /* Baris genap – hitam */
+        .table tbody tr:nth-child(even) .col-nama {
+            background-color: #0000004f !important;
+            color: #fff;
+        }
 
-textarea::placeholder {
-    color: #ffffff;
-}
-</style>
+        /* Kolom Aksi – Baris ganjil (putih) */
+        .table tbody tr:nth-child(odd) .col-aksi {
+            background-color: #ffffff !important;
+            color: #000;
+        }
+
+        /* Nama mahasiswa rata kiri */
+        table.table tbody td:first-child {
+            text-align: left !important;
+        }
+
+
+        /* ================= MODAL GELAP ================= */
+        .modal-content {
+            background-color: #0000004f;
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .modal-content input,
+        .modal-content textarea {
+            background-color: #3a3a3a;
+            color: white;
+            border: none;
+        }
+
+        .modal-content input:focus,
+        .modal-content textarea:focus {
+            background-color: #444;
+            color: white;
+            box-shadow: none;
+            border: 1px solid #0d6efd;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #ffffff;
+        }
+    </style>
 </head>
 
 <body class="mahasiswa-page">
-    <?php
-    include("header.php");
-    ?>
+    <?php include("header.php"); ?>
 
-    <!-- Konten -->
+    <!-- ================= KONTEN ================= -->
     <main class="container my-4">
         <div class="mb-3">
             <h4 class="fw-bold mb-1">Mahasiswa</h4>
             <button class="btn btn-secondary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalTambahMahasiswa">
-                + Tambah Mahhasiswa
+                + Tambah Mahasiswa
             </button>
         </div>
-
 
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th style="width: 50%;">Nama Mahasiswa</th>
-                    <th style="width: 20%;">NIM</th>
-                    <th style="width: 20%;">Prodi</th>
-                    <th style="width: 10%;">Aksi</th>
+                    <th>Nama Mahasiswa</th>
+                    <th>NIM</th>
+                    <th>Prodi</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -140,7 +167,7 @@ textarea::placeholder {
         </table>
     </main>
 
-    <!-- Modal Tambah Mahasiswa -->
+    <!-- ================= MODAL TAMBAH MAHASISWA ================= -->
     <div class="modal fade" id="modalTambahMahasiswa" tabindex="-1" aria-labelledby="modalTambahMahasiswaLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -153,7 +180,7 @@ textarea::placeholder {
                         data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="formTambahMahasiswa">
                         <div class="mb-3">
                             <label class="form-label">Nama</label>
                             <input type="text" class="form-control" placeholder="Masukkan Nama">
@@ -173,7 +200,7 @@ textarea::placeholder {
         </div>
     </div>
 
-    <!-- Modal Edit Mahasiswa -->
+    <!-- ================= MODAL EDIT MAHASISWA ================= -->
     <div class="modal fade" id="modalEditMahasiswa" tabindex="-1" aria-labelledby="modalEditMahasiswaLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -206,13 +233,11 @@ textarea::placeholder {
         </div>
     </div>
 
-    <!-- Footer -->
     <?php include("footer.php"); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // JS untuk isi otomatis modal edit
+        // ================= JS EDIT MODAL =================
         document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const nama = button.getAttribute('data-nama');
@@ -225,26 +250,26 @@ textarea::placeholder {
             });
         });
 
-        // Simulasi submit form edit
         document.getElementById('formEditMahasiswa').addEventListener('submit', e => {
             e.preventDefault();
-
             alert('Perubahan berhasil disimpan!');
 
             const modalEl = document.getElementById('modalEditMahasiswa');
             const modal = bootstrap.Modal.getInstance(modalEl);
             modal.hide();
-
-            // Tambahkan sedikit jeda untuk memastikan backdrop hilang
-            setTimeout(() => {
-                const backdrops = document.querySelectorAll('.modal-backdrop');
-                backdrops.forEach(b => b.remove());
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = ''; // pastikan bisa scroll lagi
-            }, 300);
         });
 
+        // ================= JS HAPUS BARIS =================
+        document.querySelectorAll('.btn-danger').forEach(button => {
+            button.addEventListener('click', e => {
+                if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                    const row = button.closest('tr'); // cari baris <tr> terdekat
+                    row.remove(); // hapus baris dari tabel
+                }
+            });
+        });
     </script>
+
 </body>
 
 </html>

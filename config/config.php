@@ -1,25 +1,25 @@
 <?php
 // Konfigurasi Database
-$host = "localhost";        // Host database (biasanya localhost)
-$username = "root";         // Username database (default: root)
-$password = "";             // Password database (default: kosong untuk XAMPP)
-$database = "db_pbl8"; // Ganti dengan nama database Anda
+$host = "localhost";
+$username = "root";
+$password = "";
+$database = "db_pbl8";
 
-// Membuat config
-$config = new mysqli($host, $username, $password, $database);
+// Membuat koneksi
+$conn = new mysqli($host, $username, $password, $database);
 
-// Cek config
-if ($config->connect_error) {
-    die("config gagal: " . $conn->connect_error);
+// Cek koneksi
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
 }
 
-// Set charset ke UTF-8 untuk mendukung karakter Indonesia
-$config->set_charset("utf8");
+// Set charset ke UTF-8
+$conn->set_charset("utf8");
 
-// Optional: Set timezone (sesuaikan dengan zona waktu Anda)
+// Set timezone
 date_default_timezone_set('Asia/Jakarta');
 
-// Session start (jika menggunakan login/session)
+// Start session jika belum ada
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
