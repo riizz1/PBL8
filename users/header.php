@@ -2,201 +2,199 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navbar Glass Dropdown</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navbar Glass Dropdown</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 0 5px;
-            transition: background 0.3s ease, backdrop-filter 0.3s ease;
-        }
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-        .navbar-brand img {
-            height: 55px;
-        }
+  <style>
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 0 5px;
+      transition: background 0.3s ease, backdrop-filter 0.3s ease;
+    }
 
-        .nav-link {
-            color: #333 !important;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
+    .navbar-brand img {
+      height: 55px;
+    }
 
-        .nav-link i {
-            font-size: 1.4rem;
-            margin-bottom: 4px;
-        }
+    .nav-link {
+      color: #333 !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
 
-        .nav-link:hover {
-            color: #0d6efd !important;
-        }
+    .nav-link svg {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
+    }
 
-        /* 🔹 Dropdown default (sembunyi dulu) */
-        .dropdown-menu {
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(5px);
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 15px 20px;
-            border-radius: 12px;
-            transition: all 0.25s ease;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px 30px;
-            min-width: 300px;
-        }
+    .nav-link:hover {
+      color: #0d6efd !important;
+    }
 
-        /* 🔹 Saat aktif (hover / klik) */
-        .dropdown.show .dropdown-menu,
-        .dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
+    /* Dropdown custom */
+    .dropdown-menu {
+      right: 0;
+      left: auto;
+      max-width: 90vw;
+      word-wrap: break-word;
+    }
 
-        .dropdown-item {
-            font-weight: 500;
-            color: #333;
-            transition: all 0.2s ease;
-        }
+    .dropdown-item {
+      color: #2f2f2fff;
+      transition: background 0.2s;
+    }
 
-        .dropdown-item:hover {
-            color: #0d6efd;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-        }
+    .dropdown-item:hover {
+      background-color: #dc3545;
+      color: #fff;
+    }
 
-        /* 🔹 Dropdown toggle: ikon di atas teks, panah di kanan teks */
-        .nav-link.dropdown-toggle {
-            display: flex;
-            flex-direction: column; /* ikon di atas teks */
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            position: relative;
-        }
+    /* Smooth show/hide */
+    .dropdown.show .dropdown-menu {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-        .nav-link .text-arrow {
-            display: flex;
-            flex-direction: row; /* teks & panah sejajar */
-            align-items: center;
-            gap: 4px;
-        }
+    /* Tombol hamburger */
+    .navbar-toggler {
+      border: none;
+      outline: none;
+    }
 
-        .dropdown-arrow {
-            font-size: 0.9rem;
-            transition: transform 0.2s ease;
-        }
+    .navbar-toggler-icon {
+      filter: invert(1);
+    }
 
-        .dropdown.show .dropdown-arrow {
-            transform: rotate(180deg);
-        }
+    /* Saat collapse, biar semua menu utama ke kiri */
+    @media (max-width: 991.98px) {
+      .navbar-collapse {
+        position: relative;
+      }
 
-        .dropdown-toggle::after {
-            display: none !important;
-        }
+      .navbar-collapse .navbar-nav.me-auto {
+        align-items: flex-start !important;
+      }
 
-        @media (max-width: 768px) {
-            .navbar-nav.flex-row {
-                flex-direction: column;
-                text-align: center;
-            }
+      /* Bell & profile tetap kanan atas */
+      .navbar-collapse .right-icons {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        display: flex;
+        gap: 10px;
+      }
 
-            .dropdown-menu {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+      .navbar-collapse.show {
+        padding-top: 50px; /* beri ruang agar bell/profile tidak menimpa menu */
+      }
+
+      .nav-link {
+        flex-direction: row;
+        gap: 8px;
+        justify-content: flex-start;
+      }
+
+      .nav-link svg {
+        margin-bottom: 0;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container d-flex align-items-center justify-content-between">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container d-flex align-items-center justify-content-between">
 
-            <div class="d-flex align-items-center">
-                <a class="navbar-brand fw-bold me-3" href="#">
-                    <img src="../assets/img/logopolibatam.png" alt="Logo">
-                </a>
+      <!-- Brand -->
+      <a class="navbar-brand fw-bold me-3" href="#">
+        <img src="../assets/img/logopolibatam.png" alt="Logo">
+      </a>
 
-                <ul class="navbar-nav flex-row">
-                    <li class="nav-item me-3">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-house-door"></i>
-                            Dashboard
-                        </a>
-                    </li>
+      <!-- Tombol hamburger -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-                    <!-- 🔹 Dropdown kategori -->
-                    <li class="nav-item dropdown me-3">
-                        <a class="nav-link dropdown-toggle" href="#" id="kategoriDropdown" role="button">
-                            <i class="bi bi-grid-3x3-gap"></i>
-                            <span class="text-arrow">
-                                Kategori
-                                <i class="bi bi-caret-down-fill dropdown-arrow"></i>
-                            </span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="kategoriDropdown">
-                            <li><a class="dropdown-item" href="#">Jadwal Akademik</a></li>
-                            <li><a class="dropdown-item" href="#">Perkuliahan</a></li>
-                            <li><a class="dropdown-item" href="#">Ujian</a></li>
-                            <li><a class="dropdown-item" href="#">Beasiswa</a></li>
-                            <li><a class="dropdown-item" href="#">Kegiatan</a></li>
-                            <li><a class="dropdown-item" href="#">Magang & Karir</a></li>
-                        </ul>
-                    </li>
+      <!-- Isi navbar -->
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <!-- Menu utama -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
+          <li class="nav-item me-3">
+            <a class="nav-link" href="#">
+              <i data-lucide="home"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="#">
+              <i data-lucide="megaphone"></i>
+              Pengumuman
+            </a>
+          </li>
+        </ul>
 
-                </ul>
-            </div>
-
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="bi bi-bell fs-5"></i></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="bi bi-person-circle fs-4"></i></a>
-                </li>
+        <!-- Icon kanan (Bell & Profile) -->
+        <ul class="navbar-nav align-items-center right-icons">
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i data-lucide="bell"></i></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link" href="#" id="profileDropdown" role="button">
+              <i data-lucide="user"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+              <li><a class="dropdown-item" href="#">Log Out</a></li>
             </ul>
-        </div>
-    </nav>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const dropdown = document.querySelector('.nav-item.dropdown');
-        const link = dropdown.querySelector('.nav-link');
-        const menu = dropdown.querySelector('.dropdown-menu');
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        // Toggle on click
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            dropdown.classList.toggle('show');
-        });
+  <script>
+    // Toggle dropdown manual
+    const profileLink = document.getElementById('profileDropdown');
+    const dropdownMenu = profileLink.nextElementSibling;
 
-        // Close when mouse leaves dropdown
-        dropdown.addEventListener('mouseleave', () => {
-            dropdown.classList.remove('show');
-        });
-    </script>
+    profileLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      dropdownMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!profileLink.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.classList.remove('show');
+      }
+    });
+
+    // Aktifkan Lucide
+    lucide.createIcons();
+  </script>
 </body>
 
 </html>

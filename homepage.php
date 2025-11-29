@@ -29,15 +29,15 @@
                         <div id="buildingCarousel" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner rounded-4 overflow-hidden" style="height: 250px;">
                                 <div class="carousel-item active">
-                                    <img src="assets/img/backgroundpolibatam.jpg"
+                                    <img src="assets/img/polibatam.jpg"
                                         class="d-block w-100 h-100 object-fit-cover" alt="Gedung Kampus 1">
                                 </div>
                                 <div class="carousel-item">
-                                    <img src="assets/img/backgroundpolibatam.jpg"
+                                    <img src="assets/img/polibatam.jpg"
                                         class="d-block w-100 h-100 object-fit-cover" alt="Gedung Kampus 2">
                                 </div>
                                 <div class="carousel-item">
-                                    <img src="assets/img/backgroundpolibatam.jpg"
+                                    <img src="assets/img/polibatam.jpg"
                                         class="d-block w-100 h-100 object-fit-cover" alt="Gedung Kampus 3">
                                 </div>
                             </div>

@@ -18,62 +18,7 @@
       padding: 0;
     }
 
-    /* Navbar */
-    .navbar {
-      background-color: #d9d9d9;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 40px;
-    }
-
-    .navbar-left {
-      display: flex;
-      align-items: center;
-      gap: 40px;
-    }
-
-    .navbar-brand img {
-      height: 40px;
-    }
-
-    /* Menu */
-    .nav-menu {
-      display: flex;
-      gap: 30px;
-      align-items: center;
-    }
-
-    .nav-item {
-      text-align: center;
-    }
-
-    .nav-item a {
-      text-decoration: none;
-      color: #333;
-      font-size: 0.9rem;
-      transition: color 0.3s;
-    }
-
-    .nav-item a:hover,
-    .nav-item.active a {
-      color: #0d6efd;
-    }
-
-    .nav-item i {
-      display: block;
-      font-size: 1.3rem;
-      margin-bottom: 3px;
-    }
-
-    /* Profil kanan */
-    .user-icon {
-      font-size: 1.8rem;
-      color: #555;
-      cursor: pointer;
-    }
-
+ 
     /* Konten utama */
     .main-content {
       padding: 40px;
@@ -107,37 +52,9 @@
   </style>
 </head>
 <body>
-
-<!-- Navbar -->
-<nav class="navbar">
-  <div class="navbar-left">
-    <div class="navbar-brand">
-      <img src="logopolibatam.png" alt="Logo">
-    </div>
-
-    <div class="nav-menu">
-      <div class="nav-item active">
-        <a href="#"><i class="bi bi-house-door"></i>Dashboard</a>
-      </div>
-      <div class="nav-item">
-        <a href="#"><i class="bi bi-megaphone"></i>Pengumuman</a>
-      </div>
-      <div class="nav-item">
-        <a href="#"><i class="bi bi-star"></i>Kategori</a>
-      </div>
-      <div class="nav-item">
-        <a href="#"><i class="bi bi-people"></i>Mahasiswa</a>
-      </div>
-      <div class="nav-item">
-        <a href="#"><i class="bi bi-file-earmark-bar-graph"></i>Laporan</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="user-icon">
-    <i class="bi bi-person-circle"></i>
-  </div>
-</nav>
+<?php
+  include("header.php");
+?>
 
 <!-- Main Content -->
 <div class="main-content">
