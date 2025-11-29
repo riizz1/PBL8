@@ -31,7 +31,7 @@
                         <p class="text-muted">Silakan login ke akun Anda</p>
                     </div>
 
-                    <form action="controllers/login_aksi.php" method="POST">
+                    <form action="controllers/auth/login_aksi.php" method="POST">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" name="username" class="form-control form-control-lg" id="username"

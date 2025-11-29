@@ -113,7 +113,7 @@
 <body class="pengumuman-page">
     <?php
     include("header.php");
-    include("../config/koneksi.php");
+    include("../config/config.php");
 
     // Proses Tambah Pengumuman
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tambah'])) {

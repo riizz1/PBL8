@@ -14,7 +14,6 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="landingpage.css">
     <style>
-        /* Navbar dengan Liquid Glass Effect */
         /* ====== NAVBAR GLASS EFFECT UNIVERSAL ====== */
         .navbar {
             position: sticky;
