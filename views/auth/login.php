@@ -12,7 +12,7 @@
 
 <body>
     <?php
-    include("header.php");
+    include("../../public/header.php");
     ?>
     <div class="container">
         <div class="row justify-content-center align-items-center min-vh-100">
@@ -31,7 +31,7 @@
                         <p class="text-muted">Silakan login ke akun Anda</p>
                     </div>
 
-                    <form action="controllers/auth/login_aksi.php" method="POST">
+                    <form action="../app/controllers/auth/login_aksi.php" method="POST">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" name="username" class="form-control form-control-lg" id="username"
@@ -52,7 +52,7 @@
         </div>
     </div>
  <?php
-    include("footer.php");
+    include("../../public/footer.php");
  ?>
 
 </body>

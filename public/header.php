@@ -12,7 +12,7 @@
 
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="landingpage.css">
+    <link rel="stylesheet" href="index.css">
     <style>
         /* ====== NAVBAR GLASS EFFECT UNIVERSAL ====== */
         .navbar {
@@ -116,7 +116,7 @@
 
             <!-- Logo -->
             <a class="navbar-brand" href="landingpage.php">
-                <img src="assets/img/logopolibatam.png" alt="Logo Polibatam" height="45">
+                <img src="/public/assets/img/logopolibatam.png" alt="Logo Polibatam" height="45">
             </a>
 
             <!-- Tombol Hamburger -->
@@ -133,7 +133,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="landingpage.php">Beranda</a>
+                        <a class="nav-link" href="index.php">Beranda</a>
                     </li>
                 </ul>
             </div>

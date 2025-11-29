@@ -59,7 +59,7 @@
                 <div class="card shadow text-center rounded-4">
                     <div class="card-body">
                         <h5 class="card-title mb-3">Selamat Datang di website pengumuman akademik online</h5>
-                        <a href="login.php" class="btn btn-success btn-lg">Login</a>
+                        <a href="../../views/auth/login.php" class="btn btn-success btn-lg">Login</a>
                     </div>
                 </div>
 

@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validasi
     if (empty($username) || empty($password)) {
-        echo "<script>alert('Username dan password harus diisi!'); location.href='../login.php';</script>";
+        echo "<script>alert('Username dan password harus diisi!'); location.href='../views/auth/login.php';</script>";
         exit();
     }
 
@@ -39,27 +39,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Redirect berdasarkan role
             if ($data['role_name'] === 'superadmin') {
-                echo "<script>alert('Login berhasil sebagai Superadmin!'); location.href='../superadmin/dashboard.php';</script>";
+                echo "<script>alert('Login berhasil sebagai Superadmin!'); location.href='../views/superadmin/dashboard.php';</script>";
             } 
             else if ($data['role_name'] === 'dosen') {
-                echo "<script>alert('Login berhasil sebagai Dosen!'); location.href='../admin/dashboard.php';</script>";
+                echo "<script>alert('Login berhasil sebagai Dosen!'); location.href='../views/admin/dashboard.php';</script>";
             } 
             else {
-                echo "<script>alert('Login berhasil sebagai Mahasiswa!'); location.href='../user/dashboard.php';</script>";
+                echo "<script>alert('Login berhasil sebagai Mahasiswa!'); location.href='../views/user/dashboard.php';</script>";
             }
 
             exit();
         } else {
-            echo "<script>alert('Password salah!'); location.href='../login.php';</script>";
+            echo "<script>alert('Password salah!'); location.href='../views/auth/login.php';</script>";
             exit();
         }
     } else {
-        echo "<script>alert('Username tidak ditemukan!'); location.href='../login.php';</script>";
+        echo "<script>alert('Username tidak ditemukan!'); location.href='../views/auth/login.php';</script>";
         exit();
     }
 
 } else {
-    header("Location: ../login.php");
+    header("Location: ../views/auth/login.php");
     exit();
 }
 ?>

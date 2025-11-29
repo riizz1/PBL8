@@ -3,7 +3,7 @@ session_start();
 
 // Cek hanya superadmin yang bisa akses
 if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
-    header("Location: ../login.php");
+    header("Location: ../views/auth/login.php");
     exit();
 }
 ?>
@@ -16,7 +16,7 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
 <body>
     <h2>Tambah Akun Dosen</h2>
 
-    <form action="add_admin_aksi.php" method="POST">
+    <form action="../app/controllers/models/add_dosen.php" method="POST">
         <label>Username:</label><br>
         <input type="text" name="username" required><br><br>
 
