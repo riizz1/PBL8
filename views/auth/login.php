@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -31,7 +30,7 @@
                         <p class="text-muted">Silakan login ke akun Anda</p>
                     </div>
 
-                    <form action="../app/controllers/auth/login_aksi.php" method="POST">
+                    <form action="/PBL8/app/controllers/auth/login_aksi.php" method="POST">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" name="username" class="form-control form-control-lg" id="username"
@@ -51,9 +50,9 @@
             </div>
         </div>
     </div>
- <?php
+    <?php
     include("../../public/footer.php");
- ?>
+    ?>
 
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
