@@ -92,32 +92,74 @@ $result_kategori = $conn->query($query_kategori);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        .table thead th {
+        /* Style tetap sama seperti sebelumnya */
+        .table thead .col-nama-pengumuman,
+        .table thead .col-kategori,
+        .table thead .col-aksi {
             background-color: #2193b0 !important;
-            color: white !important;
+            color: #fff !important;
             text-align: center;
         }
-        .text-center { text-align: center; }
+
+        .col-kategori {
+            text-align: center;
+        }
+
+        .col-aksi {
+            text-align: center;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
 
         .modal-content {
             background-color: #222;
             color: white;
+            border-radius: 10px;
         }
 
         .form-control {
             background-color: #333;
             color: white;
+            border: 1px solid #555;
         }
 
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: none;
+        }
+
+        /* ===============================
+   TOMBOL SUBMIT (BIRU)
+   =============================== */
         .btn-submit {
-            background-color: #0d6efd;
-            color: white;
+            background-color: #0d6efd !important;
+            color: white !important;
             width: 100%;
             border: none;
-            padding: 10px;
+            border-radius: 6px;
+            padding: 10px 0;
+            font-size: 15px;
+            font-weight: 600;
         }
+
         .btn-submit:hover {
-            background-color: #0b5ed7;
+            background-color: #0b5ed7 !important;
+            color: white !important;
+        }
+
+        /* Menang terhadap Bootstrap di dalam modal */
+        .modal .btn-submit {
+            background-color: #0d6efd !important;
+            color: white !important;
         }
     </style>
 </head>
@@ -162,54 +204,108 @@ $result_kategori = $conn->query($query_kategori);
                         </a>
                     </td>
                 </tr>
+            </thead>
+            <tbody>
+                <?php if ($result && $result->num_rows > 0): ?>
+                    <?php $no = 1;
+                    while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo $no++ . ". " . htmlspecialchars($row['judul']); ?></td>
+                            <td class="col-kategori"><?php echo htmlspecialchars($row['nama_kategori']); ?></td>
+                            <td class="col-aksi">
+                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#modalEdit<?php echo $row['pengumuman_id']; ?>">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Yakin ingin menghapus pengumuman ini?') ? window.location.href='pengumuman.php?hapus=<?php echo $row['pengumuman_id']; ?>' : false;">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
 
-                <!-- MODAL EDIT -->
-                <div class="modal fade" id="modalEdit<?= $row['pengumuman_id'] ?>" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5>Edit Pengumuman</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <!-- Modal Edit -->
+                        <div class="modal fade" id="modalEdit<?php echo $row['pengumuman_id']; ?>" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5>Edit Pengumuman</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST">
+                                            <input type="hidden" name="pengumuman_id"
+                                                value="<?php echo $row['pengumuman_id']; ?>">
+                                            <div class="mb-3">
+                                                <label class="form-label">Judul Pengumuman</label>
+                                                <input type="text" class="form-control" name="judul"
+                                                    value="<?php echo htmlspecialchars($row['judul']); ?>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Kategori</label>
+                                                <select class="form-control" name="kategori_id" required>
+                                                    <option value="">Pilih kategori</option>
+                                                    <?php
+                                                    $result_kategori->data_seek(0);
+                                                    while ($kat = $result_kategori->fetch_assoc()):
+                                                        ?>
+                                                        <option value="<?php echo $kat['kategori_id']; ?>" <?php echo ($kat['kategori_id'] == $row['kategori_id']) ? 'selected' : ''; ?>>
+                                                            <?php echo htmlspecialchars($kat['nama_kategori']); ?>
+                                                        </option>
+                                                    <?php endwhile; ?>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Isi Pengumuman</label>
+                                                <textarea class="form-control" name="isi" rows="3"
+                                                    required><?php echo htmlspecialchars($row['isi']); ?></textarea>
+                                            </div>
+                                            <button type="submit" name="edit" class="btn btn-submit mt-2">Update</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="modal-body">
                                 <form method="POST">
                                     <input type="hidden" name="pengumuman_id" value="<?= $row['pengumuman_id'] ?>">
 
-                                    <div class="mb-3">
-                                        <label>Judul Pengumuman</label>
-                                        <input type="text" name="judul"
-                                               value="<?= htmlspecialchars($row['judul']) ?>"
-                                               class="form-control" required>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label>Kategori</label>
-                                        <select name="kategori_id" class="form-control" required>
-                                            <option value="">Pilih kategori</option>
-                                            <?php
-                                            $result_kategori->data_seek(0);
-                                            while ($kat = $result_kategori->fetch_assoc()):
-                                            ?>
-                                                <option value="<?= $kat['kategori_id'] ?>"
-                                                    <?= $kat['kategori_id'] == $row['kategori_id'] ? 'selected' : '' ?>>
-                                                    <?= htmlspecialchars($kat['nama_kategori']) ?>
-                                                </option>
-                                            <?php endwhile; ?>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label>Isi Pengumuman</label>
-                                        <textarea name="isi" class="form-control" rows="3" required><?= htmlspecialchars($row['isi']) ?></textarea>
-                                    </div>
-
-                                    <button type="submit" name="edit" class="btn-submit">Update</button>
-                                </form>
-                            </div>
-
+    <!-- Modal Tambah -->
+    <div class="modal fade" id="modalTambah" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Penambahan Pengumuman</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Judul Pengumuman</label>
+                            <input type="text" class="form-control" name="judul" placeholder="Masukkan judul pengumuman"
+                                required>
                         </div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Kategori</label>
+                            <select class="form-control" name="kategori_id" required>
+                                <option value="">Pilih kategori</option>
+                                <?php
+                                $result_kategori->data_seek(0);
+                                while ($kat = $result_kategori->fetch_assoc()):
+                                    ?>
+                                    <option value="<?php echo $kat['kategori_id']; ?>">
+                                        <?php echo htmlspecialchars($kat['nama_kategori']); ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Isi Pengumuman</label>
+                            <textarea class="form-control" name="isi" rows="3" placeholder="Masukkan isi pengumuman"
+                                required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Simpan</button>
+                    </form>
                 </div>
 
             <?php endwhile; ?>
@@ -279,4 +375,5 @@ $result_kategori = $conn->query($query_kategori);
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

@@ -90,20 +90,7 @@
             background-color: #f2f2f2 !important;
             color: black !important;
         }
-        .modal-content input,
-        .modal-content textarea {
-            background-color: #ffffffff;
-            color: white;
-            border: none;
-        }
 
-        .modal-content input:focus,
-        .modal-content textarea:focus {
-            background-color: #444;
-            color: white;
-            box-shadow: none;
-            border: 1px solid #0d6efd;
-        }
 
         .btn-close {
             filter: invert(1);
@@ -282,7 +269,7 @@
             rowToEdit.querySelector('.col-prodi').textContent = newProdi;
 
 =======
->>>>>>> d0d0d98
+>>>>>>> b6950b5 (update citra)
             alert('Perubahan berhasil disimpan!');
 
             // Tutup modal
@@ -291,15 +278,6 @@
             modal.hide();
         });
 
-        // ================= JS HAPUS BARIS =================
-        document.querySelectorAll('.btn-danger').forEach(button => {
-            button.addEventListener('click', e => {
-                if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-                    const row = button.closest('tr'); // cari baris <tr> terdekat
-                    row.remove(); // hapus baris dari tabel
-                }
-            });
-        });
     </script>
 
 </body>

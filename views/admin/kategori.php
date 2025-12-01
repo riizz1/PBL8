@@ -28,49 +28,32 @@
             padding: 20px;
         }
 
-        .modal-content input,
-        .modal-content textarea {
-            background-color: #ffffffff;
-            color: white;
-            border: none;
-        }
-
-        .modal-content input:focus,
-        .modal-content textarea:focus {
-            background-color: #ffffffff;
-            color: white;
-            border: 1px solid #0d6efd;
-        }
-
-        /* Placeholder putih untuk modal tambah kategori */
-        #modalTambahKategori input::placeholder,
-        #modalTambahKategori textarea::placeholder {
-            color: #ffffff !important;
-            opacity: 1 !important;
-        }
-
-        #modalTambahKategori input,
-        #modalTambahKategori textarea {
-            color: #ffffff !important;
-        }
-
-        /* Fallback terkuat */
+        /* ============================
+   PRIORITAS TERTINGGI BORDER ABU ROKOK
+   ============================ */
         #modalTambahKategori .modal-content input.form-control,
         #modalTambahKategori .modal-content textarea.form-control {
+            border: 1px solid #b0b0b0 !important;
+            /* ABU ROKOK */
+            background-color: #2b2b2b !important;
             color: #ffffff !important;
         }
 
+        /* Fokus tetap abu rokok */
+        #modalTambahKategori .modal-content input.form-control:focus,
+        #modalTambahKategori .modal-content textarea.form-control:focus {
+            border: 1px solid #8f8f8f !important;
+            /* ABU ROKOK GELAP */
+            background-color: #444 !important;
+            color: white !important;
+        }
+
+        /* Placeholder */
         #modalTambahKategori .modal-content input.form-control::placeholder,
         #modalTambahKategori .modal-content textarea.form-control::placeholder {
-            color: #ffffff !important;
-            opacity: 1 !important;
+            color: #d0d0d0 !important;
         }
 
-        /* Placeholder input dan textarea pada halaman kategori */
-        .kategori-page ::placeholder {
-            color: #ffffff !important;
-            opacity: 1;
-        }
 
         .col-aksi {
             background-color: #6B2C2C !important;

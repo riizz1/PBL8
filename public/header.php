@@ -10,10 +10,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<<<<<<< HEAD
-
-=======
->>>>>>> dec0de8 (membuat dashboard di superadmin dan membuat agar admin yang ada di superadmin bisa jalan)
     <!-- Custom CSS -->
     <link rel="stylesheet" href="index.css">
     <style>
@@ -34,10 +30,6 @@
             background: linear-gradient(to bottom right, #f8f9fc, #e9ecef);
         }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> dec0de8 (membuat dashboard di superadmin dan membuat agar admin yang ada di superadmin bisa jalan)
         .navbar-toggler {
             border: none;
         }
@@ -92,10 +84,6 @@
             background: #00aa00;
         }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> dec0de8 (membuat dashboard di superadmin dan membuat agar admin yang ada di superadmin bisa jalan)
         /* Responsive untuk Navbar */
         @media (max-width: 768px) {
             .navbar .container {
@@ -125,11 +113,8 @@
 
             <!-- Logo -->
             <a class="navbar-brand" href="landingpage.php">
-<<<<<<< HEAD
-            <img src="/pbl8/PBL8/public/assets/img/logopolibatam.png" alt="Logo" height="45">
-=======
-                <img src="/pbl8/PBL8/public/assets/img/logopolibatam.png" alt="Logo" height="45">
->>>>>>> dec0de8 (membuat dashboard di superadmin dan membuat agar admin yang ada di superadmin bisa jalan)
+
+            <img src="/PBL8/public/assets/img/logopolibatam.png" alt="Logo" height="45">
             </a>
 
             <!-- Tombol Hamburger -->
@@ -148,22 +133,8 @@
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Beranda</a>
                     </li>
-<<<<<<< HEAD
-=======
-
-                    <!-- 🔥 Tombol Logout sudah ditambahkan -->
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="../../app/controllers/auth/logout.php">
-                            Logout
-                        </a>
-                    </li>
->>>>>>> dec0de8 (membuat dashboard di superadmin dan membuat agar admin yang ada di superadmin bisa jalan)
                 </ul>
             </div>
 
         </div>
-<<<<<<< HEAD
     </nav>
-=======
-    </nav>
->>>>>>> dec0de8 (membuat dashboard di superadmin dan membuat agar admin yang ada di superadmin bisa jalan)
