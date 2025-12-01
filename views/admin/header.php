@@ -247,7 +247,7 @@
 
       <!-- Brand -->
       <a class="navbar-brand fw-bold me-3" href="dashboard.php">
-        <img src="../assets/img/logopolibatam.png" alt="Logo">
+        <img src="../../public/assets/img/logopolibatam.png" alt="Logo">
       </a>
 
       <!-- Tombol hamburger -->

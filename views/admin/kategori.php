@@ -9,62 +9,63 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-.col-nama {
-    background-color: #7a7171 !important;
-    color: white;
-}
+        .col-nama {
+            background-color: #7a7171 !important;
+            color: white;
+        }
 
-.col-aksi {
-    background-color: #6B2C2C !important;
-    color: white;
-    text-align: center;
-}
+        .col-aksi {
+            background-color: #6B2C2C !important;
+            color: white;
+            text-align: center;
+        }
 
-/* Modal kategori */
-.modal-content {
-    background-color: #2b2b2b;
-    color: white;
-    border-radius: 10px;
-    padding: 20px;
-}
+        /* Modal kategori */
+        .modal-content {
+            background-color: #2b2b2b;
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
 
-.modal-content input,
-.modal-content textarea {
-    background-color: #3a3a3a;
-    color: white;
-    border: none;
-}
+        .modal-content input,
+        .modal-content textarea {
+            background-color: #3a3a3a;
+            color: white;
+            border: none;
+        }
 
-.modal-content input:focus,
-.modal-content textarea:focus {
-    background-color: #444;
-    color: white;
-    border: 1px solid #0d6efd;
-}
+        .modal-content input:focus,
+        .modal-content textarea:focus {
+            background-color: #444;
+            color: white;
+            border: 1px solid #0d6efd;
+        }
 
-/* Placeholder putih untuk modal tambah kategori */
-#modalTambahKategori input::placeholder,
-#modalTambahKategori textarea::placeholder {
-    color: #ffffff !important;
-    opacity: 1 !important;
-}
+        /* Placeholder putih untuk modal tambah kategori */
+        #modalTambahKategori input::placeholder,
+        #modalTambahKategori textarea::placeholder {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
 
-#modalTambahKategori input,
-#modalTambahKategori textarea {
-    color: #ffffff !important;
-}
+        #modalTambahKategori input,
+        #modalTambahKategori textarea {
+            color: #ffffff !important;
+        }
 
-/* Fallback terkuat */
-#modalTambahKategori .modal-content input.form-control,
-#modalTambahKategori .modal-content textarea.form-control {
-    color: #ffffff !important;
-}
+        /* Fallback terkuat */
+        #modalTambahKategori .modal-content input.form-control,
+        #modalTambahKategori .modal-content textarea.form-control {
+            color: #ffffff !important;
+        }
 
-#modalTambahKategori .modal-content input.form-control::placeholder,
-#modalTambahKategori .modal-content textarea.form-control::placeholder {
-    color: #ffffff !important;
-    opacity: 1 !important;
-}
+        #modalTambahKategori .modal-content input.form-control::placeholder,
+        #modalTambahKategori .modal-content textarea.form-control::placeholder {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+
         /* Placeholder input dan textarea pada halaman kategori */
         .kategori-page ::placeholder {
             color: #ffffff !important;
@@ -126,14 +127,13 @@
             color: #fff;
         }
     </style>
+
 </head>
 
 <body class="kategori-page">
-    <?php
-    include("header.php");
-    ?>
 
-    <!-- Konten -->
+    <?php include("header.php"); ?>
+
     <main class="container my-4">
         <div class="mb-3">
             <h4 class="fw-bold mb-1">Kategori</h4>
@@ -141,6 +141,7 @@
                 + Tambah Kategori
             </button>
         </div>
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -149,93 +150,45 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="col-nama">1. Jadwal Akademik (20 pengumuman)</td>
-                    <td class="col-aksi">
-                        <button class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-nama">2. Perkuliahan (15 pengumuman)</td>
-                    <td class="col-aksi">
-                        <button class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-nama">3. Ujian (12 pengumuman)</td>
-                    <td class="col-aksi">
-                        <button class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-nama">4. Beasiswa (8 pengumuman)</td>
-                    <td class="col-aksi">
-                        <button class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-nama">5. Kegiatan (25 pengumuman)</td>
-                    <td class="col-aksi">
-                        <button class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-nama">6. Magang & Karier (10 pengumuman)</td>
-                    <td class="col-aksi">
-                        <button class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-nama">7. Umum (30 pengumuman)</td>
-                    <td class="col-aksi">
-                        <button class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>
-                    </td>
-                </tr>
+                <?php if (!empty($dataKategori)) : ?>
+                    <?php $no = 1;
+                    foreach ($dataKategori as $row) : ?>
+                        <tr>
+                            <td class="col-nama">
+                                <?= $no++ . ". " . htmlspecialchars($row['nama_kategori']); ?>
+                            </td>
+                            <td class="col-aksi">
+                                <a href="#" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a href="#" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <tr>
+                        <td colspan="2" class="text-center">Belum ada kategori</td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </main>
 
     <!-- Modal Tambah Kategori -->
-    <div class="modal fade" id="modalTambahKategori" tabindex="-1" aria-labelledby="modalTambahKategoriLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="modalTambahKategori" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title" id="modalTambahKategoriLabel">Penambahan Kategori Pengumuman</h5>
+                    <h5 class="modal-title">Penambahan Kategori Pengumuman</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form action="/PBL8/app/controllers/kategori_tambah.php" method="POST">
                         <div class="mb-3">
-                            <label for="kategoriName" class="form-label">Nama Kategori</label>
-                            <input type="text" class="form-control" id="kategoriName"
-                                placeholder="Masukkan nama kategori">
-                        </div>
-                        <div class="mb-3">
-                            <label for="deskripsiKategori" class="form-label">Deskripsi</label>
-                            <textarea class="form-control" id="deskripsiKategori" rows="3"
-                                placeholder="Deskripsi kategori"></textarea>
+                            <label class="form-label">Nama Kategori</label>
+                            <input type="text" name="nama_kategori" class="form-control" placeholder="Masukkan nama kategori">
                         </div>
                         <button type="submit" class="btn btn-light w-100">Simpan</button>
                     </form>
@@ -244,12 +197,10 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <?php
-    include("footer.php");
-    ?>
+    <?php include("footer.php"); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>
