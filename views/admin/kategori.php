@@ -12,8 +12,6 @@
         .col-nama {
             background-color: #7a7171 !important;
             color: white;
-<<<<<<< HEAD
-=======
         }
 
         .col-aksi {
@@ -32,14 +30,14 @@
 
         .modal-content input,
         .modal-content textarea {
-            background-color: #3a3a3a;
+            background-color: #ffffffff;
             color: white;
             border: none;
         }
 
         .modal-content input:focus,
         .modal-content textarea:focus {
-            background-color: #444;
+            background-color: #ffffffff;
             color: white;
             border: 1px solid #0d6efd;
         }
@@ -72,7 +70,6 @@
         .kategori-page ::placeholder {
             color: #ffffff !important;
             opacity: 1;
->>>>>>> d0d0d98
         }
 
         .col-aksi {
@@ -243,6 +240,10 @@
                         <div class="mb-3">
                             <label class="form-label">Nama Kategori</label>
                             <input type="text" name="nama_kategori" class="form-control" placeholder="Masukkan nama kategori">
+                        </div>
+                         <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <input type="text" name="deskripsi" class="form-control" placeholder="Masukkan deskripsi">
                         </div>
                         <button type="submit" class="btn btn-light w-100">Simpan</button>
                     </form>

@@ -92,7 +92,7 @@
         }
         .modal-content input,
         .modal-content textarea {
-            background-color: #3a3a3a;
+            background-color: #ffffffff;
             color: white;
             border: none;
         }
