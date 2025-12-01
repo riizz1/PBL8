@@ -168,10 +168,10 @@
   <div id="kampusCarousel" class="carousel slide my-4" data-bs-ride="carousel">
     <div class="carousel-inner rounded-4 overflow-hidden mx-3 shadow-sm">
       <div class="carousel-item active">
-        <img src="../assets/img/polibatam.jpg" class="d-block w-100" alt="Kampus">
+          <img src="/pbl8/PBL8/public/assets/img/polibatam.jpg" class="d-block w-100" alt="Kampus 2">
       </div>
       <div class="carousel-item">
-        <img src="../assets/img/polibatam.jpg" class="d-block w-100" alt="Kampus 2">
+        <img src="/pbl8/PBL8/public/assets/img/polibatam.jpg" class="d-block w-100" alt="Kampus 2">
       </div>
     </div>
 

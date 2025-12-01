@@ -78,20 +78,19 @@
             padding: 20px;
         }
 
-        .modal-content input,
-        .modal-content textarea {
-            background-color: #3a3a3a;
-            color: white;
-            border: none;
+        /* Border input pada modal Tambah Mahasiswa jadi abu rokok */
+        #modalTambahMahasiswa .modal-content input {
+            border: 1px solid #b0b0b0 !important;
+            color: black !important;
         }
 
-        .modal-content input:focus,
-        .modal-content textarea:focus {
-            background-color: #444;
-            color: white;
-            box-shadow: none;
-            border: 1px solid #0d6efd;
+        /* Saat fokus tetap abu rokok lebih gelap */
+        #modalTambahMahasiswa .modal-content input:focus {
+            border: 1px solid #8f8f8f !important;
+            background-color: #f2f2f2 !important;
+            color: black !important;
         }
+
 
         .btn-close {
             filter: invert(1);
@@ -127,9 +126,9 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Fariz Zikri Pohan</td>
-                    <td>123456789</td>
-                    <td>Informatika</td>
+                    <td class="col-nama">Fariz Zikri Pohan</td>
+                    <td class="col-nim">123456789</td>
+                    <td class="col-prodi">Informatika</td>
                     <td>
                         <button class="btn btn-warning btn-sm edit-btn" data-nama="Fariz Zikri Pohan"
                             data-nim="123456789" data-prodi="Informatika" data-bs-toggle="modal"
@@ -140,29 +139,32 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Edo Christian</td>
-                    <td>123456710</td>
-                    <td>Informatika</td>
+                    <td class="col-nama">Edo Cristian</td>
+                    <td class="col-nim">3312501028</td>
+                    <td class="col-prodi">Informatika</td>
                     <td>
-                        <button class="btn btn-warning btn-sm edit-btn" data-nama="Edo Christian" data-nim="123456710"
+                        <button class="btn btn-warning btn-sm edit-btn" data-nama="Edo Cristian" data-nim="3312501028"
                             data-prodi="Informatika" data-bs-toggle="modal" data-bs-target="#modalEditMahasiswa">
                             <i class="bi bi-pencil-fill"></i>
                         </button>
                         <button class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>
                     </td>
                 </tr>
+
                 <tr>
-                    <td>Citra</td>
-                    <td>123456711</td>
-                    <td>Informatika</td>
+                    <td class="col-nama">Citra Anggun Batubara</td>
+                    <td class="col-nim">3312501030</td>
+                    <td class="col-prodi">Informatika</td>
                     <td>
-                        <button class="btn btn-warning btn-sm edit-btn" data-nama="Citra" data-nim="123456711"
-                            data-prodi="Informatika" data-bs-toggle="modal" data-bs-target="#modalEditMahasiswa">
+                        <button class="btn btn-warning btn-sm edit-btn" data-nama="Citra Anggun Batubara"
+                            data-nim="3312501030" data-prodi="Informatika" data-bs-toggle="modal"
+                            data-bs-target="#modalEditMahasiswa">
                             <i class="bi bi-pencil-fill"></i>
                         </button>
                         <button class="btn btn-danger btn-sm"><i class="bi bi-trash-fill"></i></button>
                     </td>
                 </tr>
+
             </tbody>
         </table>
     </main>
@@ -237,37 +239,42 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ================= JS EDIT MODAL =================
+        let rowToEdit = null;
+
         document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', () => {
-                const nama = button.getAttribute('data-nama');
-                const nim = button.getAttribute('data-nim');
-                const prodi = button.getAttribute('data-prodi');
 
-                document.getElementById('editNama').value = nama;
-                document.getElementById('editNim').value = nim;
-                document.getElementById('editProdi').value = prodi;
+                // Simpan baris <tr> yang sedang diedit
+                rowToEdit = button.closest('tr');
+
+                // Ambil data dari atribut tombol
+                document.getElementById('editNama').value = button.dataset.nama;
+                document.getElementById('editNim').value = button.dataset.nim;
+                document.getElementById('editProdi').value = button.dataset.prodi;
             });
         });
 
         document.getElementById('formEditMahasiswa').addEventListener('submit', e => {
             e.preventDefault();
+
+            // Ambil nilai baru
+            const newNama = document.getElementById('editNama').value;
+            const newNim = document.getElementById('editNim').value;
+            const newProdi = document.getElementById('editProdi').value;
+
+            // Update kolom di baris yang diedit
+            rowToEdit.querySelector('.col-nama').textContent = newNama;
+            rowToEdit.querySelector('.col-nim').textContent = newNim;
+            rowToEdit.querySelector('.col-prodi').textContent = newProdi;
+
             alert('Perubahan berhasil disimpan!');
 
+            // Tutup modal
             const modalEl = document.getElementById('modalEditMahasiswa');
             const modal = bootstrap.Modal.getInstance(modalEl);
             modal.hide();
         });
 
-        // ================= JS HAPUS BARIS =================
-        document.querySelectorAll('.btn-danger').forEach(button => {
-            button.addEventListener('click', e => {
-                if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-                    const row = button.closest('tr'); // cari baris <tr> terdekat
-                    row.remove(); // hapus baris dari tabel
-                }
-            });
-        });
     </script>
 
 </body>

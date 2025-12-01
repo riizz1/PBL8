@@ -116,7 +116,7 @@
 
             <!-- Logo -->
             <a class="navbar-brand" href="landingpage.php">
-                <img src="/public/assets/img/logopolibatam.png" alt="Logo Polibatam" height="45">
+            <img src="/pbl8/PBL8/public/assets/img/logopolibatam.png" alt="Logo" height="45">
             </a>
 
             <!-- Tombol Hamburger -->
