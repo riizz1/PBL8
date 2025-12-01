@@ -6,7 +6,7 @@ VALUES
     (2, 'dosen'),
     (3, 'mahasiswa');
 
--- seed superadmin
+-- seed superadmin (plain password: superadmin123)
 INSERT INTO
     users (username, password, role_id)
 VALUES
