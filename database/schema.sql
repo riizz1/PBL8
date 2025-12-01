@@ -34,7 +34,7 @@ CREATE TABLE
         `kategori_id` int NOT NULL,
         `nama_kategori` varchar(100) NOT NULL,
         `deskripsi` varchar(100) NOT NULL
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 --
@@ -51,7 +51,7 @@ CREATE TABLE
         `email` varchar(100) DEFAULT NULL,
         `alamat` text,
         `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 --
@@ -64,7 +64,7 @@ CREATE TABLE
         `isi` text NOT NULL,
         `kategori_id` int DEFAULT NULL,
         `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 --
@@ -74,7 +74,7 @@ CREATE TABLE
     `roles` (
         `role_id` int NOT NULL,
         `role_name` varchar(50) NOT NULL
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 --
@@ -87,7 +87,7 @@ CREATE TABLE
         `password` varchar(255) NOT NULL,
         `role_id` int DEFAULT NULL,
         `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
