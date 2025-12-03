@@ -12,6 +12,67 @@
         .col-nama {
             background-color: #7a7171 !important;
             color: white;
+<<<<<<< HEAD
+=======
+        }
+
+        .col-aksi {
+            background-color: #6B2C2C !important;
+            color: white;
+            text-align: center;
+        }
+
+        /* Modal kategori */
+        .modal-content {
+            background-color: #2b2b2b;
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .modal-content input,
+        .modal-content textarea {
+            background-color: #3a3a3a;
+            color: white;
+            border: none;
+        }
+
+        .modal-content input:focus,
+        .modal-content textarea:focus {
+            background-color: #444;
+            color: white;
+            border: 1px solid #0d6efd;
+        }
+
+        /* Placeholder putih untuk modal tambah kategori */
+        #modalTambahKategori input::placeholder,
+        #modalTambahKategori textarea::placeholder {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+
+        #modalTambahKategori input,
+        #modalTambahKategori textarea {
+            color: #ffffff !important;
+        }
+
+        /* Fallback terkuat */
+        #modalTambahKategori .modal-content input.form-control,
+        #modalTambahKategori .modal-content textarea.form-control {
+            color: #ffffff !important;
+        }
+
+        #modalTambahKategori .modal-content input.form-control::placeholder,
+        #modalTambahKategori .modal-content textarea.form-control::placeholder {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+
+        /* Placeholder input dan textarea pada halaman kategori */
+        .kategori-page ::placeholder {
+            color: #ffffff !important;
+            opacity: 1;
+>>>>>>> d0d0d98
         }
 
         .col-aksi {

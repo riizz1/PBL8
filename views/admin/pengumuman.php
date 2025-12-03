@@ -161,7 +161,20 @@ $result_kategori = $conn->query($query_kategori);
         .modal .btn-submit {
             background-color: #0d6efd !important;
             color: white !important;
+=======
+        .table thead .col-nama-pengumuman, .table thead .col-kategori, .table thead .col-aksi {
+            background-color: #2193b0 !important; color: #fff !important; text-align:center;
+>>>>>>> d0d0d98
         }
+        .col-kategori { text-align:center; }
+        .col-aksi { text-align:center; }
+        .no-data { text-align: center; padding: 40px; color: #666; font-style: italic; }
+        .btn-close { filter: invert(1); }
+        .modal-content { background-color:#222; color:white; border-radius:10px; }
+        .form-control { background-color:#333; color:white; border:1px solid #555; }
+        .form-control:focus { border-color:#0d6efd; box-shadow:none; }
+        .btn-submit { background-color:#0d6efd; color:white; width:100%; }
+        .btn-submit:hover { background-color:#0b5ed7; }
     </style>
 </head>
 
@@ -186,6 +199,7 @@ $result_kategori = $conn->query($query_kategori);
                 <?php if ($result && $result->num_rows > 0): ?>
                     <?php $no = 1;
                     while ($row = $result->fetch_assoc()): ?>
+                    <?php $no=1; while($row = $result->fetch_assoc()): ?>
                         <tr>
                             <td><?php echo $no++ . ". " . htmlspecialchars($row['judul']); ?></td>
                             <td class="col-kategori"><?php echo htmlspecialchars($row['nama_kategori']); ?></td>
@@ -215,8 +229,7 @@ $result_kategori = $conn->query($query_kategori);
                                                 value="<?php echo $row['pengumuman_id']; ?>">
                                             <div class="mb-3">
                                                 <label class="form-label">Judul Pengumuman</label>
-                                                <input type="text" class="form-control" name="judul"
-                                                    value="<?php echo htmlspecialchars($row['judul']); ?>" required>
+                                                <input type="text" class="form-control" name="judul" value="<?php echo htmlspecialchars($row['judul']); ?>" required>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Kategori</label>
@@ -226,6 +239,8 @@ $result_kategori = $conn->query($query_kategori);
                                                     $result_kategori->data_seek(0);
                                                     while ($kat = $result_kategori->fetch_assoc()):
                                                         ?>
+                                                    while($kat = $result_kategori->fetch_assoc()):
+                                                    ?>
                                                         <option value="<?php echo $kat['kategori_id']; ?>" <?php echo ($kat['kategori_id'] == $row['kategori_id']) ? 'selected' : ''; ?>>
                                                             <?php echo htmlspecialchars($kat['nama_kategori']); ?>
                                                         </option>
@@ -236,6 +251,7 @@ $result_kategori = $conn->query($query_kategori);
                                                 <label class="form-label">Isi Pengumuman</label>
                                                 <textarea class="form-control" name="isi" rows="3"
                                                     required><?php echo htmlspecialchars($row['isi']); ?></textarea>
+                                                <textarea class="form-control" name="isi" rows="3" required><?php echo htmlspecialchars($row['isi']); ?></textarea>
                                             </div>
                                             <button type="submit" name="edit" class="btn btn-submit mt-2">Update</button>
                                         </form>
@@ -280,6 +296,8 @@ $result_kategori = $conn->query($query_kategori);
                                 $result_kategori->data_seek(0);
                                 while ($kat = $result_kategori->fetch_assoc()):
                                     ?>
+                                while($kat = $result_kategori->fetch_assoc()):
+                                ?>
                                     <option value="<?php echo $kat['kategori_id']; ?>">
                                         <?php echo htmlspecialchars($kat['nama_kategori']); ?>
                                     </option>
@@ -290,6 +308,7 @@ $result_kategori = $conn->query($query_kategori);
                             <label class="form-label">Isi Pengumuman</label>
                             <textarea class="form-control" name="isi" rows="3" placeholder="Masukkan isi pengumuman"
                                 required></textarea>
+                            <textarea class="form-control" name="isi" rows="3" placeholder="Masukkan isi pengumuman" required></textarea>
                         </div>
                         <button type="submit" class="btn-submit">Simpan</button>
                     </form>
@@ -301,5 +320,4 @@ $result_kategori = $conn->query($query_kategori);
     <?php include("footer.php"); ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

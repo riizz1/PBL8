@@ -3,17 +3,14 @@ session_start();
 
 // Cek hanya superadmin yang bisa akses
 if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
-<<<<<<< HEAD
+
     header("Location: ../views/auth/login.php");
-=======
     header("Location: ../../views/auth/login.php");
->>>>>>> dec0de8 (membuat dashboard di superadmin dan membuat agar admin yang ada di superadmin bisa jalan)
     exit();
 }
 ?>
 
 <!DOCTYPE html>
-<<<<<<< HEAD
 <html>
 <head>
     <title>Tambah Admin (Dosen)</title>
