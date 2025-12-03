@@ -27,7 +27,10 @@
                             </svg>
                         </div>
                         <h2 class="mt-3 mb-1">Selamat Datang</h2>
+<<<<<<< HEAD
                         <p class="text-muted">Silakan login ke akun Anda</p>
+=======
+>>>>>>> dec0de8 (membuat dashboard di superadmin dan membuat agar admin yang ada di superadmin bisa jalan)
                     </div>
 
                     <form action="/PBL8/app/controllers/auth/login_aksi.php" method="POST">
