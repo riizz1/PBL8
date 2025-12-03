@@ -93,6 +93,7 @@
         width: 0%;
         opacity: 0;
       }
+
       to {
         width: 40%;
         opacity: 1;
@@ -157,10 +158,13 @@
     }
 
     @keyframes pulse {
-      0%, 100% {
+
+      0%,
+      100% {
         opacity: 1;
         transform: scale(1);
       }
+
       50% {
         opacity: 0.5;
         transform: scale(1.2);
@@ -248,6 +252,8 @@
       <!-- Brand -->
       <a class="navbar-brand fw-bold me-3" href="dashboard.php">
         <img src="../assets/img/logopolibatam.png" alt="Logo">
+
+
       </a>
 
       <!-- Tombol hamburger -->
@@ -260,42 +266,42 @@
       <div class="collapse navbar-collapse" id="navbarContent">
 
         <!-- Menu utama -->
-       <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
-  <li class="nav-item me-3">
-    <a class="nav-link" href="dashboard.php" data-page="dashboard">
-      <i data-lucide="home"></i>
-      Dashboard
-    </a>
-  </li>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
+          <li class="nav-item me-3">
+            <a class="nav-link" href="dashboard.php" data-page="dashboard">
+              <i data-lucide="home"></i>
+              Dashboard
+            </a>
+          </li>
 
-  <li class="nav-item me-3">
-    <a class="nav-link" href="pengumuman.php" data-page="pengumuman">
-      <i data-lucide="megaphone"></i>
-      Pengumuman
-    </a>
-  </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="pengumuman.php" data-page="pengumuman">
+              <i data-lucide="megaphone"></i>
+              Pengumuman
+            </a>
+          </li>
 
-  <li class="nav-item me-3">
-    <a class="nav-link" href="kategori.php" data-page="kategori">
-      <i data-lucide="tags"></i>
-      Kategori
-    </a>
-  </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="kategori.php" data-page="kategori">
+              <i data-lucide="tags"></i>
+              Kategori
+            </a>
+          </li>
 
-  <li class="nav-item me-3">
-    <a class="nav-link" href="mahasiswa.php" data-page="mahasiswa">
-      <i data-lucide="users"></i>
-      Mahasiswa
-    </a>
-  </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="mahasiswa.php" data-page="mahasiswa">
+              <i data-lucide="users"></i>
+              Mahasiswa
+            </a>
+          </li>
 
-  <li class="nav-item me-3">
-    <a class="nav-link" href="laporan.php" data-page="laporan">
-      <i data-lucide="file-text"></i>
-      Laporan
-    </a>
-  </li>
-</ul>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="laporan.php" data-page="laporan">
+              <i data-lucide="file-text"></i>
+              Laporan
+            </a>
+          </li>
+        </ul>
 
 
         <!-- Icon kanan -->
@@ -345,12 +351,12 @@
     function setActivePage() {
       // Dapatkan nama file halaman saat ini (misal: dashboard.php, pengumuman.php)
       const currentPage = window.location.pathname.split('/').pop().replace('.php', '');
-      
+
       // Hapus semua class active
       document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
       });
-      
+
       // Tambahkan class active ke link yang sesuai
       const activeLink = document.querySelector(`.nav-link[data-page="${currentPage}"]`);
       if (activeLink) {
