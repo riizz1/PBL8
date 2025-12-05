@@ -124,7 +124,7 @@
             </div>
         </div>
     </div>
-     <?
+     <?php
    include('footer.php')
    ?>
     <script src="https://unpkg.com/lucide@latest/dist/lucide.min.js"></script>

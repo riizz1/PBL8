@@ -1,4 +1,12 @@
-<footer class="bg-dark text-white text-center py-4 mt-auto">
+<footer class="bg-dark text-white text-center py-4"
+    style="
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 999;
+    ">
+    
     <style>
         footer {
             font-family: 'Poppins', sans-serif;
@@ -22,7 +30,6 @@
 
         footer a:hover {
             color: #0d6efd;
-            /* biru hover */
             transform: scale(1.1);
         }
 
@@ -51,7 +58,5 @@
     </div>
 
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <script>lucide.createIcons();</script>
 </footer>

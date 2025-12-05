@@ -290,7 +290,7 @@
               <i data-lucide="user"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li><a class="dropdown-item" href="logout.php">Log Out</a></li>
+              <li><a class="dropdown-item" href="../../app/controllers/auth/logout.php">Log Out</a></li>
             </ul>
           </li>
         </ul>

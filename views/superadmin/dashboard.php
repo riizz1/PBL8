@@ -19,56 +19,13 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        .header-blue {
-            background-color: #2193b0 !important;
-            color: white !important;
-        }
-        .card-header-blue {
-            background-color: #2193b0 !important;
-            color: white !important;
-        }
-        .btn-skyblue {
-            background-color: #87CEEB !important;
-            color: white !important;
-            border: none !important;
-        }
-        .btn-skyblue:hover {
-            background-color: #00BFFF !important;
-            color: white !important;
-        }
-    </style>
 </head>
 <body>
     <?php
         include('header.php')
     ?>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header card-header-blue">
-                        Tambah Akun Dosen
-                    </div>
-                    <div class="card-body">
-                        <form action="../app/controllers/models/add_dosen.php" method="POST">
-                            <div class="mb-3">
-                                <label class="form-label">Username:</label>
-                                <input type="text" name="username" class="form-control" required>
-                            </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Password:</label>
-                                <input type="password" name="password" class="form-control" required>
-                            </div>
-
-                            <button type="submit" class="btn btn-skyblue w-100">Tambah Admin</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- isi coding disini -->
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
