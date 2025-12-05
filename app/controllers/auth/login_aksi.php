@@ -3,7 +3,7 @@ session_start();
 
 // FILE CONFIG BERADA DI: PBL8/config/config.php
 // Dari app/controllers/auth -> butuh naik 3 folder
-include '../../../config/config.php';
+include __DIR__ . '/../../../config/config.php';
 
 // Hanya boleh via POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

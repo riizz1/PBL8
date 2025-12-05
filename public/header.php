@@ -112,8 +112,7 @@
         <div class="container">
 
             <!-- Logo -->
-            <a class="navbar-brand" href="landingpage.php">
-
+            <a class="navbar-brand" href="index.php">
             <img src="/PBL8/public/assets/img/logopolibatam.png" alt="Logo" height="45">
             </a>
 
@@ -131,7 +130,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Beranda</a>
+                        <a class="nav-link" href="/PBL8/public/index.php">Beranda</a>
                     </li>
                 </ul>
             </div>
