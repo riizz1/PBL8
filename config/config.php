@@ -6,15 +6,15 @@ $password = "";
 $database = "db_pbl8";
 
 // Membuat koneksi
-$conn = new mysqli($host, $username, $password, $database);
+$config = new mysqli($host, $username, $password, $database);
 
 // Cek koneksi
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
+if ($config->connect_error) {
+    die("Koneksi gagal: " . $config->connect_error);
 }
 
 // Set charset ke UTF-8
-$conn->set_charset("utf8");
+$config->set_charset("utf8");
 
 // Set timezone
 date_default_timezone_set('Asia/Jakarta');

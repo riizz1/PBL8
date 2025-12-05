@@ -271,9 +271,9 @@
             </a>
           </li>
           <li class="nav-item me-3">
-            <a class="nav-link" href="pengumuman.php" data-page="pengumuman">
+            <a class="nav-link" href="dosen.php" data-page="dosen">
               <i data-lucide="megaphone"></i>
-              Pengumuman
+              Dosen
             </a>
           </li>
         </ul>
@@ -290,7 +290,7 @@
               <i data-lucide="user"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li><a class="dropdown-item" href="/PBL8/app/controllers/auth/logout.php">Log Out</a></li>
+              <li><a class="dropdown-item" href="logout.php">Log Out</a></li>
             </ul>
           </li>
         </ul>
