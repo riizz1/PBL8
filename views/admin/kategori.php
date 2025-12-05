@@ -219,7 +219,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/PBL8/app/controllers/kategori_tambah.php" method="POST">
+                    <form action="/PBL8/app/controllers/models/crud_kategori.php" method="POST">
                         <div class="mb-3">
                             <label class="form-label">Nama Kategori</label>
                             <input type="text" name="nama_kategori" class="form-control" placeholder="Masukkan nama kategori">

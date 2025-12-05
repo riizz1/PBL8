@@ -4,7 +4,7 @@
 // =======================
 include __DIR__ . '/../../config/config.php';
 
-if (!$conn) {
+if (!$config) {
     die("Koneksi database tidak tersedia!");
 }
 
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tambah'])) {
     $isi = $_POST['isi'];
 
     $query = "INSERT INTO pengumuman (judul, kategori_id, isi, created_at) VALUES (?, ?, ?, NOW())";
-    $stmt = $conn->prepare($query);
+    $stmt = $config->prepare($query);
     $stmt->bind_param("sis", $judul, $kategori_id, $isi);
 
     if ($stmt->execute()) {
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit'])) {
     $isi = $_POST['isi'];
 
     $query = "UPDATE pengumuman SET judul=?, kategori_id=?, isi=? WHERE pengumuman_id=?";
-    $stmt = $conn->prepare($query);
+    $stmt = $config->prepare($query);
     $stmt->bind_param("sisi", $judul, $kategori_id, $isi, $pengumuman_id);
 
     if ($stmt->execute()) {
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit'])) {
 if (isset($_GET['hapus'])) {
     $pengumuman_id = $_GET['hapus'];
     $query = "DELETE FROM pengumuman WHERE pengumuman_id=?";
-    $stmt = $conn->prepare($query);
+    $stmt = $config->prepare($query);
     $stmt->bind_param("i", $pengumuman_id);
 
     if ($stmt->execute()) {
@@ -73,11 +73,11 @@ $query = "SELECT p.pengumuman_id, p.judul, p.isi, p.kategori_id, k.nama_kategori
           FROM pengumuman p 
           LEFT JOIN kategori k ON p.kategori_id = k.kategori_id 
           ORDER BY p.created_at DESC";
-$result = $conn->query($query);
+$result = $config->query($query);
 
 // Ambil data kategori ke array supaya bisa dipakai berulang
 $query_kategori = "SELECT kategori_id, nama_kategori FROM kategori ORDER BY nama_kategori ASC";
-$result_kategori = $conn->query($query_kategori);
+$result_kategori = $config->query($query_kategori);
 $kategories = [];
 if ($result_kategori) {
     while ($kat = $result_kategori->fetch_assoc()) {

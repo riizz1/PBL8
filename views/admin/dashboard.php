@@ -29,21 +29,20 @@
 <body class="dashboard-page">
   <?php
   include("header.php");
-  include("config.php");
 
   // Hitung total pengumuman
   $total_pengumuman = mysqli_fetch_assoc(
-    mysqli_query($conn, "SELECT COUNT(*) AS total FROM pengumuman")
+    mysqli_query($config, "SELECT COUNT(*) AS total FROM pengumuman")
   )['total'];
 
   // Hitung beasiswa
   $total_beasiswa = mysqli_fetch_assoc(
-    mysqli_query($conn, "SELECT COUNT(*) AS total FROM pengumuman WHERE kategori='beasiswa'")
+    mysqli_query($config, "SELECT COUNT(*) AS total FROM pengumuman WHERE kategori='beasiswa'")
   )['total'];
 
   // Hitung ujian
   $total_ujian = mysqli_fetch_assoc(
-    mysqli_query($conn, "SELECT COUNT(*) AS total FROM pengumuman WHERE kategori='ujian'")
+    mysqli_query($config, "SELECT COUNT(*) AS total FROM pengumuman WHERE kategori='ujian'")
   )['total'];
   ?>
 
