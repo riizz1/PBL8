@@ -67,7 +67,7 @@
 </head>
 
 <body>
-    <?php include(""); ?>
+    <?php include("../../views/header.php"); ?>
 
     <nav class="navbar navbar-expand-lg header-blue">
         <div class="container-fluid">
