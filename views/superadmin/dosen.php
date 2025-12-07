@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+// Cek hanya superadmin yang bisa akses
+if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
+
+    header("Location: ../views/auth/login.php");
+    header("Location: ../../views/auth/login.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 

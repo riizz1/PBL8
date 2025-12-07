@@ -3,7 +3,7 @@
 $host = "localhost";
 $username = "root";
 $password = "";
-$database = "pbl8";
+$database = "db_pbl8";
 
 // Membuat koneksi
 $config = new mysqli($host, $username, $password, $database);

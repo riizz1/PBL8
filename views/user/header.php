@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Navbar Admin</title>
+  <title>Navbar User</title>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,7 +23,6 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       padding: 0 1px;
-      /* disamakan dengan admin */
       padding-top: 10px;
       padding-bottom: 10px;
       transition: all 0.3s ease;
@@ -68,7 +67,7 @@
       transform: scale(1.1);
     }
 
-    /* Active state */
+    /* Active state - Highlight halaman yang sedang dikunjungi */
     .nav-link.active {
       color: #fff !important;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -134,13 +133,14 @@
       transform: translateX(5px);
     }
 
+    /* Smooth dropdown show/hide */
     .dropdown-menu.show {
       display: block;
       opacity: 1;
       transform: translateY(0);
     }
 
-    /* Bell icon */
+    /* Bell icon dengan notif badge effect */
     .nav-link[href="#"]:has([data-lucide="bell"]) {
       position: relative;
     }
@@ -209,6 +209,7 @@
         align-items: flex-start !important;
       }
 
+      /* Bell & Profile tetap kanan atas */
       .navbar-collapse .right-icons {
         position: absolute;
         top: 10px;
@@ -231,6 +232,7 @@
         margin-bottom: 0;
       }
 
+      /* Active state di mobile */
       .nav-link.active::before {
         left: 0;
         transform: translateX(0);
@@ -240,7 +242,6 @@
       }
     }
   </style>
-
 </head>
 
 <body>
@@ -270,6 +271,7 @@
               Dashboard
             </a>
           </li>
+
           <li class="nav-item me-3">
             <a class="nav-link" href="pengumuman.php" data-page="pengumuman">
               <i data-lucide="megaphone"></i>
@@ -319,43 +321,6 @@
 
     // Aktifkan Lucide Icons
     lucide.createIcons();
-    // ===== NOTIFIKASI =====
-    const notifLink = document.getElementById('notifLink');
-    const notifCount = document.getElementById('notifCount');
-
-    // Contoh data notifikasi (bisa dari database via AJAX nanti)
-    let notifications = [
-      { id: 1, message: "Pengumuman baru tersedia" },
-      { id: 2, message: "Deadline tugas segera" }
-    ];
-
-    // Tampilkan jumlah notifikasi
-    function updateNotifBadge() {
-      if (notifications.length > 0) {
-        notifCount.innerText = notifications.length;
-        notifCount.style.display = 'inline-block';
-      } else {
-        notifCount.style.display = 'none';
-      }
-    }
-
-    // Klik notifikasi -> tampilkan alert (contoh sederhana)
-    notifLink.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (notifications.length === 0) {
-        alert("Tidak ada notifikasi baru.");
-      } else {
-        let messages = notifications.map(n => "- " + n.message).join("\n");
-        alert("Notifikasi:\n" + messages);
-        // Setelah dibuka, bisa reset notifikasi
-        notifications = [];
-        updateNotifBadge();
-      }
-    });
-
-    // Inisialisasi badge
-    updateNotifBadge();
-
 
     // ===== ACTIVE STATE OTOMATIS =====
     // Deteksi halaman saat ini dan beri highlight
