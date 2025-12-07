@@ -18,7 +18,7 @@ main {
     background: none;
     border: none;
     cursor: pointer;
-    color: white;
+    color: rgb(255, 255, 255);
     transition: transform 0.2s;
 }
 

@@ -319,6 +319,43 @@
 
     // Aktifkan Lucide Icons
     lucide.createIcons();
+    // ===== NOTIFIKASI =====
+    const notifLink = document.getElementById('notifLink');
+    const notifCount = document.getElementById('notifCount');
+
+    // Contoh data notifikasi (bisa dari database via AJAX nanti)
+    let notifications = [
+      { id: 1, message: "Pengumuman baru tersedia" },
+      { id: 2, message: "Deadline tugas segera" }
+    ];
+
+    // Tampilkan jumlah notifikasi
+    function updateNotifBadge() {
+      if (notifications.length > 0) {
+        notifCount.innerText = notifications.length;
+        notifCount.style.display = 'inline-block';
+      } else {
+        notifCount.style.display = 'none';
+      }
+    }
+
+    // Klik notifikasi -> tampilkan alert (contoh sederhana)
+    notifLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (notifications.length === 0) {
+        alert("Tidak ada notifikasi baru.");
+      } else {
+        let messages = notifications.map(n => "- " + n.message).join("\n");
+        alert("Notifikasi:\n" + messages);
+        // Setelah dibuka, bisa reset notifikasi
+        notifications = [];
+        updateNotifBadge();
+      }
+    });
+
+    // Inisialisasi badge
+    updateNotifBadge();
+
 
     // ===== ACTIVE STATE OTOMATIS =====
     // Deteksi halaman saat ini dan beri highlight

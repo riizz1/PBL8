@@ -1,3 +1,20 @@
+<?php
+include '../../config/config.php';
+
+$sql = "SELECT p.pengumuman_id, p.judul, p.isi, p.created_at, k.nama_kategori 
+        FROM pengumuman p
+        LEFT JOIN kategori k ON p.kategori_id = k.kategori_id
+        ORDER BY p.created_at DESC";
+
+$result = mysqli_query($conn, $sql);
+
+if(!$result){
+    die("SQL ERROR: " . mysqli_error($conn));
+}
+
+$pengumuman = mysqli_fetch_all($result, MYSQLI_ASSOC);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -142,12 +159,6 @@
     overflow-x: auto;
 }
 
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 0;
-}
-
 table {
     width: 100%;
     border-collapse: collapse;
@@ -160,13 +171,13 @@ thead {
 .table thead th {
     background-color: #6c757d;
     color: white;
+    text-align: left;
 }
 
 th {
     padding: 15px 20px;
-    text-align: left;
     font-weight: 600;
-    color: #555;
+    color: white;
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -175,7 +186,7 @@ th {
 td {
     padding: 15px 20px;
     border-bottom: 1px solid #f0f0f0;
-    color: #666;
+    color: #333;
     font-size: 14px;
 }
 
@@ -240,6 +251,23 @@ tbody tr:hover {
     color: #c62828;
 }
 
+/* ACTION BUTTON */
+.action-btn {
+    background: #2193b0;
+    color: white;
+    border: none;
+    padding: 7px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.action-btn:hover {
+    background: #1a7a94;
+    transform: scale(1.04);
+}
+
 /* PAGINATION */
 .pagination {
     padding: 20px 25px;
@@ -286,28 +314,6 @@ tbody tr:hover {
     border-color: #2193b0;
 }
 
-/* MODAL */
-.modal-content {
-    background-color: #2b2b2b;
-    color: white;
-    border-radius: 10px;
-    padding: 20px;
-}
-
-.modal-content input,
-.modal-content textarea {
-    background-color: #3a3a3a;
-    color: white;
-    border: none;
-}
-
-.modal-content input:focus,
-.modal-content textarea:focus {
-    background-color: #444;
-    border: 1px solid #0d6efd;
-    box-shadow: none;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .filter-grid {
@@ -318,32 +324,12 @@ tbody tr:hover {
 </head>
 
 <body>
-    <?php
-    include("header.php");
-    ?>
-    <!-- Main Container -->
+    <?php include("header.php"); ?>
+
     <div class="container">
         <h1 class="page-title">Pengumuman</h1>
 
-        <!-- Stats Cards -->
-        <div class="stats-cards">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #e3f2fd;">📢</div>
-                <div class="stat-info">
-                    <h3>24</h3>
-                    <p>Total Pengumuman</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #e8f5e9;">✅</div>
-                <div class="stat-info">
-                    <h3>12</h3>
-                    <p>Dibaca Hari Ini</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filter Section -->
+        <!-- FILTER -->
         <div class="filter-section">
             <div class="filter-header">
                 <div class="filter-title">🔍 Filter Pengumuman</div>
@@ -399,11 +385,10 @@ tbody tr:hover {
             </div>
         </div>
 
-        <!-- Table Section -->
+        <!-- TABEL -->
         <div class="table-section">
             <div class="table-header">
                 <div class="table-title">Daftar Pengumuman</div>
-                <div class="entries-info">Menampilkan 1-10 dari 24 pengumuman</div>
             </div>
 
             <div class="table-wrapper">
@@ -417,98 +402,141 @@ tbody tr:hover {
                             <th>Aksi</th>
                         </tr>
                     </thead>
+
                     <tbody id="tableBody">
                         <tr>
                             <td>1</td>
                             <td>23 Okt 2025</td>
                             <td>Pengumuman Jadwal UTS Semester Ganjil 2025/2026</td>
                             <td><span class="badge badge-akademik">Akademik</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(1)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>22 Okt 2025</td>
                             <td>Pendaftaran Beasiswa PPA Tahun 2025</td>
                             <td><span class="badge badge-beasiswa">Beasiswa</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(2)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                         <tr>
                             <td>3</td>
                             <td>20 Okt 2025</td>
                             <td>Lomba Karya Tulis Ilmiah Tingkat Nasional</td>
                             <td><span class="badge badge-kemahasiswaan">Kemahasiswaan</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(3)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                         <tr>
                             <td>4</td>
                             <td>18 Okt 2025</td>
                             <td>Perubahan Jadwal Kuliah Mata Kuliah Basis Data</td>
                             <td><span class="badge badge-akademik">Akademik</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(4)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                         <tr>
                             <td>5</td>
                             <td>15 Okt 2025</td>
                             <td>Webinar Nasional: Masa Depan Teknologi AI</td>
                             <td><span class="badge badge-umum">Umum</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(5)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                         <tr>
                             <td>6</td>
                             <td>12 Okt 2025</td>
                             <td>Pembayaran UKT Semester Ganjil 2025/2026</td>
                             <td><span class="badge badge-akademik">Akademik</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(6)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                         <tr>
                             <td>7</td>
                             <td>10 Okt 2025</td>
                             <td>Rekrutmen Asisten Laboratorium Komputer</td>
                             <td><span class="badge badge-kemahasiswaan">Kemahasiswaan</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(7)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                         <tr>
                             <td>8</td>
                             <td>08 Okt 2025</td>
                             <td>Seminar Proposal Tugas Akhir Batch 3</td>
                             <td><span class="badge badge-akademik">Akademik</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(8)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                         <tr>
                             <td>9</td>
                             <td>05 Okt 2025</td>
                             <td>Pendaftaran Magang Industri Semester Genap</td>
                             <td><span class="badge badge-akademik">Akademik</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(9)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                         <tr>
                             <td>10</td>
                             <td>01 Okt 2025</td>
                             <td>Libur Nasional dan Cuti Bersama Oktober 2025</td>
                             <td><span class="badge badge-umum">Umum</span></td>
-                            <td><button class="action-btn" onclick="viewDetail(10)">Lihat Detail</button></td>
+                            <td><button class="action-btn">Lihat Detail</button></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-
-            <div class="pagination">
-                <div class="page-info">Halaman 1 dari 3</div>
-                <div class="page-buttons">
-                    <button class="page-btn" disabled>‹ Prev</button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn">Next ›</button>
-                </div>
-            </div>
         </div>
     </div>
 
-    <?php
-    include("footer.php");
-    ?>
+    <?php include("footer.php"); ?>
+
+    <!-- ============================= -->
+    <!-- ===       JAVASCRIPT      === -->
+    <!-- ============================= -->
+    <script>
+    const originalRows = [...document.querySelectorAll("#tableBody tr")];
+
+    function applyFilters() {
+        const kategori = document.getElementById("kategori").value.toLowerCase();
+        const bulan = document.getElementById("bulan").value;
+        const tahun = document.getElementById("tahun").value;
+        const search = document.getElementById("search").value.toLowerCase();
+
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+
+        let filtered = originalRows.filter(row => {
+            const tanggal = row.children[1].innerText;
+            const judul = row.children[2].innerText.toLowerCase();
+            const kategoriRow = row.children[3].innerText.toLowerCase();
+
+            if (kategori !== "" && !kategoriRow.includes(kategori)) return false;
+
+            const parts = tanggal.split(" ");
+            const bulanMap = {
+                "Jan": "01","Feb": "02","Mar": "03","Apr": "04",
+                "Mei": "05","Jun": "06","Jul": "07","Agu": "08",
+                "Sep": "09","Okt": "10","Nov": "11","Des": "12"
+            };
+
+            const rowBulan = bulanMap[parts[1]];
+            const rowTahun = parts[2];
+
+            if (bulan !== "" && bulan !== rowBulan) return false;
+            if (tahun !== "" && tahun !== rowTahun) return false;
+
+            if (search !== "" && !judul.includes(search)) return false;
+
+            return true;
+        });
+
+        filtered.forEach((row, i) => {
+            const clone = row.cloneNode(true);
+            clone.children[0].innerText = i + 1;
+            tbody.appendChild(clone);
+        });
+    }
+
+    function resetFilters() {
+        document.getElementById("kategori").value = "";
+        document.getElementById("bulan").value = "";
+        document.getElementById("tahun").value = "";
+        document.getElementById("search").value = "";
+        applyFilters();
+    }
+    </script>
+
 </body>
-
-
 </html>

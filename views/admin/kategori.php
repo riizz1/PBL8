@@ -45,7 +45,7 @@
         /* Placeholder putih untuk modal tambah kategori */
         #modalTambahKategori input::placeholder,
         #modalTambahKategori textarea::placeholder {
-            color: #ffffff !important;
+            color: #ffffffff !important;
             opacity: 1 !important;
         }
 
