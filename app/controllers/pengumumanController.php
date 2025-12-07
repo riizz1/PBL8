@@ -8,8 +8,8 @@ class PengumumanController {
     private $model;
 
     public function __construct() {
-        global $conn;
-        $this->model = new PengumumanModel($conn);
+        global $config;
+        $this->model = new PengumumanModel($config);
     }
 
     public function index() {

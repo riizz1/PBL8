@@ -10,7 +10,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
     <!-- Custom CSS -->
     <link rel="stylesheet" href="index.css">
     <style>
@@ -30,7 +29,6 @@
         body {
             background: linear-gradient(to bottom right, #f8f9fc, #e9ecef);
         }
-
 
         .navbar-toggler {
             border: none;
@@ -86,7 +84,6 @@
             background: #00aa00;
         }
 
-
         /* Responsive untuk Navbar */
         @media (max-width: 768px) {
             .navbar .container {
@@ -115,8 +112,8 @@
         <div class="container">
 
             <!-- Logo -->
-            <a class="navbar-brand" href="landingpage.php">
-                <img src="/public/assets/img/logopolibatam.png" alt="Logo Polibatam" height="45">
+            <a class="navbar-brand" href="index.php">
+            <img src="/PBL8/public/assets/img/logopolibatam.png" alt="Logo" height="45">
             </a>
 
             <!-- Tombol Hamburger -->
@@ -133,7 +130,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Beranda</a>
+                        <a class="nav-link" href="/PBL8/public/index.php">Beranda</a>
                     </li>
                 </ul>
             </div>

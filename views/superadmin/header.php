@@ -271,9 +271,9 @@
             </a>
           </li>
           <li class="nav-item me-3">
-            <a class="nav-link" href="pengumuman.php" data-page="pengumuman">
+            <a class="nav-link" href="dosen.php" data-page="dosen">
               <i data-lucide="megaphone"></i>
-              Pengumuman
+              Dosen
             </a>
           </li>
         </ul>
@@ -290,7 +290,7 @@
               <i data-lucide="user"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li><a class="dropdown-item" href="/PBL8/app/controllers/auth/logout.php">Log Out</a></li>
+              <li><a class="dropdown-item" href="../../app/controllers/auth/logout.php">Log Out</a></li>
             </ul>
           </li>
         </ul>
@@ -319,43 +319,6 @@
 
     // Aktifkan Lucide Icons
     lucide.createIcons();
-    // ===== NOTIFIKASI =====
-    const notifLink = document.getElementById('notifLink');
-    const notifCount = document.getElementById('notifCount');
-
-    // Contoh data notifikasi (bisa dari database via AJAX nanti)
-    let notifications = [
-      { id: 1, message: "Pengumuman baru tersedia" },
-      { id: 2, message: "Deadline tugas segera" }
-    ];
-
-    // Tampilkan jumlah notifikasi
-    function updateNotifBadge() {
-      if (notifications.length > 0) {
-        notifCount.innerText = notifications.length;
-        notifCount.style.display = 'inline-block';
-      } else {
-        notifCount.style.display = 'none';
-      }
-    }
-
-    // Klik notifikasi -> tampilkan alert (contoh sederhana)
-    notifLink.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (notifications.length === 0) {
-        alert("Tidak ada notifikasi baru.");
-      } else {
-        let messages = notifications.map(n => "- " + n.message).join("\n");
-        alert("Notifikasi:\n" + messages);
-        // Setelah dibuka, bisa reset notifikasi
-        notifications = [];
-        updateNotifBadge();
-      }
-    });
-
-    // Inisialisasi badge
-    updateNotifBadge();
-
 
     // ===== ACTIVE STATE OTOMATIS =====
     // Deteksi halaman saat ini dan beri highlight

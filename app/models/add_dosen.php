@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     if (empty($username) || empty($password)) {
-        echo "<script>alert('Username dan password tidak boleh kosong!'); location.href='add_admin.php';</script>";
+        echo "<script>alert('Username dan password tidak boleh kosong!'); location.href='/PBL8/views/superadmin/dosen.php';</script>";
         exit();
     }
 
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $check->get_result();
 
     if ($result->num_rows > 0) {
-        echo "<script>alert('Username sudah digunakan!'); location.href='add_admin.php';</script>";
+        echo "<script>alert('Username sudah digunakan!'); location.href='/PBL8/views/superadmin/dosen.php';</script>";
         exit();
     }
 
@@ -40,13 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("ssi", $username, $hashed_password, $role_id);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Akun admin/dosen berhasil dibuat!'); location.href='add_admin.php';</script>";
+        echo "<script>alert('Akun admin/dosen berhasil dibuat!'); location.href='/PBL8/views/superadmin/dosen.php';</script>";
     } else {
-        echo "<script>alert('Gagal membuat akun!'); location.href='add_admin.php';</script>";
+        echo "<script>alert('Gagal membuat akun!'); location.href='/PBL8/views/superadmin/dosen.php';</script>";
     }
 
 } else {
-    header("Location: add_admin.php");
+    header("Location: /PBL8/views/superadmin/dosen.php");
     exit();
 }
 ?>

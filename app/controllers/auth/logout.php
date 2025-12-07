@@ -1,6 +1,6 @@
 <?php
 session_start();
 session_destroy();
-header("Location: ../views/auth/login.php");
+header("Location: /PBL8/views/auth/login.php");
 exit();
 ?>
