@@ -1,4 +1,24 @@
 <?php
+session_start();
+
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+    echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+    exit();
+}
+
+// Proteksi role - hanya mahasiswa yang bisa akses
+if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'mahasiswa') {
+    echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk mahasiswa.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+    exit();
+}
+
 require_once __DIR__ . '/../../app/controllers/user/dashboard_controller.php';
 $controller = new DashboardControllerUser();
 $data = $controller->index();

@@ -1,3 +1,13 @@
+<?php
+// Pastikan session sudah dimulai
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+// Ambil nama dari session
+$namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -240,6 +250,20 @@
         height: 100%;
         bottom: 0;
       }
+
+      /* Welcome text styling */
+      .navbar-nav .text-dark {
+        white-space: nowrap;
+        margin-right: 10px;
+      }
+
+      .navbar-nav .text-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+      }
     }
   </style>
 </head>
@@ -281,7 +305,15 @@
         </ul>
 
         <!-- Icon kanan -->
+        <!-- Icon kanan -->
         <ul class="navbar-nav align-items-center right-icons">
+          <!-- Selamat Datang Text -->
+          <li class="nav-item me-3 d-none d-lg-block">
+            <span class="text-dark fw-semibold" style="font-size: 0.95rem;">
+              Selamat Datang, <span class="text-primary"><?= htmlspecialchars($namaUser); ?></span>
+            </span>
+          </li>
+
           <li class="nav-item">
             <a class="nav-link" href="#" title="Notifikasi"><i data-lucide="bell"></i></a>
           </li>
@@ -308,12 +340,12 @@
     const profileLink = document.getElementById('profileDropdown');
     const dropdownMenu = profileLink.nextElementSibling;
 
-    profileLink.addEventListener('click', function (e) {
+    profileLink.addEventListener('click', function(e) {
       e.preventDefault();
       dropdownMenu.classList.toggle('show');
     });
 
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function(e) {
       if (!profileLink.contains(e.target) && !dropdownMenu.contains(e.target)) {
         dropdownMenu.classList.remove('show');
       }

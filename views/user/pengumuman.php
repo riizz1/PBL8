@@ -1,4 +1,29 @@
 <?php
+session_start();
+
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+    echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+    exit();
+}
+
+// Proteksi role - hanya mahasiswa yang bisa akses
+if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'mahasiswa') {
+    echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk mahasiswa.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+    exit();
+}
+
+require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
+$controller = new PengumumanControllerUser();
+$data = $controller->index();
+
+
 require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
 $controller = new PengumumanControllerUser();
 $data = $controller->index();
@@ -25,7 +50,7 @@ $endData = $data['endData'] ?? 0;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mahasiswa - Pengumuman</title>
+    <title>Mahasiswa | Pengumuman</title>
     <link rel="stylesheet" href="style.css">
     <style>
         /* FILTER SECTION */
@@ -754,13 +779,13 @@ $endData = $data['endData'] ?? 0;
             document.body.style.overflow = 'auto';
         }
 
-        window.onclick = function (event) {
+        window.onclick = function(event) {
             if (event.target == document.getElementById('detailModal')) {
                 closeModal();
             }
         }
 
-        document.addEventListener('keydown', function (event) {
+        document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') closeModal();
         });
 
