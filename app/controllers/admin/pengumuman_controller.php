@@ -11,21 +11,44 @@ class PengumumanControllerAdmin
         $this->model = new PengumumanModel();
     }
 
+    /* ===========================
+       LIST DATA
+    ============================ */
     public function index()
     {
         return [
             "pengumuman" => $this->model->getAll(),
-            "kategori"   => $this->model->getKategori()
+            "kategori" => $this->model->getKategori()
         ];
     }
 
+    /* ===========================
+       TAMBAH DATA
+    ============================ */
     public function tambah($post)
     {
-        return $this->model->create($post['judul'], $post['kategori_id'], $post['isi']);
+        if (!isset($post['judul'], $post['kategori_id'], $post['isi'])) {
+            return false;
+        }
+
+        return $this->model->create(
+            $post['judul'],
+            $post['kategori_id'],
+            $post['isi']
+        );
     }
 
+    /* ===========================
+       EDIT DATA
+    ============================ */
     public function edit($post)
     {
+        if (
+            !isset($post['pengumuman_id'], $post['judul'], $post['kategori_id'], $post['isi'])
+        ) {
+            return false;
+        }
+
         return $this->model->update(
             $post['pengumuman_id'],
             $post['judul'],
@@ -34,8 +57,15 @@ class PengumumanControllerAdmin
         );
     }
 
+    /* ===========================
+       HAPUS DATA
+    ============================ */
     public function hapus($id)
     {
+        if (!isset($id) || empty($id)) {
+            return false;
+        }
+
         return $this->model->delete($id);
     }
 }
