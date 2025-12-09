@@ -17,7 +17,7 @@ $stats = $dashboardController->getStatistics();
 $categoryData = $dashboardController->getAnnouncementsByCategory();
 $recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
 $monthlyTrend = $dashboardController->getMonthlyTrend();
-$recentUsers = $dashboardController->getRecentUsers(5);
+$recentUsers = $dashboardController->getRecentAdmin(5);
 
 // Prepare data untuk Chart.js
 $categoryLabels = array_column($categoryData, 'nama_kategori');

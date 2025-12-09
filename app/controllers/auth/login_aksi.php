@@ -17,13 +17,13 @@ if ($username === '' || $password === '') {
     exit();
 }
 
-// Cek di tabel admin dulu (superadmin/dosen)
-$stmt = $config->prepare("
-    SELECT admin.*, roles.role_name 
-    FROM admin
-    JOIN roles ON admin.role_id = roles.role_id
-    WHERE admin.username = ?
-");
+// Cek di tabel admin dulu (superadmin/dosen) - TANPA JOIN DULU
+$stmt = $config->prepare("SELECT * FROM admin WHERE username = ?");
+
+if (!$stmt) {
+    die("Error prepare statement: " . $config->error);
+}
+
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -37,17 +37,39 @@ if ($result->num_rows === 1) {
         exit();
     }
 
-    $_SESSION['user_id'] = $data['user_id'];
+    // Ambil role_name dari tabel roles
+    $role_name = 'dosen'; // default
+    if (isset($data['role_id'])) {
+        $stmtRole = $config->prepare("SELECT role_name FROM roles WHERE role_id = ?");
+        if ($stmtRole) {
+            $stmtRole->bind_param("i", $data['role_id']);
+            $stmtRole->execute();
+            $resultRole = $stmtRole->get_result();
+            if ($resultRole->num_rows === 1) {
+                $roleData = $resultRole->fetch_assoc();
+                $role_name = $roleData['role_name'];
+            }
+            $stmtRole->close();
+        }
+    }
+
+    // Cek kolom ID yang tersedia
+    $user_id = isset($data['admin_id']) ? $data['admin_id'] : (isset($data['user_id']) ? $data['user_id'] : null);
+
+    $_SESSION['user_id'] = $user_id;
     $_SESSION['username'] = $data['username'];
-    $_SESSION['role_id'] = $data['role_id'];
-    $_SESSION['role_name'] = $data['role_name'];
-    $_SESSION['user_type'] = 'admin'; // Untuk membedakan tabel asal
+    $_SESSION['role_id'] = isset($data['role_id']) ? $data['role_id'] : 2;
+    $_SESSION['role_name'] = $role_name;
+    $_SESSION['user_ty  pe'] = 'admin';
 
 } else {
     // Cek di tabel mahasiswa
-    $stmt2 = $config->prepare("
-        SELECT * FROM mahasiswa WHERE username = ?
-    ");
+    $stmt2 = $config->prepare("SELECT * FROM mahasiswa WHERE username = ?");
+    
+    if (!$stmt2) {
+        die("Error prepare statement: " . $config->error);
+    }
+    
     $stmt2->bind_param("s", $username);
     $stmt2->execute();
     $result2 = $stmt2->get_result();
@@ -69,9 +91,9 @@ if ($result->num_rows === 1) {
     $_SESSION['nama_lengkap'] = $data['nama_lengkap'];
     $_SESSION['nim'] = $data['nim'];
     $_SESSION['prodi'] = $data['prodi'];
-    $_SESSION['role_id'] = 3; // Mahasiswa
+    $_SESSION['role_id'] = 3;
     $_SESSION['role_name'] = 'mahasiswa';
-    $_SESSION['user_type'] = 'mahasiswa'; // Untuk membedakan tabel asal
+    $_SESSION['user_type'] = 'mahasiswa';
 
     $stmt2->close();
 }
@@ -82,13 +104,13 @@ $stmt->close();
 // Redirect sesuai role
 switch ($_SESSION['role_name']) {
     case 'superadmin':
-        echo "<script>alert('Login berhasil sebagai Superadmin!'); location.href='/PBL8/views/superadmin/dashboard.php';</script>";
+        header("Location: /PBL8/views/superadmin/dashboard.php");
         break;
     case 'dosen':
-        echo "<script>alert('Login berhasil sebagai Dosen!'); location.href='/PBL8/views/admin/dashboard.php';</script>";
+        header("Location: /PBL8/views/admin/dashboard.php");
         break;
     case 'mahasiswa':
-        echo "<script>alert('Login berhasil sebagai Mahasiswa!'); location.href='/PBL8/views/user/dashboard.php';</script>";
+        header("Location: /PBL8/views/user/dashboard.php");
         break;
     default:
         echo "<script>alert('Role tidak dikenali!'); location.href='/PBL8/views/auth/login.php';</script>";
@@ -96,3 +118,4 @@ switch ($_SESSION['role_name']) {
 }
 
 exit();
+?>

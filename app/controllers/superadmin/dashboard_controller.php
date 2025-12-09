@@ -84,6 +84,11 @@ class DashboardController {
                   LIMIT ?";
         
         $stmt = $this->db->prepare($query);
+        if (!$stmt) {
+            error_log("Error prepare getRecentAnnouncements: " . $this->db->error);
+            return [];
+        }
+        
         $stmt->bind_param('i', $limit);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -116,20 +121,57 @@ class DashboardController {
     }
     
     /**
-     * Get recent admin (dosen & mahasiswa)
+     * Get recent admin (dosen only - dari tabel admin)
      */
     public function getRecentAdmin($limit = 5) {
         $query = "SELECT 
-                    u.username,
+                    a.username,
                     r.role_name,
-                    u.created_at
+                    a.created_at
                   FROM admin a
-                  LEFT JOIN roles r ON u.role_id = r.role_id
-                  WHERE u.role_id IN (2, 3)
-                  ORDER BY u.created_at DESC
+                  LEFT JOIN roles r ON a.role_id = r.role_id
+                  WHERE a.role_id = 2
+                  ORDER BY a.created_at DESC
                   LIMIT ?";
         
         $stmt = $this->db->prepare($query);
+        
+        if (!$stmt) {
+            error_log("Error prepare getRecentAdmin: " . $this->db->error);
+            return [];
+        }
+        
+        $stmt->bind_param('i', $limit);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $data = [];
+        while($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        return $data;
+    }
+    
+    /**
+     * Get recent mahasiswa
+     */
+    public function getRecentMahasiswa($limit = 5) {
+        $query = "SELECT 
+                    username,
+                    nama_lengkap,
+                    nim,
+                    created_at
+                  FROM mahasiswa
+                  ORDER BY created_at DESC
+                  LIMIT ?";
+        
+        $stmt = $this->db->prepare($query);
+        
+        if (!$stmt) {
+            error_log("Error prepare getRecentMahasiswa: " . $this->db->error);
+            return [];
+        }
+        
         $stmt->bind_param('i', $limit);
         $stmt->execute();
         $result = $stmt->get_result();
