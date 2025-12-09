@@ -9,6 +9,7 @@ class KategoriModel
         $this->db = $config;
     }
 
+    // ========== CREATE ==========
     public function tambahKategori($nama, $deskripsi)
     {
         $stmt = $this->db->prepare("INSERT INTO kategori (nama_kategori, deskripsi) VALUES (?, ?)");
@@ -16,14 +17,14 @@ class KategoriModel
         return $stmt->execute();
     }
 
+    // ========== READ ALL ==========
     public function getAll()
     {
         $result = $this->db->query("SELECT * FROM kategori ORDER BY kategori_id DESC");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    // ===== METHOD BARU =====
-    
+    // ========== READ BY ID ==========
     public function getById($id)
     {
         $stmt = $this->db->prepare("SELECT * FROM kategori WHERE kategori_id = ?");
@@ -33,6 +34,7 @@ class KategoriModel
         return $result->fetch_assoc();
     }
 
+    // ========== UPDATE ==========
     public function updateKategori($id, $nama, $deskripsi)
     {
         $stmt = $this->db->prepare("UPDATE kategori SET nama_kategori = ?, deskripsi = ? WHERE kategori_id = ?");
@@ -40,9 +42,10 @@ class KategoriModel
         return $stmt->execute();
     }
 
+    // ========== CEK KATEGORI DIGUNAKAN ==========
     public function cekKategoriDigunakan($id)
     {
-        // Ganti 'pengumuman' dengan nama tabel yang menggunakan kategori_id
+        // Cek apakah kategori ini masih digunakan di tabel pengumuman
         $stmt = $this->db->prepare("SELECT COUNT(*) as jumlah FROM pengumuman WHERE kategori_id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -51,11 +54,12 @@ class KategoriModel
         return $row['jumlah'] > 0;
     }
 
+    // ========== DELETE ==========
     public function hapusKategori($id)
     {
         // Cek dulu apakah kategori masih digunakan
         if ($this->cekKategoriDigunakan($id)) {
-            return false; // Kategori masih digunakan
+            return false; // Kategori masih digunakan, tidak bisa dihapus
         }
         
         $stmt = $this->db->prepare("DELETE FROM kategori WHERE kategori_id = ?");

@@ -1,7 +1,20 @@
 <footer class="bg-dark text-white text-center py-4 mt-auto">
     <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+        }
+
         footer {
             font-family: 'Poppins', sans-serif;
+            margin-top: 0 !important;
+            /* Override mt-auto */
+
         }
 
         footer .container {

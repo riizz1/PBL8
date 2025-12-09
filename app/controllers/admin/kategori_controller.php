@@ -57,6 +57,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         exit;
     }
     
+    // Cek apakah kategori masih digunakan
+    if ($kategori->cekKategoriDigunakan($id)) {
+        header("Location: ../../views/admin/kategori.php?status=error&msg=" . urlencode("Kategori tidak dapat dihapus karena masih digunakan"));
+        exit;
+    }
+    
     $result = $kategori->hapusKategori($id);
     
     if ($result) {

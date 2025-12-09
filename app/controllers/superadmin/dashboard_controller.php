@@ -28,7 +28,7 @@ class DashboardController {
         $stats = [];
         
         // Total Dosen
-        $query = "SELECT COUNT(*) as total FROM users WHERE role_id = 2";
+        $query = "SELECT COUNT(*) as total FROM admin WHERE role_id = 2";
         $result = $this->db->query($query);
         $stats['total_dosen'] = $result->fetch_assoc()['total'];
         
@@ -116,14 +116,14 @@ class DashboardController {
     }
     
     /**
-     * Get recent users (dosen & mahasiswa)
+     * Get recent admin (dosen & mahasiswa)
      */
-    public function getRecentUsers($limit = 5) {
+    public function getRecentAdmin($limit = 5) {
         $query = "SELECT 
                     u.username,
                     r.role_name,
                     u.created_at
-                  FROM users u
+                  FROM admin a
                   LEFT JOIN roles r ON u.role_id = r.role_id
                   WHERE u.role_id IN (2, 3)
                   ORDER BY u.created_at DESC

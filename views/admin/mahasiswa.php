@@ -18,20 +18,20 @@ $mahasiswaController = new MahasiswaController();
 // Handle AJAX requests
 if (isset($_POST['action'])) {
     header('Content-Type: application/json');
-    
+
     switch ($_POST['action']) {
         case 'create':
             echo json_encode($mahasiswaController->create());
             exit();
-            
+
         case 'update':
             echo json_encode($mahasiswaController->update());
             exit();
-            
+
         case 'delete':
             echo json_encode($mahasiswaController->delete());
             exit();
-            
+
         case 'get':
             $id = intval($_POST['mahasiswa_id']);
             echo json_encode($mahasiswaController->getById($id));
@@ -202,6 +202,8 @@ $endData = min($offset + $itemsPerPage, $totalData);
         .page-info {
             font-size: 14px;
             color: #777;
+            margin-left: 10px;
+            /* Tambahkan ini */
         }
 
         .page-buttons {
@@ -283,7 +285,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         .btn-close {
-            filter: invert(1);
+            filter: invert(0) !important;
+            background-color: white;
+            opacity: 1;
         }
 
         input::placeholder,
@@ -367,15 +371,15 @@ $endData = min($offset + $itemsPerPage, $totalData);
                                     <td class="col-nim"><?= htmlspecialchars($mahasiswa['nim']) ?></td>
                                     <td class="col-prodi"><?= htmlspecialchars($mahasiswa['prodi']) ?></td>
                                     <td class="col-aksi">
-                                        <button class="btn btn-warning btn-sm edit-btn" 
-                                                data-id="<?= $mahasiswa['mahasiswa_id'] ?>"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#modalEditMahasiswa">
+                                        <button class="btn btn-warning btn-sm edit-btn"
+                                            data-id="<?= $mahasiswa['mahasiswa_id'] ?>"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEditMahasiswa">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
-                                        <button class="btn btn-danger btn-sm delete-btn" 
-                                                data-id="<?= $mahasiswa['mahasiswa_id'] ?>"
-                                                data-nama="<?= htmlspecialchars($mahasiswa['nama_lengkap']) ?>">
+                                        <button class="btn btn-danger btn-sm delete-btn"
+                                            data-id="<?= $mahasiswa['mahasiswa_id'] ?>"
+                                            data-nama="<?= htmlspecialchars($mahasiswa['nama_lengkap']) ?>">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
                                     </td>
@@ -386,7 +390,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 </div>
 
                 <!-- PAGINATION -->
-                <?php if ($totalPages > 1): ?>
+                <?php if ($totalData > 0): ?>
                     <div class="pagination">
                         <div class="page-info">
                             Halaman <?= $currentPage; ?> dari <?= $totalPages; ?>
@@ -548,7 +552,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 </div>
             `;
             document.getElementById('alertContainer').innerHTML = alertHtml;
-            
+
             // Auto hide after 5 seconds
             setTimeout(() => {
                 const alert = document.querySelector('.alert');
@@ -561,35 +565,35 @@ $endData = min($offset + $itemsPerPage, $totalData);
         // ================= TAMBAH MAHASISWA =================
         document.getElementById('formTambahMahasiswa').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const btn = document.getElementById('btnTambah');
             const btnText = btn.querySelector('.btn-text');
             const spinner = btn.querySelector('.spinner-border');
-            
+
             // Show loading
             btn.disabled = true;
             btnText.classList.add('d-none');
             spinner.classList.remove('d-none');
-            
+
             try {
                 const formData = new FormData(this);
                 const response = await fetch(window.location.pathname, {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     showAlert(result.message, 'success');
-                    
+
                     // Close modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalTambahMahasiswa'));
                     modal.hide();
-                    
+
                     // Reset form
                     this.reset();
-                    
+
                     // Reload page after 1 second
                     setTimeout(() => {
                         window.location.href = window.location.pathname;
@@ -611,19 +615,19 @@ $endData = min($offset + $itemsPerPage, $totalData);
         document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', async function() {
                 const mahasiswaId = this.getAttribute('data-id');
-                
+
                 try {
                     const formData = new FormData();
                     formData.append('action', 'get');
                     formData.append('mahasiswa_id', mahasiswaId);
-                    
+
                     const response = await fetch(window.location.pathname, {
                         method: 'POST',
                         body: formData
                     });
-                    
+
                     const data = await response.json();
-                    
+
                     if (data) {
                         document.getElementById('editMahasiswaId').value = data.mahasiswa_id;
                         document.getElementById('editNama').value = data.nama_lengkap;
@@ -640,32 +644,32 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         document.getElementById('formEditMahasiswa').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const btn = document.getElementById('btnEdit');
             const btnText = btn.querySelector('.btn-text');
             const spinner = btn.querySelector('.spinner-border');
-            
+
             // Show loading
             btn.disabled = true;
             btnText.classList.add('d-none');
             spinner.classList.remove('d-none');
-            
+
             try {
                 const formData = new FormData(this);
                 const response = await fetch(window.location.pathname, {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     showAlert(result.message, 'success');
-                    
+
                     // Close modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditMahasiswa'));
                     modal.hide();
-                    
+
                     // Reload page after 1 second
                     setTimeout(() => {
                         window.location.href = window.location.pathname;
@@ -688,26 +692,26 @@ $endData = min($offset + $itemsPerPage, $totalData);
             button.addEventListener('click', async function() {
                 const mahasiswaId = this.getAttribute('data-id');
                 const namaMahasiswa = this.getAttribute('data-nama');
-                
+
                 if (!confirm(`Apakah Anda yakin ingin menghapus mahasiswa "${namaMahasiswa}"?`)) {
                     return;
                 }
-                
+
                 try {
                     const formData = new FormData();
                     formData.append('action', 'delete');
                     formData.append('mahasiswa_id', mahasiswaId);
-                    
+
                     const response = await fetch(window.location.pathname, {
                         method: 'POST',
                         body: formData
                     });
-                    
+
                     const result = await response.json();
-                    
+
                     if (result.success) {
                         showAlert(result.message, 'success');
-                        
+
                         // Reload page after 1 second to maintain pagination
                         setTimeout(() => {
                             window.location.href = window.location.pathname;
