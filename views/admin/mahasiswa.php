@@ -13,7 +13,7 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
 
 // Load controller
 require_once __DIR__ . '/../../app/controllers/admin/mahasiswa_controller.php';
-$mahasiswaController = new MahasiswaController();
+ $mahasiswaController = new MahasiswaController();
 
 // Handle AJAX requests
 if (isset($_POST['action'])) {
@@ -36,25 +36,43 @@ if (isset($_POST['action'])) {
             $id = intval($_POST['mahasiswa_id']);
             echo json_encode($mahasiswaController->getById($id));
             exit();
+            
+        case 'checkNim':
+            $nim = $_POST['nim'];
+            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+            echo json_encode(['exists' => $mahasiswaController->checkNimExists($nim, $excludeId)]);
+            exit();
+            
+        case 'checkUsername':
+            $username = $_POST['username'];
+            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+            echo json_encode(['exists' => $mahasiswaController->checkUsernameExists($username, $excludeId)]);
+            exit();
+            
+        case 'checkEmail':
+            $email = $_POST['email'];
+            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+            echo json_encode(['exists' => $mahasiswaController->checkEmailExists($email, $excludeId)]);
+            exit();
     }
 }
 
 // Pagination settings
-$itemsPerPage = 10;
-$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-$offset = ($currentPage - 1) * $itemsPerPage;
+ $itemsPerPage = 10;
+ $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+ $offset = ($currentPage - 1) * $itemsPerPage;
 
 // Get all mahasiswa
-$allMahasiswa = $mahasiswaController->index();
-$totalData = count($allMahasiswa);
-$totalPages = ceil($totalData / $itemsPerPage);
+ $allMahasiswa = $mahasiswaController->index();
+ $totalData = count($allMahasiswa);
+ $totalPages = ceil($totalData / $itemsPerPage);
 
 // Slice data for current page
-$mahasiswaList = array_slice($allMahasiswa, $offset, $itemsPerPage);
+ $mahasiswaList = array_slice($allMahasiswa, $offset, $itemsPerPage);
 
 // Calculate display range
-$startData = $totalData > 0 ? $offset + 1 : 0;
-$endData = min($offset + $itemsPerPage, $totalData);
+ $startData = $totalData > 0 ? $offset + 1 : 0;
+ $endData = min($offset + $itemsPerPage, $totalData);
 ?>
 
 <!DOCTYPE html>
@@ -300,6 +318,25 @@ $endData = min($offset + $itemsPerPage, $totalData);
             width: 1rem;
             height: 1rem;
         }
+        
+        /* ================= ALERT DI DALAM MODAL ================= */
+        .modal-body .alert {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        /* Validation feedback */
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+        
+        .invalid-feedback {
+            display: block;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #dc3545;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -454,6 +491,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Alert akan disisipkan di sini oleh JavaScript -->
                     <form id="formTambahMahasiswa">
                         <input type="hidden" name="action" value="create">
                         <div class="mb-3">
@@ -462,11 +500,13 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         </div>
                         <div class="mb-3">
                             <label class="form-label">NIM <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="nim" required placeholder="Masukkan NIM">
+                            <input type="text" class="form-control" name="nim" id="tambahNim" required placeholder="Masukkan NIM">
+                            <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Username <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="username" required placeholder="Masukkan Username">
+                            <input type="text" class="form-control" name="username" id="tambahUsername" required placeholder="Masukkan Username">
+                            <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password <span class="text-danger">*</span></label>
@@ -478,7 +518,8 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" placeholder="Masukkan Email">
+                            <input type="email" class="form-control" name="email" id="tambahEmail" placeholder="Masukkan Email">
+                            <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Alamat</label>
@@ -505,6 +546,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Alert akan disisipkan di sini oleh JavaScript -->
                     <form id="formEditMahasiswa">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="mahasiswa_id" id="editMahasiswaId">
@@ -515,6 +557,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         <div class="mb-3">
                             <label class="form-label">NIM <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="nim" id="editNim" required>
+                            <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Prodi <span class="text-danger">*</span></label>
@@ -523,6 +566,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         <div class="mb-3">
                             <label class="form-label">Email</label>
                             <input type="email" class="form-control" name="email" id="editEmail">
+                            <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Alamat</label>
@@ -542,7 +586,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Show Alert
+        // Show Alert di luar modal (untuk notifikasi umum)
         function showAlert(message, type = 'success') {
             const alertHtml = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert">
@@ -562,9 +606,182 @@ $endData = min($offset + $itemsPerPage, $totalData);
             }, 5000);
         }
 
+        // ================= VALIDASI REAL-TIME =================
+        // Fungsi untuk validasi NIM
+        async function validateNim(nim, excludeId = null, feedbackElement) {
+            if (!nim) {
+                feedbackElement.textContent = 'NIM harus diisi';
+                return false;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'checkNim');
+                formData.append('nim', nim);
+                if (excludeId) formData.append('exclude_id', excludeId);
+                
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.exists) {
+                    feedbackElement.textContent = 'NIM sudah terdaftar';
+                    return false;
+                } else {
+                    feedbackElement.textContent = '';
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error validating NIM:', error);
+                return false;
+            }
+        }
+        
+        // Fungsi untuk validasi Username
+        async function validateUsername(username, excludeId = null, feedbackElement) {
+            if (!username) {
+                feedbackElement.textContent = 'Username harus diisi';
+                return false;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'checkUsername');
+                formData.append('username', username);
+                if (excludeId) formData.append('exclude_id', excludeId);
+                
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.exists) {
+                    feedbackElement.textContent = 'Username sudah digunakan';
+                    return false;
+                } else {
+                    feedbackElement.textContent = '';
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error validating username:', error);
+                return false;
+            }
+        }
+        
+        // Fungsi untuk validasi Email
+        async function validateEmail(email, excludeId = null, feedbackElement) {
+            if (!email) {
+                feedbackElement.textContent = '';
+                return true; // Email opsional
+            }
+            
+            // Validasi format email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                feedbackElement.textContent = 'Format email tidak valid';
+                return false;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'checkEmail');
+                formData.append('email', email);
+                if (excludeId) formData.append('exclude_id', excludeId);
+                
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.exists) {
+                    feedbackElement.textContent = 'Email sudah digunakan';
+                    return false;
+                } else {
+                    feedbackElement.textContent = '';
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error validating email:', error);
+                return false;
+            }
+        }
+
+        // Event listener untuk validasi real-time pada form tambah
+        document.getElementById('tambahNim').addEventListener('blur', async function() {
+            const feedbackElement = this.nextElementSibling;
+            const isValid = await validateNim(this.value, null, feedbackElement);
+            
+            if (isValid) {
+                this.classList.remove('is-invalid');
+            } else {
+                this.classList.add('is-invalid');
+            }
+        });
+        
+        document.getElementById('tambahUsername').addEventListener('blur', async function() {
+            const feedbackElement = this.nextElementSibling;
+            const isValid = await validateUsername(this.value, null, feedbackElement);
+            
+            if (isValid) {
+                this.classList.remove('is-invalid');
+            } else {
+                this.classList.add('is-invalid');
+            }
+        });
+        
+        document.getElementById('tambahEmail').addEventListener('blur', async function() {
+            const feedbackElement = this.nextElementSibling;
+            const isValid = await validateEmail(this.value, null, feedbackElement);
+            
+            if (isValid) {
+                this.classList.remove('is-invalid');
+            } else {
+                this.classList.add('is-invalid');
+            }
+        });
+
         // ================= TAMBAH MAHASISWA =================
-        document.getElementById('formTambahMahasiswa').addEventListener('submit', async function(e) {
+        document.querySelector('#modalTambahMahasiswa form').addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            // Validasi semua field sebelum submit
+            const nimInput = document.getElementById('tambahNim');
+            const usernameInput = document.getElementById('tambahUsername');
+            const emailInput = document.getElementById('tambahEmail');
+            
+            const nimFeedback = nimInput.nextElementSibling;
+            const usernameFeedback = usernameInput.nextElementSibling;
+            const emailFeedback = emailInput.nextElementSibling;
+            
+            const isNimValid = await validateNim(nimInput.value, null, nimFeedback);
+            const isUsernameValid = await validateUsername(usernameInput.value, null, usernameFeedback);
+            const isEmailValid = await validateEmail(emailInput.value, null, emailFeedback);
+            
+            if (!isNimValid) nimInput.classList.add('is-invalid');
+            if (!isUsernameValid) usernameInput.classList.add('is-invalid');
+            if (!isEmailValid) emailInput.classList.add('is-invalid');
+            
+            if (!isNimValid || !isUsernameValid || !isEmailValid) {
+                // Tampilkan error DI DALAM MODAL
+                const alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Perbaiki kesalahan pada form sebelum menyimpan
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Sisipkan alert di dalam modal
+                this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
+                return;
+            }
 
             const btn = document.getElementById('btnTambah');
             const btnText = btn.querySelector('.btn-text');
@@ -574,6 +791,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
             btn.disabled = true;
             btnText.classList.add('d-none');
             spinner.classList.remove('d-none');
+
+            // Hapus alert sebelumnya jika ada
+            const existingAlert = this.parentElement.querySelector('.alert');
+            if (existingAlert) existingAlert.remove();
 
             try {
                 const formData = new FormData(this);
@@ -585,24 +806,45 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 const result = await response.json();
 
                 if (result.success) {
-                    showAlert(result.message, 'success');
-
-                    // Close modal
+                    // Tutup modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalTambahMahasiswa'));
                     modal.hide();
 
                     // Reset form
                     this.reset();
 
+                    // Tampilkan notifikasi sukses di luar modal
+                    showAlert(result.message, 'success');
+
                     // Reload page after 1 second
                     setTimeout(() => {
                         window.location.href = window.location.pathname;
                     }, 1000);
                 } else {
-                    showAlert(result.message, 'danger');
+                    // Tampilkan error DI DALAM MODAL
+                    const alertHtml = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            ${result.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+                    
+                    // Sisipkan alert di dalam modal
+                    this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
                 }
             } catch (error) {
-                showAlert('Terjadi kesalahan: ' + error.message, 'danger');
+                // Tampilkan error DI DALAM MODAL
+                const alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Terjadi kesalahan: ${error.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Sisipkan alert di dalam modal
+                this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
             } finally {
                 // Hide loading
                 btn.disabled = false;
@@ -635,15 +877,103 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         document.getElementById('editProdi').value = data.prodi;
                         document.getElementById('editEmail').value = data.email || '';
                         document.getElementById('editAlamat').value = data.alamat || '';
+                        
+                        // Simpan nilai asli untuk validasi
+                        document.getElementById('editNim').setAttribute('data-original', data.nim);
+                        document.getElementById('editEmail').setAttribute('data-original', data.email || '');
                     }
                 } catch (error) {
                     showAlert('Gagal memuat data: ' + error.message, 'danger');
                 }
             });
         });
+        
+        // Event listener untuk validasi real-time pada form edit
+        document.getElementById('editNim').addEventListener('blur', async function() {
+            const feedbackElement = this.nextElementSibling;
+            const originalValue = this.getAttribute('data-original');
+            const excludeId = document.getElementById('editMahasiswaId').value;
+            
+            // Jika nilai tidak berubah, tidak perlu validasi
+            if (this.value === originalValue) {
+                feedbackElement.textContent = '';
+                this.classList.remove('is-invalid');
+                return;
+            }
+            
+            const isValid = await validateNim(this.value, excludeId, feedbackElement);
+            
+            if (isValid) {
+                this.classList.remove('is-invalid');
+            } else {
+                this.classList.add('is-invalid');
+            }
+        });
+        
+        document.getElementById('editEmail').addEventListener('blur', async function() {
+            const feedbackElement = this.nextElementSibling;
+            const originalValue = this.getAttribute('data-original');
+            const excludeId = document.getElementById('editMahasiswaId').value;
+            
+            // Jika nilai tidak berubah, tidak perlu validasi
+            if (this.value === originalValue) {
+                feedbackElement.textContent = '';
+                this.classList.remove('is-invalid');
+                return;
+            }
+            
+            const isValid = await validateEmail(this.value, excludeId, feedbackElement);
+            
+            if (isValid) {
+                this.classList.remove('is-invalid');
+            } else {
+                this.classList.add('is-invalid');
+            }
+        });
 
-        document.getElementById('formEditMahasiswa').addEventListener('submit', async function(e) {
+        document.querySelector('#modalEditMahasiswa form').addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            // Validasi semua field sebelum submit
+            const nimInput = document.getElementById('editNim');
+            const emailInput = document.getElementById('editEmail');
+            
+            const nimFeedback = nimInput.nextElementSibling;
+            const emailFeedback = emailInput.nextElementSibling;
+            
+            const originalNim = nimInput.getAttribute('data-original');
+            const originalEmail = emailInput.getAttribute('data-original');
+            const excludeId = document.getElementById('editMahasiswaId').value;
+            
+            let isNimValid = true;
+            let isEmailValid = true;
+            
+            // Validasi NIM hanya jika berubah
+            if (nimInput.value !== originalNim) {
+                isNimValid = await validateNim(nimInput.value, excludeId, nimFeedback);
+                if (!isNimValid) nimInput.classList.add('is-invalid');
+            }
+            
+            // Validasi Email hanya jika berubah
+            if (emailInput.value !== originalEmail) {
+                isEmailValid = await validateEmail(emailInput.value, excludeId, emailFeedback);
+                if (!isEmailValid) emailInput.classList.add('is-invalid');
+            }
+            
+            if (!isNimValid || !isEmailValid) {
+                // Tampilkan error DI DALAM MODAL
+                const alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Perbaiki kesalahan pada form sebelum menyimpan
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Sisipkan alert di dalam modal
+                this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
+                return;
+            }
 
             const btn = document.getElementById('btnEdit');
             const btnText = btn.querySelector('.btn-text');
@@ -653,6 +983,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
             btn.disabled = true;
             btnText.classList.add('d-none');
             spinner.classList.remove('d-none');
+
+            // Hapus alert sebelumnya jika ada
+            const existingAlert = this.parentElement.querySelector('.alert');
+            if (existingAlert) existingAlert.remove();
 
             try {
                 const formData = new FormData(this);
@@ -664,21 +998,42 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 const result = await response.json();
 
                 if (result.success) {
-                    showAlert(result.message, 'success');
-
-                    // Close modal
+                    // Tutup modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditMahasiswa'));
                     modal.hide();
+
+                    // Tampilkan notifikasi sukses di luar modal
+                    showAlert(result.message, 'success');
 
                     // Reload page after 1 second
                     setTimeout(() => {
                         window.location.href = window.location.pathname;
                     }, 1000);
                 } else {
-                    showAlert(result.message, 'danger');
+                    // Tampilkan error DI DALAM MODAL
+                    const alertHtml = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            ${result.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+                    
+                    // Sisipkan alert di dalam modal
+                    this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
                 }
             } catch (error) {
-                showAlert('Terjadi kesalahan: ' + error.message, 'danger');
+                // Tampilkan error DI DALAM MODAL
+                const alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Terjadi kesalahan: ${error.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Sisipkan alert di dalam modal
+                this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
             } finally {
                 // Hide loading
                 btn.disabled = false;

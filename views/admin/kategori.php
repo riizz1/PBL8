@@ -2,8 +2,8 @@
 require_once realpath(__DIR__ . '/../../config/config.php');
 require_once realpath(__DIR__ . '/../../app/models/kategori_model.php');
 
-$kategori = new KategoriModel($config);
-$dataKategori = $kategori->getAll();
+ $kategori = new KategoriModel($config);
+ $dataKategori = $kategori->getAll();
 ?>
 
 <!DOCTYPE html>
@@ -164,6 +164,12 @@ $dataKategori = $kategori->getAll();
             color: #999999 !important;
         }
 
+        /* ================= ALERT DI DALAM MODAL ================= */
+        .modal-body .alert {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .table-header {
@@ -186,7 +192,7 @@ $dataKategori = $kategori->getAll();
             </button>
         </div>
 
-        <!-- Alert Messages -->
+        <!-- Alert Messages (for page load alerts, e.g., from redirect) -->
         <?php if (isset($_GET['status'])): ?>
             <div class="alert alert-<?= $_GET['status'] === 'success' ? 'success' : 'danger' ?> alert-dismissible fade show" role="alert">
                 <i class="bi bi-<?= $_GET['status'] === 'success' ? 'check-circle' : 'exclamation-triangle' ?> me-2"></i>
@@ -221,7 +227,8 @@ $dataKategori = $kategori->getAll();
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $no = 1; foreach ($dataKategori as $row): ?>
+                            <?php $no = 1;
+                            foreach ($dataKategori as $row): ?>
                                 <tr data-id="<?= $row['kategori_id'] ?>">
                                     <td><?= $no++ . ". " . htmlspecialchars($row['nama_kategori']); ?></td>
                                     <td class="text-center">
@@ -229,9 +236,9 @@ $dataKategori = $kategori->getAll();
                                             onclick='editKategori(<?= json_encode($row, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
-                                        <a href="/PBL8/app/controllers/admin/kategori_controller.php?action=delete&id=<?= $row['kategori_id'] ?>" 
-                                           class="btn btn-danger btn-sm"
-                                           onclick="return confirm('Yakin hapus kategori \'<?= htmlspecialchars($row['nama_kategori']) ?>\'?\n\nCatatan: Kategori yang masih digunakan tidak dapat dihapus.')">
+                                        <a href="../../app/controllers/admin/kategori_controller.php?action=delete&id=<?= $row['kategori_id'] ?>"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Yakin hapus kategori \'<?= htmlspecialchars($row['nama_kategori']) ?>\'?\n\nCatatan: Kategori yang masih digunakan tidak dapat dihapus.')">
                                             <i class="bi bi-trash-fill"></i>
                                         </a>
                                     </td>
@@ -253,15 +260,16 @@ $dataKategori = $kategori->getAll();
                     <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/PBL8/app/controllers/admin/kategori_controller.php" method="POST">
+                    <!-- Alert akan disisipkan di sini oleh JavaScript -->
+                    <form id="formTambahKategori" action="../../app/controllers/admin/kategori_controller.php" method="POST">
                         <div class="mb-3">
                             <label class="form-label">Nama Kategori <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_kategori" class="form-control" 
+                            <input type="text" name="nama_kategori" class="form-control"
                                 placeholder="Masukkan Nama Kategori" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Deskripsi</label>
-                            <textarea name="deskripsi" class="form-control" rows="2" 
+                            <textarea name="deskripsi" class="form-control" rows="2"
                                 placeholder="Masukkan Deskripsi (Opsional)"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Simpan</button>
@@ -280,17 +288,18 @@ $dataKategori = $kategori->getAll();
                     <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/PBL8/app/controllers/admin/kategori_controller.php" method="POST">
+                    <!-- Alert akan disisipkan di sini oleh JavaScript -->
+                    <form id="formEditKategori" action="../../app/controllers/admin/kategori_controller.php" method="POST">
                         <input type="hidden" name="_method" value="PUT">
                         <input type="hidden" name="kategori_id" id="edit_kategori_id">
                         <div class="mb-3">
                             <label class="form-label">Nama Kategori <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_kategori" id="edit_nama_kategori" 
+                            <input type="text" name="nama_kategori" id="edit_nama_kategori"
                                 class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Deskripsi</label>
-                            <textarea name="deskripsi" id="edit_deskripsi" 
+                            <textarea name="deskripsi" id="edit_deskripsi"
                                 class="form-control" rows="2"></textarea>
                         </div>
                         <button type="submit" class="btn btn-success w-100">Simpan Perubahan</button>
@@ -304,18 +313,216 @@ $dataKategori = $kategori->getAll();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Show Alert di luar modal (untuk notifikasi umum)
+        function showAlert(message, type = 'success') {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            const container = document.querySelector('main.container');
+            const existingAlert = container.querySelector('.alert');
+            if (existingAlert) existingAlert.remove();
+
+            container.insertAdjacentHTML('afterbegin', alertHtml);
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                const alert = container.querySelector('.alert');
+                if (alert) {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 150);
+                }
+            }, 5000);
+        }
+
         function editKategori(data) {
             document.getElementById('edit_kategori_id').value = data.kategori_id;
             document.getElementById('edit_nama_kategori').value = data.nama_kategori;
             document.getElementById('edit_deskripsi').value = data.deskripsi || '';
-            
+
             var modal = new bootstrap.Modal(document.getElementById('modalEditKategori'));
             modal.show();
         }
 
-        // Auto hide alert after 5 seconds
+        // ================= TAMBAH KATEGORI =================
+        document.querySelector('#modalTambahKategori form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+
+            // Show loading
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+
+            // Hapus alert sebelumnya jika ada
+            const existingAlert = this.parentElement.querySelector('.alert');
+            if (existingAlert) existingAlert.remove();
+
+            try {
+                const formData = new FormData(this);
+                const response = await fetch('../../app/controllers/admin/kategori_controller.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Tutup modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalTambahKategori'));
+                    modal.hide();
+
+                    // Reset form
+                    this.reset();
+
+                    // Tampilkan notifikasi sukses di luar modal
+                    showAlert(result.message, 'success');
+
+                    // Reload page setelah 1 detik
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    // Tampilkan error DI DALAM MODAL
+                    const alertHtml = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            ${result.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+                    
+                    // Sisipkan alert di dalam modal
+                    this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
+                }
+            } catch (error) {
+                // Tampilkan error DI DALAM MODAL
+                const alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Terjadi kesalahan: ${error.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Sisipkan alert di dalam modal
+                this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
+            } finally {
+                // Hide loading
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        // ================= EDIT KATEGORI =================
+        document.querySelector('#modalEditKategori form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+
+            // Show loading
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+
+            // Hapus alert sebelumnya jika ada
+            const existingAlert = this.parentElement.querySelector('.alert');
+            if (existingAlert) existingAlert.remove();
+
+            try {
+                const formData = new FormData(this);
+                const response = await fetch('../../app/controllers/admin/kategori_controller.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Tutup modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditKategori'));
+                    modal.hide();
+
+                    // Tampilkan notifikasi sukses di luar modal
+                    showAlert(result.message, 'success');
+
+                    // Reload page setelah 1 detik
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    // Tampilkan error DI DALAM MODAL
+                    const alertHtml = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            ${result.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+                    
+                    // Sisipkan alert di dalam modal
+                    this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
+                }
+            } catch (error) {
+                // Tampilkan error DI DALAM MODAL
+                const alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Terjadi kesalahan: ${error.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Sisipkan alert di dalam modal
+                this.parentElement.insertAdjacentHTML('afterbegin', alertHtml);
+            } finally {
+                // Hide loading
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        // ================= DELETE KATEGORI =================
+        document.querySelectorAll('a[href*="action=delete"]').forEach(link => {
+            link.addEventListener('click', async function(e) {
+                e.preventDefault();
+
+                const url = this.getAttribute('href');
+                const kategoriNama = this.closest('tr').querySelector('td:first-child').textContent.trim();
+
+                if (!confirm(`Yakin hapus kategori "${kategoriNama}"?\n\nCatatan: Kategori yang masih digunakan tidak dapat dihapus.`)) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET'
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showAlert(result.message, 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showAlert(result.message, 'danger');
+                    }
+                } catch (error) {
+                    showAlert('Terjadi kesalahan: ' + error.message, 'danger');
+                }
+            });
+        });
+
+        // Auto hide alert on page load (for alerts from PHP GET)
         setTimeout(function() {
-            const alert = document.querySelector('.alert');
+            const alert = document.querySelector('main.container .alert');
             if (alert) {
                 alert.classList.remove('show');
                 setTimeout(() => alert.remove(), 150);

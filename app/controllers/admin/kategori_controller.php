@@ -1,6 +1,8 @@
 <?php
-require_once realpath(__DIR__ . '/../../config/config.php');
-require_once realpath(__DIR__ . '/../models/kategori_model.php');
+require_once realpath(__DIR__ . '/../../../config/config.php');
+require_once realpath(__DIR__ . '/../../models/kategori_model.php');
+
+header('Content-Type: application/json');
 
 $kategori = new KategoriModel($config);
 
@@ -11,16 +13,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['_method'])) {
     $deskripsi = isset($_POST['deskripsi']) ? trim($_POST['deskripsi']) : '';
     
     if (empty($nama)) {
-        header("Location: ../../views/admin/kategori.php?status=error&msg=" . urlencode("Nama kategori tidak boleh kosong"));
+        echo json_encode([
+            'success' => false,
+            'message' => 'Nama kategori tidak boleh kosong'
+        ]);
+        exit;
+    }
+    
+    // CEK DUPLIKASI NAMA
+    if ($kategori->cekDuplikasiNama($nama)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Nama kategori sudah ada, gunakan nama lain'
+        ]);
         exit;
     }
     
     $result = $kategori->tambahKategori($nama, $deskripsi);
     
     if ($result) {
-        header("Location: ../../views/admin/kategori.php?status=success&msg=" . urlencode("Kategori berhasil ditambahkan"));
+        echo json_encode([
+            'success' => true,
+            'message' => 'Kategori berhasil ditambahkan'
+        ]);
     } else {
-        header("Location: ../../views/admin/kategori.php?status=error&msg=" . urlencode("Gagal menambahkan kategori"));
+        echo json_encode([
+            'success' => false,
+            'message' => 'Gagal menambahkan kategori'
+        ]);
     }
     exit;
 }
@@ -33,16 +53,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST[
     $deskripsi = isset($_POST['deskripsi']) ? trim($_POST['deskripsi']) : '';
     
     if (empty($nama) || $id <= 0) {
-        header("Location: ../../views/admin/kategori.php?status=error&msg=" . urlencode("Data tidak valid"));
+        echo json_encode([
+            'success' => false,
+            'message' => 'Data tidak valid'
+        ]);
+        exit;
+    }
+    
+    // CEK DUPLIKASI NAMA (exclude ID yang sedang diedit)
+    if ($kategori->cekDuplikasiNama($nama, $id)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Nama kategori sudah ada, gunakan nama lain'
+        ]);
         exit;
     }
     
     $result = $kategori->updateKategori($id, $nama, $deskripsi);
     
     if ($result) {
-        header("Location: ../../views/admin/kategori.php?status=success&msg=" . urlencode("Kategori berhasil diupdate"));
+        echo json_encode([
+            'success' => true,
+            'message' => 'Kategori berhasil diupdate'
+        ]);
     } else {
-        header("Location: ../../views/admin/kategori.php?status=error&msg=" . urlencode("Gagal mengupdate kategori"));
+        echo json_encode([
+            'success' => false,
+            'message' => 'Gagal mengupdate kategori'
+        ]);
     }
     exit;
 }
@@ -53,27 +91,42 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     $id = intval($_GET['id']);
     
     if ($id <= 0) {
-        header("Location: ../../views/admin/kategori.php?status=error&msg=" . urlencode("ID tidak valid"));
+        echo json_encode([
+            'success' => false,
+            'message' => 'ID tidak valid'
+        ]);
         exit;
     }
     
     // Cek apakah kategori masih digunakan
     if ($kategori->cekKategoriDigunakan($id)) {
-        header("Location: ../../views/admin/kategori.php?status=error&msg=" . urlencode("Kategori tidak dapat dihapus karena masih digunakan"));
+        echo json_encode([
+            'success' => false,
+            'message' => 'Kategori tidak dapat dihapus karena masih digunakan'
+        ]);
         exit;
     }
     
     $result = $kategori->hapusKategori($id);
     
     if ($result) {
-        header("Location: ../../views/admin/kategori.php?status=success&msg=" . urlencode("Kategori berhasil dihapus"));
+        echo json_encode([
+            'success' => true,
+            'message' => 'Kategori berhasil dihapus'
+        ]);
     } else {
-        header("Location: ../../views/admin/kategori.php?status=error&msg=" . urlencode("Gagal menghapus kategori"));
+        echo json_encode([
+            'success' => false,
+            'message' => 'Gagal menghapus kategori'
+        ]);
     }
     exit;
 }
 
-// Redirect jika akses langsung
-header("Location: ../../views/admin/kategori.php");
+// Invalid request
+echo json_encode([
+    'success' => false,
+    'message' => 'Invalid request'
+]);
 exit;
 ?>

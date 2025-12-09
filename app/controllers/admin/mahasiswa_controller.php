@@ -11,7 +11,8 @@ class MahasiswaController {
         // Load model
         require_once __DIR__ . '/../../models/mahasiswa_model.php';
         
-        $this->mahasiswaModel = new Mahasiswa($config);
+        // Perbaikan: Gunakan MahasiswaModel bukan Mahasiswa
+        $this->mahasiswaModel = new MahasiswaModel($config);
     }
     
     /**
@@ -45,6 +46,11 @@ class MahasiswaController {
         // Check if username already exists
         if ($this->mahasiswaModel->usernameExists($_POST['username'])) {
             return ['success' => false, 'message' => 'Username sudah digunakan'];
+        }
+        
+        // Check if email already exists (if provided)
+        if (!empty($_POST['email']) && $this->mahasiswaModel->emailExists($_POST['email'])) {
+            return ['success' => false, 'message' => 'Email sudah digunakan'];
         }
         
         $data = [
@@ -83,6 +89,11 @@ class MahasiswaController {
             return ['success' => false, 'message' => 'NIM sudah digunakan oleh mahasiswa lain'];
         }
         
+        // Check if email already exists (if provided and exclude current mahasiswa)
+        if (!empty($_POST['email']) && $this->mahasiswaModel->emailExists($_POST['email'], $id)) {
+            return ['success' => false, 'message' => 'Email sudah digunakan oleh mahasiswa lain'];
+        }
+        
         $data = [
             'nim' => trim($_POST['nim']),
             'nama_lengkap' => trim($_POST['nama_lengkap']),
@@ -116,6 +127,27 @@ class MahasiswaController {
      */
     public function getById($id) {
         return $this->mahasiswaModel->getById($id);
+    }
+    
+    /**
+     * Check if NIM exists (for AJAX validation)
+     */
+    public function checkNimExists($nim, $excludeId = null) {
+        return $this->mahasiswaModel->nimExists($nim, $excludeId);
+    }
+    
+    /**
+     * Check if username exists (for AJAX validation)
+     */
+    public function checkUsernameExists($username, $excludeId = null) {
+        return $this->mahasiswaModel->usernameExists($username, $excludeId);
+    }
+    
+    /**
+     * Check if email exists (for AJAX validation)
+     */
+    public function checkEmailExists($email, $excludeId = null) {
+        return $this->mahasiswaModel->emailExists($email, $excludeId);
     }
 }
 ?>

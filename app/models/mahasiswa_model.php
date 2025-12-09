@@ -1,7 +1,7 @@
 <?php
 // PBL8/app/models/Mahasiswa.php
 
-class Mahasiswa {
+class MahasiswaModel {
     private $db;
     
     public function __construct($connection) {
@@ -174,6 +174,30 @@ class Mahasiswa {
             $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE username = ?";
             $stmt = $this->db->prepare($query);
             $stmt->bind_param('s', $username);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['count'] > 0;
+    }
+    
+    /**
+     * Check if email already exists
+     */
+    public function emailExists($email, $excludeId = null) {
+        if (empty($email)) {
+            return false; // Email kosong dianggap tidak duplikat
+        }
+        
+        if ($excludeId) {
+            $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE email = ? AND mahasiswa_id != ?";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param('si', $email, $excludeId);
+        } else {
+            $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE email = ?";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param('s', $email);
         }
         
         $stmt->execute();
