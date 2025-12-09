@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Navbar Admin</title>
+  <title>Navbar Superadmin</title>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,7 +23,6 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       padding: 0 1px;
-      /* disamakan dengan admin */
       padding-top: 10px;
       padding-bottom: 10px;
       transition: all 0.3s ease;
@@ -272,8 +271,14 @@
           </li>
           <li class="nav-item me-3">
             <a class="nav-link" href="dosen.php" data-page="dosen">
-              <i data-lucide="megaphone"></i>
+              <i data-lucide="users"></i>
               Dosen
+            </a>
+          </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="mahasiswa.php" data-page="mahasiswa">
+              <i data-lucide="graduation-cap"></i>
+              Mahasiswa
             </a>
           </li>
         </ul>
@@ -321,27 +326,20 @@
     lucide.createIcons();
 
     // ===== ACTIVE STATE OTOMATIS =====
-    // Deteksi halaman saat ini dan beri highlight
     function setActivePage() {
-      // Dapatkan nama file halaman saat ini (misal: dashboard.php, pengumuman.php)
       const currentPage = window.location.pathname.split('/').pop().replace('.php', '');
 
-      // Hapus semua class active
       document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
       });
 
-      // Tambahkan class active ke link yang sesuai
       const activeLink = document.querySelector(`.nav-link[data-page="${currentPage}"]`);
       if (activeLink) {
         activeLink.classList.add('active');
       }
     }
 
-    // Jalankan saat halaman dimuat
     setActivePage();
-
-    // Optional: Update active state saat navigasi (untuk SPA)
     window.addEventListener('popstate', setActivePage);
   </script>
 </body>
