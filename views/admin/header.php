@@ -288,7 +288,7 @@
 
           <li class="nav-item me-3">
             <a class="nav-link" href="mahasiswa.php" data-page="mahasiswa">
-              <i data-lucide="users"></i>
+              <i data-lucide="graduation-cap"></i>
               Mahasiswa
             </a>
           </li>
