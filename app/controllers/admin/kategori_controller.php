@@ -6,8 +6,19 @@ header('Content-Type: application/json');
 
 $kategori = new KategoriModel($config);
 
+// ========== CEK DUPLIKASI NAMA KATEGORI (untuk validasi real-time) ==========
+if (isset($_POST['action']) && $_POST['action'] === 'checkNamaKategori') {
+    $nama = isset($_POST['nama_kategori']) ? trim($_POST['nama_kategori']) : '';
+    $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+    
+    $exists = $kategori->cekDuplikasiNama($nama, $excludeId);
+    
+    echo json_encode(['exists' => $exists]);
+    exit;
+}
+
 // ========== TAMBAH KATEGORI ==========
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['_method'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['_method']) && !isset($_POST['action'])) {
     
     $nama = isset($_POST['nama_kategori']) ? trim($_POST['nama_kategori']) : '';
     $deskripsi = isset($_POST['deskripsi']) ? trim($_POST['deskripsi']) : '';

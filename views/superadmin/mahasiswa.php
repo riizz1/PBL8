@@ -290,7 +290,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
             color: #333;
         }
 
-        .input-group input:focus + .btn-outline-secondary {
+        .input-group input:focus+.btn-outline-secondary {
             border-color: #8f8f8f;
         }
 
@@ -442,7 +442,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" name="username"
                                 class="form-control" required placeholder="Masukkan Username"></div>
                         <div class="mb-3"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" name="password"
-                                class="form-control" required placeholder="Minimal 8 karakter (huruf, angka, simbol)" minlength="8"></div>
+                                class="form-control" required placeholder="Masukkan Password"></div>
                         <div class="mb-3"><label class="form-label">Prodi <span class="text-danger">*</span></label><input type="text" name="prodi"
                                 class="form-control" required placeholder="Masukkan Prodi"></div>
                         <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email"
@@ -480,12 +480,11 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         <div class="mb-3">
                             <label class="form-label">Password Baru <span class="text-muted">(Kosongkan jika tidak ingin mengubah)</span></label>
                             <div class="input-group">
-                                <input type="text" name="password" id="editPassword" class="form-control" placeholder="Masukkan password baru (minimal 8 karakter)" minlength="8">
+                                <input type="password" name="password" id="editPassword" class="form-control" placeholder="Masukkan password baru">
                                 <button class="btn btn-outline-secondary" type="button" id="toggleEditPassword">
-                                    <i class="bi bi-eye-slash" id="editPasswordIcon"></i>
+                                    <i class="bi bi-eye" id="editPasswordIcon"></i>
                                 </button>
                             </div>
-                            <small class="text-muted">Kosongkan field ini jika tidak ingin mengubah password</small>
                         </div>
                         <div class="mb-3"><label class="form-label">Prodi <span class="text-danger">*</span></label><input type="text" name="prodi"
                                 id="editProdi" class="form-control" required></div>
@@ -505,24 +504,141 @@ $endData = min($offset + $itemsPerPage, $totalData);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // ================= ALERT =================
-        function showAlert(message, type = 'success') { const a = document.getElementById('alertContainer'); a.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert"><i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`; setTimeout(() => { const e = document.querySelector('.alert'); if (e) e.remove(); }, 5000); }
+        function showAlert(message, type = 'success') {
+            const a = document.getElementById('alertContainer');
+            a.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert"><i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
+            setTimeout(() => {
+                const e = document.querySelector('.alert');
+                if (e) e.remove();
+            }, 5000);
+        }
 
         // ================= TAMBAH MAHASISWA =================
-        document.getElementById('formTambahMahasiswa').addEventListener('submit', async function (e) { e.preventDefault(); const btn = document.getElementById('btnTambah'); const btnText = btn.querySelector('.btn-text'); const spinner = btn.querySelector('.spinner-border'); btn.disabled = true; btnText.classList.add('d-none'); spinner.classList.remove('d-none'); try { const formData = new FormData(this); const response = await fetch(window.location.pathname, { method: 'POST', body: formData }); const result = await response.json(); if (result.success) { showAlert(result.message, 'success'); bootstrap.Modal.getInstance(document.getElementById('modalTambahMahasiswa')).hide(); this.reset(); setTimeout(() => { window.location.href = window.location.pathname; }, 1000); } else showAlert(result.message, 'danger'); } catch (err) { showAlert('Terjadi kesalahan: ' + err.message, 'danger'); } finally { btn.disabled = false; btnText.classList.remove('d-none'); spinner.classList.add('d-none'); } });
+        document.getElementById('formTambahMahasiswa').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnTambah');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner-border');
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+            try {
+                const formData = new FormData(this);
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showAlert(result.message, 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('modalTambahMahasiswa')).hide();
+                    this.reset();
+                    setTimeout(() => {
+                        window.location.href = window.location.pathname;
+                    }, 1000);
+                } else showAlert(result.message, 'danger');
+            } catch (err) {
+                showAlert('Terjadi kesalahan: ' + err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                spinner.classList.add('d-none');
+            }
+        });
 
         // ================= EDIT MAHASISWA =================
-        document.querySelectorAll('.edit-btn').forEach(button => { button.addEventListener('click', async function () { const id = this.getAttribute('data-id'); try { const formData = new FormData(); formData.append('action', 'get'); formData.append('mahasiswa_id', id); const response = await fetch(window.location.pathname, { method: 'POST', body: formData }); const data = await response.json(); if (data) { document.getElementById('editMahasiswaId').value = data.mahasiswa_id; document.getElementById('editNama').value = data.nama_lengkap; document.getElementById('editNim').value = data.nim; document.getElementById('editUsername').value = data.username; document.getElementById('editPassword').value = ''; document.getElementById('editProdi').value = data.prodi; document.getElementById('editEmail').value = data.email || ''; document.getElementById('editAlamat').value = data.alamat || ''; } } catch (err) { showAlert('Gagal memuat data', 'danger'); } }); });
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                const id = this.getAttribute('data-id');
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'get');
+                    formData.append('mahasiswa_id', id);
+                    const response = await fetch(window.location.pathname, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    if (data) {
+                        document.getElementById('editMahasiswaId').value = data.mahasiswa_id;
+                        document.getElementById('editNama').value = data.nama_lengkap;
+                        document.getElementById('editNim').value = data.nim;
+                        document.getElementById('editUsername').value = data.username;
+                        document.getElementById('editPassword').value = '';
+                        document.getElementById('editProdi').value = data.prodi;
+                        document.getElementById('editEmail').value = data.email || '';
+                        document.getElementById('editAlamat').value = data.alamat || '';
+                    }
+                } catch (err) {
+                    showAlert('Gagal memuat data', 'danger');
+                }
+            });
+        });
 
-        document.getElementById('formEditMahasiswa').addEventListener('submit', async function (e) { e.preventDefault(); const btn = document.getElementById('btnEdit'); const btnText = btn.querySelector('.btn-text'); const spinner = btn.querySelector('.spinner-border'); btn.disabled = true; btnText.classList.add('d-none'); spinner.classList.remove('d-none'); try { const formData = new FormData(this); const response = await fetch(window.location.pathname, { method: 'POST', body: formData }); const result = await response.json(); if (result.success) { showAlert(result.message, 'success'); bootstrap.Modal.getInstance(document.getElementById('modalEditMahasiswa')).hide(); setTimeout(() => { window.location.href = window.location.pathname; }, 1000); } else showAlert(result.message, 'danger'); } catch (err) { showAlert('Terjadi kesalahan: ' + err.message, 'danger'); } finally { btn.disabled = false; btnText.classList.remove('d-none'); spinner.classList.add('d-none'); } });
+        document.getElementById('formEditMahasiswa').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnEdit');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner-border');
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+            try {
+                const formData = new FormData(this);
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showAlert(result.message, 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('modalEditMahasiswa')).hide();
+                    setTimeout(() => {
+                        window.location.href = window.location.pathname;
+                    }, 1000);
+                } else showAlert(result.message, 'danger');
+            } catch (err) {
+                showAlert('Terjadi kesalahan: ' + err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                spinner.classList.add('d-none');
+            }
+        });
 
         // ================= DELETE MAHASISWA =================
-        document.querySelectorAll('.delete-btn').forEach(button => { button.addEventListener('click', async function () { const id = this.getAttribute('data-id'); const nama = this.getAttribute('data-nama'); if (confirm(`Apakah Anda yakin ingin menghapus mahasiswa "${nama}"?`)) { try { const formData = new FormData(); formData.append('action', 'delete'); formData.append('mahasiswa_id', id); const response = await fetch(window.location.pathname, { method: 'POST', body: formData }); const result = await response.json(); if (result.success) { showAlert(result.message, 'success'); setTimeout(() => { window.location.href = window.location.pathname; }, 1000); } else showAlert(result.message, 'danger'); } catch (err) { showAlert('Terjadi kesalahan', 'danger'); } } }); });
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                const id = this.getAttribute('data-id');
+                const nama = this.getAttribute('data-nama');
+                if (confirm(`Apakah Anda yakin ingin menghapus mahasiswa "${nama}"?`)) {
+                    try {
+                        const formData = new FormData();
+                        formData.append('action', 'delete');
+                        formData.append('mahasiswa_id', id);
+                        const response = await fetch(window.location.pathname, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                            showAlert(result.message, 'success');
+                            setTimeout(() => {
+                                window.location.href = window.location.pathname;
+                            }, 1000);
+                        } else showAlert(result.message, 'danger');
+                    } catch (err) {
+                        showAlert('Terjadi kesalahan', 'danger');
+                    }
+                }
+            });
+        });
 
         // ================= TOGGLE PASSWORD VISIBILITY =================
         document.getElementById('toggleEditPassword').addEventListener('click', function() {
             const passwordInput = document.getElementById('editPassword');
             const passwordIcon = document.getElementById('editPasswordIcon');
-            
+
             if (passwordInput.type === 'text') {
                 passwordInput.type = 'password';
                 passwordIcon.classList.remove('bi-eye-slash');
