@@ -4,8 +4,8 @@
 class PengumumanModel {
     private $db;
     
-    public function __construct($connection) {
-        $this->db = $connection;
+    public function __construct($config) {
+        $this->db = $config;
     }
     
     /**
