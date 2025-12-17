@@ -1,5 +1,5 @@
 <?php
-// PBL8/app/models/Mahasiswa.php
+// PBL8/app/models/mahasiswa_model.php
 
 class MahasiswaModel {
     private $db;
@@ -9,20 +9,62 @@ class MahasiswaModel {
     }
     
     /**
-     * Get all mahasiswa
+     * Get all mahasiswa with jurusan and prodi
      */
     public function getAll() {
         $query = "SELECT 
-                    mahasiswa_id,
-                    nim,
-                    nama_lengkap,
-                    prodi,
-                    email,
-                    alamat,
-                    created_at
-                  FROM mahasiswa 
-                  ORDER BY nama_lengkap ASC";
+                    m.mahasiswa_id,
+                    m.nim,
+                    m.nama_lengkap,
+                    m.kelas,
+                    m.email,
+                    m.alamat,
+                    m.jurusan_id,
+                    m.prodi_id,
+                    j.nama_jurusan,
+                    p.nama_prodi,
+                    m.created_at
+                  FROM mahasiswa m
+                  LEFT JOIN jurusan j ON m.jurusan_id = j.jurusan_id
+                  LEFT JOIN prodi p ON m.prodi_id = p.prodi_id
+                  ORDER BY m.nama_lengkap ASC";
         
+        $result = $this->db->query($query);
+        
+        if (!$result) {
+            return [];
+        }
+        
+        $data = [];
+        while($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        return $data;
+    }
+    
+    /**
+     * Get all jurusan
+     */
+    public function getAllJurusan() {
+        $query = "SELECT jurusan_id, nama_jurusan FROM jurusan ORDER BY nama_jurusan ASC";
+        $result = $this->db->query($query);
+        
+        if (!$result) {
+            return [];
+        }
+        
+        $data = [];
+        while($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        return $data;
+    }
+    
+    /**
+     * Get all prodi with jurusan relation
+     */
+    public function getAllProdi() {
+        $query = "SELECT prodi_id, nama_prodi, jurusan_id FROM prodi ORDER BY nama_prodi ASC";
         $result = $this->db->query($query);
         
         if (!$result) {
@@ -40,7 +82,14 @@ class MahasiswaModel {
      * Get mahasiswa by ID
      */
     public function getById($id) {
-        $query = "SELECT * FROM mahasiswa WHERE mahasiswa_id = ?";
+        $query = "SELECT 
+                    m.*,
+                    j.nama_jurusan,
+                    p.nama_prodi
+                  FROM mahasiswa m
+                  LEFT JOIN jurusan j ON m.jurusan_id = j.jurusan_id
+                  LEFT JOIN prodi p ON m.prodi_id = p.prodi_id
+                  WHERE m.mahasiswa_id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $id);
         $stmt->execute();
@@ -52,8 +101,8 @@ class MahasiswaModel {
      * Create new mahasiswa
      */
     public function create($data) {
-        $query = "INSERT INTO mahasiswa (nim, nama_lengkap, username, password, prodi, email, alamat) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO mahasiswa (nim, nama_lengkap, username, password, jurusan_id, prodi_id, kelas, email, alamat) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $this->db->prepare($query);
         
@@ -61,12 +110,14 @@ class MahasiswaModel {
         $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
         
         $stmt->bind_param(
-            'sssssss',
+            'ssssiisss',
             $data['nim'],
             $data['nama_lengkap'],
             $data['username'],
             $hashedPassword,
-            $data['prodi'],
+            $data['jurusan_id'],
+            $data['prodi_id'],
+            $data['kelas'],
             $data['email'],
             $data['alamat']
         );
@@ -92,17 +143,21 @@ class MahasiswaModel {
         $query = "UPDATE mahasiswa 
                   SET nim = ?, 
                       nama_lengkap = ?, 
-                      prodi = ?, 
+                      jurusan_id = ?,
+                      prodi_id = ?,
+                      kelas = ?,
                       email = ?, 
                       alamat = ?
                   WHERE mahasiswa_id = ?";
         
         $stmt = $this->db->prepare($query);
         $stmt->bind_param(
-            'sssssi',
+            'ssiisssi',
             $data['nim'],
             $data['nama_lengkap'],
-            $data['prodi'],
+            $data['jurusan_id'],
+            $data['prodi_id'],
+            $data['kelas'],
             $data['email'],
             $data['alamat'],
             $id
@@ -187,7 +242,7 @@ class MahasiswaModel {
      */
     public function emailExists($email, $excludeId = null) {
         if (empty($email)) {
-            return false; // Email kosong dianggap tidak duplikat
+            return false;
         }
         
         if ($excludeId) {

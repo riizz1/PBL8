@@ -11,7 +11,6 @@ class MahasiswaController {
         // Load model
         require_once __DIR__ . '/../../models/mahasiswa_model.php';
         
-        // Perbaikan: Gunakan MahasiswaModel bukan Mahasiswa
         $this->mahasiswaModel = new MahasiswaModel($config);
     }
     
@@ -23,6 +22,20 @@ class MahasiswaController {
     }
     
     /**
+     * Get all jurusan
+     */
+    public function getAllJurusan() {
+        return $this->mahasiswaModel->getAllJurusan();
+    }
+    
+    /**
+     * Get all prodi
+     */
+    public function getAllProdi() {
+        return $this->mahasiswaModel->getAllProdi();
+    }
+    
+    /**
      * Create mahasiswa
      */
     public function create() {
@@ -31,7 +44,7 @@ class MahasiswaController {
         }
         
         // Validasi input
-        $required = ['nim', 'nama_lengkap', 'username', 'password', 'prodi'];
+        $required = ['nim', 'nama_lengkap', 'username', 'password', 'jurusan_id', 'prodi_id', 'kelas'];
         foreach ($required as $field) {
             if (empty($_POST[$field])) {
                 return ['success' => false, 'message' => "Field $field harus diisi"];
@@ -58,7 +71,9 @@ class MahasiswaController {
             'nama_lengkap' => trim($_POST['nama_lengkap']),
             'username' => trim($_POST['username']),
             'password' => $_POST['password'],
-            'prodi' => trim($_POST['prodi']),
+            'jurusan_id' => intval($_POST['jurusan_id']),
+            'prodi_id' => intval($_POST['prodi_id']),
+            'kelas' => trim($_POST['kelas']),
             'email' => trim($_POST['email'] ?? ''),
             'alamat' => trim($_POST['alamat'] ?? '')
         ];
@@ -77,7 +92,7 @@ class MahasiswaController {
         $id = intval($_POST['mahasiswa_id']);
         
         // Validasi input
-        $required = ['nim', 'nama_lengkap', 'prodi'];
+        $required = ['nim', 'nama_lengkap', 'jurusan_id', 'prodi_id', 'kelas'];
         foreach ($required as $field) {
             if (empty($_POST[$field])) {
                 return ['success' => false, 'message' => "Field $field harus diisi"];
@@ -97,7 +112,9 @@ class MahasiswaController {
         $data = [
             'nim' => trim($_POST['nim']),
             'nama_lengkap' => trim($_POST['nama_lengkap']),
-            'prodi' => trim($_POST['prodi']),
+            'jurusan_id' => intval($_POST['jurusan_id']),
+            'prodi_id' => intval($_POST['prodi_id']),
+            'kelas' => trim($_POST['kelas']),
             'email' => trim($_POST['email'] ?? ''),
             'alamat' => trim($_POST['alamat'] ?? '')
         ];

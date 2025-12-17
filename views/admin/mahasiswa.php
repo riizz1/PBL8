@@ -1,7 +1,4 @@
 <?php
-// TEMPORARY: Disable session check untuk testing
-// Uncomment baris di bawah setelah sistem login sudah jalan
-/*
 session_start();
 
 // Cek login dan role
@@ -9,7 +6,6 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
     header("Location: ../auth/login.php");
     exit();
 }
-*/
 
 // Load controller
 require_once __DIR__ . '/../../app/controllers/admin/mahasiswa_controller.php';
@@ -73,6 +69,10 @@ $mahasiswaList = array_slice($allMahasiswa, $offset, $itemsPerPage);
 // Calculate display range
 $startData = $totalData > 0 ? $offset + 1 : 0;
 $endData = min($offset + $itemsPerPage, $totalData);
+
+// Get jurusan dan prodi untuk dropdown
+$jurusanList = $mahasiswaController->getAllJurusan();
+$prodiList = $mahasiswaController->getAllProdi();
 ?>
 
 <!DOCTYPE html>
@@ -126,39 +126,30 @@ $endData = min($offset + $itemsPerPage, $totalData);
             background-color: #2193b0 !important;
             color: white !important;
             text-align: center !important;
-            padding: 15px 20px;
+            padding: 15px 10px;
             font-weight: 600;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
-        table.table thead th:first-child {
-            text-align: left !important;
-        }
-
-        table.table thead th:nth-child(1) {
-            width: 50%;
-        }
-
+        table.table thead th:first-child,
         table.table thead th:nth-child(2) {
-            width: 20%;
-        }
-
-        table.table thead th:nth-child(3) {
-            width: 20%;
-        }
-
-        table.table thead th:nth-child(4) {
-            width: 10%;
+            text-align: center !important;
         }
 
         /* ================= TBODY STYLING ================= */
         table.table tbody td {
-            padding: 15px 20px;
+            padding: 15px 10px;
             border-bottom: 1px solid #f0f0f0;
             color: #333;
             font-size: 14px;
+            vertical-align: middle;
+        }
+
+        table.table tbody td:first-child {
+            text-align: center !important;
         }
 
         table.table tbody tr {
@@ -176,11 +167,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         table.table tbody tr:hover td {
             background-color: #f0f0f0 !important;
-        }
-
-        /* Nama mahasiswa rata kiri */
-        table.table tbody td:first-child {
-            text-align: left !important;
         }
 
         /* ================= EMPTY STATE ================= */
@@ -271,22 +257,20 @@ $endData = min($offset + $itemsPerPage, $totalData);
             padding: 20px;
         }
 
-        /* Border input pada modal Tambah Mahasiswa jadi abu rokok */
-        #modalTambahMahasiswa .modal-content input,
-        #modalTambahMahasiswa .modal-content textarea,
-        #modalEditMahasiswa .modal-content input,
-        #modalEditMahasiswa .modal-content textarea {
+        /* Border input pada modal */
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select {
             border: 1px solid #b0b0b0 !important;
             color: black !important;
             background-color: white !important;
             transition: all 0.3s ease;
         }
 
-        /* Saat fokus tetap abu rokok lebih gelap */
-        #modalTambahMahasiswa .modal-content input:focus,
-        #modalTambahMahasiswa .modal-content textarea:focus,
-        #modalEditMahasiswa .modal-content input:focus,
-        #modalEditMahasiswa .modal-content textarea:focus {
+        /* Saat fokus */
+        .modal-content input:focus,
+        .modal-content textarea:focus,
+        .modal-content select:focus {
             border: 1px solid #8f8f8f !important;
             background-color: #f2f2f2 !important;
             color: black !important;
@@ -373,24 +357,13 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         /* ================= SHAKE ANIMATION ================= */
         @keyframes shake {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: translateX(0);
             }
-
-            10%,
-            30%,
-            50%,
-            70%,
-            90% {
+            10%, 30%, 50%, 70%, 90% {
                 transform: translateX(-5px);
             }
-
-            20%,
-            40%,
-            60%,
-            80% {
+            20%, 40%, 60%, 80% {
                 transform: translateX(5px);
             }
         }
@@ -416,24 +389,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 flex-wrap: wrap;
                 justify-content: center;
             }
-        }
-
-        /* Style untuk tombol toggle password */
-        #togglePassword {
-            border: none;
-            background: none;
-            padding: 0 15px;
-            color: #6c757d;
-            z-index: 10;
-        }
-
-        #togglePassword:hover {
-            color: #2193b0;
-        }
-
-        #togglePassword:focus {
-            outline: none;
-            box-shadow: none;
         }
     </style>
 </head>
@@ -474,19 +429,28 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Nama Mahasiswa</th>
-                                <th>NIM</th>
-                                <th>Prodi</th>
-                                <th>Aksi</th>
+                                <th style="width: 5%;">No</th>
+                                <th style="width: 25%;">Nama Mahasiswa</th>
+                                <th style="width: 12%;">NIM</th>
+                                <th style="width: 15%;">Jurusan</th>
+                                <th style="width: 18%;">Prodi</th>
+                                <th style="width: 12%;">Kelas</th>
+                                <th style="width: 13%;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="mahasiswaTableBody">
-                            <?php foreach ($mahasiswaList as $mahasiswa): ?>
+                            <?php 
+                            $no = $offset + 1;
+                            foreach ($mahasiswaList as $mahasiswa): 
+                            ?>
                                 <tr data-id="<?= $mahasiswa['mahasiswa_id'] ?>">
-                                    <td class="col-nama"><?= htmlspecialchars($mahasiswa['nama_lengkap']) ?></td>
-                                    <td class="col-nim"><?= htmlspecialchars($mahasiswa['nim']) ?></td>
-                                    <td class="col-prodi"><?= htmlspecialchars($mahasiswa['prodi']) ?></td>
-                                    <td class="col-aksi">
+                                    <td><?= $no++ ?></td>
+                                    <td><?= htmlspecialchars($mahasiswa['nama_lengkap']) ?></td>
+                                    <td><?= htmlspecialchars($mahasiswa['nim']) ?></td>
+                                    <td><?= htmlspecialchars($mahasiswa['nama_jurusan'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($mahasiswa['nama_prodi'] ?? '-') ?></td>
+                                    <td><?= htmlspecialchars($mahasiswa['kelas'] ?? '-') ?></td>
+                                    <td style="text-align: center;">
                                         <button class="btn btn-warning btn-sm edit-btn"
                                             data-id="<?= $mahasiswa['mahasiswa_id'] ?>"
                                             data-bs-toggle="modal"
@@ -596,8 +560,29 @@ $endData = min($offset + $itemsPerPage, $totalData);
                             </div>
                         </div>
                         <div class="mb-3 form-group">
+                            <label class="form-label">Jurusan <span class="text-danger">*</span></label>
+                            <div class="position-relative">
+                                <select class="form-control pe-5" name="jurusan_id" id="tambahJurusan" required onchange="filterProdi('tambah')" style="appearance: none; -webkit-appearance: none; -moz-appearance: none;">
+                                    <option value="">-- Pilih Jurusan --</option>
+                                    <?php foreach ($jurusanList as $jurusan): ?>
+                                        <option value="<?= $jurusan['jurusan_id'] ?>"><?= htmlspecialchars($jurusan['nama_jurusan']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <i class="bi bi-chevron-down position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #6c757d;"></i>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-group">
                             <label class="form-label">Prodi <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="prodi" required placeholder="Masukkan Prodi">
+                            <div class="position-relative">
+                                <select class="form-control pe-5" name="prodi_id" id="tambahProdi" required disabled style="appearance: none; -webkit-appearance: none; -moz-appearance: none;">
+                                    <option value="">-- Pilih Prodi --</option>
+                                </select>
+                                <i class="bi bi-chevron-down position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #6c757d;"></i>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label class="form-label">Kelas <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="kelas" required placeholder="Contoh: IF1A-Pagi">
                         </div>
                         <div class="mb-3 form-group">
                             <label class="form-label">Email</label>
@@ -642,8 +627,29 @@ $endData = min($offset + $itemsPerPage, $totalData);
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3 form-group">
+                            <label class="form-label">Jurusan <span class="text-danger">*</span></label>
+                            <div class="position-relative">
+                                <select class="form-control pe-5" name="jurusan_id" id="editJurusan" required onchange="filterProdi('edit')" style="appearance: none; -webkit-appearance: none; -moz-appearance: none;">
+                                    <option value="">-- Pilih Jurusan --</option>
+                                    <?php foreach ($jurusanList as $jurusan): ?>
+                                        <option value="<?= $jurusan['jurusan_id'] ?>"><?= htmlspecialchars($jurusan['nama_jurusan']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <i class="bi bi-chevron-down position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #6c757d;"></i>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-group">
                             <label class="form-label">Prodi <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="prodi" id="editProdi" required>
+                            <div class="position-relative">
+                                <select class="form-control pe-5" name="prodi_id" id="editProdi" required style="appearance: none; -webkit-appearance: none; -moz-appearance: none;">
+                                    <option value="">-- Pilih Prodi --</option>
+                                </select>
+                                <i class="bi bi-chevron-down position-absolute" style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #6c757d;"></i>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-group">
+                            <label class="form-label">Kelas <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="kelas" id="editKelas" required placeholder="Contoh: IF1A-Pagi">
                         </div>
                         <div class="mb-3 form-group">
                             <label class="form-label">Email</label>
@@ -668,7 +674,36 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Show Alert di luar modal (untuk notifikasi umum)
+        // Data prodi untuk filtering
+        const prodiData = <?= json_encode($prodiList) ?>;
+
+        // Filter prodi berdasarkan jurusan yang dipilih
+        function filterProdi(type) {
+            const jurusanSelect = document.getElementById(type + 'Jurusan');
+            const prodiSelect = document.getElementById(type + 'Prodi');
+            const selectedJurusan = jurusanSelect.value;
+
+            // Reset prodi dropdown
+            prodiSelect.innerHTML = '<option value="">-- Pilih Prodi --</option>';
+            
+            if (selectedJurusan) {
+                prodiSelect.disabled = false;
+                
+                // Filter prodi berdasarkan jurusan
+                const filteredProdi = prodiData.filter(p => p.jurusan_id == selectedJurusan);
+                
+                filteredProdi.forEach(prodi => {
+                    const option = document.createElement('option');
+                    option.value = prodi.prodi_id;
+                    option.textContent = prodi.nama_prodi;
+                    prodiSelect.appendChild(option);
+                });
+            } else {
+                prodiSelect.disabled = true;
+            }
+        }
+
+        // Show Alert
         function showAlert(message, type = 'success') {
             const alertHtml = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert">
@@ -679,7 +714,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
             `;
             document.getElementById('alertContainer').innerHTML = alertHtml;
 
-            // Auto hide after 5 seconds
             setTimeout(() => {
                 const alert = document.querySelector('.alert');
                 if (alert) {
@@ -688,7 +722,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
             }, 5000);
         }
 
-        // Fungsi untuk menambahkan animasi shake
+        // Shake animation
         function shakeElement(element) {
             element.classList.add('shake');
             setTimeout(() => {
@@ -696,11 +730,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
             }, 500);
         }
 
-        // ================= VALIDASI REAL-TIME =================
-        // Fungsi untuk validasi NIM
+        // Validasi NIM
         async function validateNim(nim, excludeId = null, feedbackElement, inputElement) {
             if (!nim) {
-                return true; // Biarkan HTML5 validation yang handle required
+                return true;
             }
 
             try {
@@ -731,10 +764,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
             }
         }
 
-        // Fungsi untuk validasi Username
+        // Validasi Username
         async function validateUsername(username, excludeId = null, feedbackElement, inputElement) {
             if (!username) {
-                return true; // Biarkan HTML5 validation yang handle required
+                return true;
             }
 
             try {
@@ -765,15 +798,14 @@ $endData = min($offset + $itemsPerPage, $totalData);
             }
         }
 
-        // Fungsi untuk validasi Email
+        // Validasi Email
         async function validateEmail(email, excludeId = null, feedbackElement, inputElement) {
             if (!email) {
                 feedbackElement.textContent = '';
                 inputElement.classList.remove('is-invalid');
-                return true; // Email opsional
+                return true;
             }
 
-            // Validasi format email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 feedbackElement.textContent = 'Format email tidak valid';
@@ -809,11 +841,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
             }
         }
 
-        // ================= EVENT LISTENERS UNTUK FORM TAMBAH =================
+        // Event listeners untuk form tambah
         document.getElementById('tambahNim').addEventListener('blur', async function() {
             const feedbackElement = this.nextElementSibling;
             const isValid = await validateNim(this.value, null, feedbackElement, this);
-
             if (!isValid) {
                 shakeElement(this.parentElement);
             }
@@ -822,7 +853,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
         document.getElementById('tambahUsername').addEventListener('blur', async function() {
             const feedbackElement = this.nextElementSibling;
             const isValid = await validateUsername(this.value, null, feedbackElement, this);
-
             if (!isValid) {
                 shakeElement(this.parentElement);
             }
@@ -831,20 +861,23 @@ $endData = min($offset + $itemsPerPage, $totalData);
         document.getElementById('tambahEmail').addEventListener('blur', async function() {
             const feedbackElement = this.nextElementSibling;
             const isValid = await validateEmail(this.value, null, feedbackElement, this);
-
             if (!isValid) {
                 shakeElement(this.parentElement);
             }
         });
 
-        // ================= TAMBAH MAHASISWA =================
+        // TAMBAH MAHASISWA
         document.querySelector('#modalTambahMahasiswa form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             let hasError = false;
             const form = this;
 
-            // Validasi duplikasi untuk field yang memerlukan (NIM, Username, Email)
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
             const nimInput = document.getElementById('tambahNim');
             const usernameInput = document.getElementById('tambahUsername');
             const emailInput = document.getElementById('tambahEmail');
@@ -852,12 +885,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
             const nimFeedback = nimInput.nextElementSibling;
             const usernameFeedback = usernameInput.nextElementSibling;
             const emailFeedback = emailInput.nextElementSibling;
-
-            // Cek HTML5 validation dulu
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
 
             const isNimValid = await validateNim(nimInput.value, null, nimFeedback, nimInput);
             const isUsernameValid = await validateUsername(usernameInput.value, null, usernameFeedback, usernameInput);
@@ -884,7 +911,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
             const btnText = btn.querySelector('.btn-text');
             const spinner = btn.querySelector('.spinner-border');
 
-            // Show loading
             btn.disabled = true;
             btnText.classList.add('d-none');
             spinner.classList.remove('d-none');
@@ -899,19 +925,11 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 const result = await response.json();
 
                 if (result.success) {
-                    // Tutup modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalTambahMahasiswa'));
                     modal.hide();
-
-                    // Reset form
                     this.reset();
-                    // Hapus semua class is-invalid
                     this.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-
-                    // Tampilkan notifikasi sukses di luar modal
                     showAlert(result.message, 'success');
-
-                    // Reload page after 1 second
                     setTimeout(() => {
                         window.location.href = window.location.pathname;
                     }, 1000);
@@ -921,14 +939,13 @@ $endData = min($offset + $itemsPerPage, $totalData);
             } catch (error) {
                 showAlert('Terjadi kesalahan: ' + error.message, 'danger');
             } finally {
-                // Hide loading
                 btn.disabled = false;
                 btnText.classList.remove('d-none');
                 spinner.classList.add('d-none');
             }
         });
 
-        // ================= EDIT MAHASISWA =================
+        // EDIT MAHASISWA
         document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', async function() {
                 const mahasiswaId = this.getAttribute('data-id');
@@ -949,15 +966,20 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         document.getElementById('editMahasiswaId').value = data.mahasiswa_id;
                         document.getElementById('editNama').value = data.nama_lengkap;
                         document.getElementById('editNim').value = data.nim;
-                        document.getElementById('editProdi').value = data.prodi;
+                        document.getElementById('editJurusan').value = data.jurusan_id || '';
+                        document.getElementById('editKelas').value = data.kelas || '';
                         document.getElementById('editEmail').value = data.email || '';
                         document.getElementById('editAlamat').value = data.alamat || '';
 
-                        // Simpan nilai asli untuk validasi
+                        // Filter dan set prodi
+                        filterProdi('edit');
+                        setTimeout(() => {
+                            document.getElementById('editProdi').value = data.prodi_id || '';
+                        }, 100);
+
                         document.getElementById('editNim').setAttribute('data-original', data.nim);
                         document.getElementById('editEmail').setAttribute('data-original', data.email || '');
 
-                        // Reset semua validasi
                         document.querySelectorAll('#modalEditMahasiswa .is-invalid').forEach(el => {
                             el.classList.remove('is-invalid');
                         });
@@ -968,13 +990,12 @@ $endData = min($offset + $itemsPerPage, $totalData);
             });
         });
 
-        // ================= EVENT LISTENERS UNTUK FORM EDIT =================
+        // Event listeners untuk form edit
         document.getElementById('editNim').addEventListener('blur', async function() {
             const feedbackElement = this.nextElementSibling;
             const originalValue = this.getAttribute('data-original');
             const excludeId = document.getElementById('editMahasiswaId').value;
 
-            // Jika nilai tidak berubah, tidak perlu validasi
             if (this.value === originalValue) {
                 feedbackElement.textContent = '';
                 this.classList.remove('is-invalid');
@@ -982,7 +1003,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
             }
 
             const isValid = await validateNim(this.value, excludeId, feedbackElement, this);
-
             if (!isValid) {
                 shakeElement(this.parentElement);
             }
@@ -993,7 +1013,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
             const originalValue = this.getAttribute('data-original');
             const excludeId = document.getElementById('editMahasiswaId').value;
 
-            // Jika nilai tidak berubah, tidak perlu validasi
             if (this.value === originalValue) {
                 feedbackElement.textContent = '';
                 this.classList.remove('is-invalid');
@@ -1001,7 +1020,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
             }
 
             const isValid = await validateEmail(this.value, excludeId, feedbackElement, this);
-
             if (!isValid) {
                 shakeElement(this.parentElement);
             }
@@ -1013,16 +1031,13 @@ $endData = min($offset + $itemsPerPage, $totalData);
             let hasError = false;
             const form = this;
 
-            // Cek HTML5 validation dulu
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
 
-            // Validasi duplikasi hanya untuk field yang berubah
             const nimInput = document.getElementById('editNim');
             const emailInput = document.getElementById('editEmail');
-
             const nimFeedback = nimInput.nextElementSibling;
             const emailFeedback = emailInput.nextElementSibling;
 
@@ -1030,7 +1045,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
             const originalEmail = emailInput.getAttribute('data-original');
             const excludeId = document.getElementById('editMahasiswaId').value;
 
-            // Validasi NIM hanya jika berubah
             if (nimInput.value !== originalNim) {
                 const isNimValid = await validateNim(nimInput.value, excludeId, nimFeedback, nimInput);
                 if (!isNimValid) {
@@ -1039,7 +1053,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 }
             }
 
-            // Validasi Email hanya jika berubah
             if (emailInput.value !== originalEmail) {
                 const isEmailValid = await validateEmail(emailInput.value, excludeId, emailFeedback, emailInput);
                 if (!isEmailValid) {
@@ -1056,7 +1069,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
             const btnText = btn.querySelector('.btn-text');
             const spinner = btn.querySelector('.spinner-border');
 
-            // Show loading
             btn.disabled = true;
             btnText.classList.add('d-none');
             spinner.classList.remove('d-none');
@@ -1071,14 +1083,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 const result = await response.json();
 
                 if (result.success) {
-                    // Tutup modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditMahasiswa'));
                     modal.hide();
-
-                    // Tampilkan notifikasi sukses di luar modal
                     showAlert(result.message, 'success');
-
-                    // Reload page after 1 second
                     setTimeout(() => {
                         window.location.href = window.location.pathname;
                     }, 1000);
@@ -1088,14 +1095,13 @@ $endData = min($offset + $itemsPerPage, $totalData);
             } catch (error) {
                 showAlert('Terjadi kesalahan: ' + error.message, 'danger');
             } finally {
-                // Hide loading
                 btn.disabled = false;
                 btnText.classList.remove('d-none');
                 spinner.classList.add('d-none');
             }
         });
 
-        // ================= DELETE MAHASISWA =================
+        // DELETE MAHASISWA
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', async function() {
                 const mahasiswaId = this.getAttribute('data-id');
@@ -1119,8 +1125,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
                     if (result.success) {
                         showAlert(result.message, 'success');
-
-                        // Reload page after 1 second to maintain pagination
                         setTimeout(() => {
                             window.location.href = window.location.pathname;
                         }, 1000);
@@ -1133,11 +1137,12 @@ $endData = min($offset + $itemsPerPage, $totalData);
             });
         });
 
-        // ================= RESET VALIDATION SAAT MODAL DITUTUP =================
+        // Reset validation saat modal ditutup
         document.getElementById('modalTambahMahasiswa').addEventListener('hidden.bs.modal', function() {
             const form = document.getElementById('formTambahMahasiswa');
             form.reset();
             form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.getElementById('tambahProdi').disabled = true;
         });
 
         document.getElementById('modalEditMahasiswa').addEventListener('hidden.bs.modal', function() {
@@ -1145,23 +1150,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
             form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         });
 
-        // ================= TOGGLE PASSWORD VISIBILITY =================
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('passwordInput');
-            const eyeIcon = document.getElementById('eyeIcon');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('bi-eye');
-                eyeIcon.classList.add('bi-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('bi-eye-slash');
-                eyeIcon.classList.add('bi-eye');
-            }
-        });
-        
-        // ================= TOGGLE PASSWORD VISIBILITY =================
+        // Toggle password visibility
         function togglePassword(inputId, button) {
             const input = document.getElementById(inputId);
             const icon = button.querySelector('i');
