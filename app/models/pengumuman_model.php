@@ -1,17 +1,21 @@
 <?php
 // PBL8/app/models/pengumuman_model.php
 
-class PengumumanModel {
+class PengumumanModel
+{
     private $db;
-    
-    public function __construct($config) {
+
+    public function __construct($config)
+    {
         $this->db = $config;
     }
-    
-    /**
-     * Get all pengumuman with target information
-     */
-    public function getAll() {
+
+    /* =========================
+       ===== ADMIN SECTION =====
+       ========================= */
+
+    public function getAll()
+    {
         $query = "SELECT 
                     p.pengumuman_id,
                     p.judul,
@@ -21,6 +25,7 @@ class PengumumanModel {
                     p.target_jurusan_id,
                     p.target_prodi_id,
                     p.target_kelas,
+                    p.created_at,
                     k.nama_kategori,
                     j.nama_jurusan,
                     pr.nama_prodi,
@@ -38,25 +43,21 @@ class PengumumanModel {
                   LEFT JOIN kategori k ON p.kategori_id = k.kategori_id
                   LEFT JOIN jurusan j ON p.target_jurusan_id = j.jurusan_id
                   LEFT JOIN prodi pr ON p.target_prodi_id = pr.prodi_id
-                  ORDER BY p.pengumuman_id DESC";
-        
+                  ORDER BY p.created_at DESC";
+
         $result = $this->db->query($query);
-        
-        if (!$result) {
+        if (!$result)
             return [];
-        }
-        
+
         $data = [];
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         return $data;
     }
-    
-    /**
-     * Get pengumuman by ID
-     */
-    public function getById($id) {
+
+    public function getById($id)
+    {
         $query = "SELECT 
                     p.*,
                     k.nama_kategori,
@@ -70,68 +71,53 @@ class PengumumanModel {
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        return $stmt->get_result()->fetch_assoc();
     }
-    
-    /**
-     * Get all kategori
-     */
-    public function getKategori() {
+
+    public function getKategori()
+    {
         $query = "SELECT kategori_id, nama_kategori FROM kategori ORDER BY nama_kategori ASC";
         $result = $this->db->query($query);
-        
-        if (!$result) {
+        if (!$result)
             return [];
-        }
-        
+
         $data = [];
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         return $data;
     }
-    
-    /**
-     * Get all jurusan
-     */
-    public function getAllJurusan() {
+
+    public function getAllJurusan()
+    {
         $query = "SELECT jurusan_id, nama_jurusan FROM jurusan ORDER BY nama_jurusan ASC";
         $result = $this->db->query($query);
-        
-        if (!$result) {
+        if (!$result)
             return [];
-        }
-        
+
         $data = [];
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         return $data;
     }
-    
-    /**
-     * Get all prodi
-     */
-    public function getAllProdi() {
+
+    public function getAllProdi()
+    {
         $query = "SELECT prodi_id, nama_prodi, jurusan_id FROM prodi ORDER BY nama_prodi ASC";
         $result = $this->db->query($query);
-        
-        if (!$result) {
+        if (!$result)
             return [];
-        }
-        
+
         $data = [];
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         return $data;
     }
-    
-    /**
-     * Get kelas by prodi
-     */
-    public function getKelasByProdi($prodi_id) {
+
+    public function getKelasByProdi($prodi_id)
+    {
         $query = "SELECT DISTINCT kelas 
                   FROM mahasiswa 
                   WHERE prodi_id = ? AND kelas IS NOT NULL AND kelas != ''
@@ -140,88 +126,213 @@ class PengumumanModel {
         $stmt->bind_param('i', $prodi_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $data = [];
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         return $data;
     }
-    
-    /**
-     * Create new pengumuman
-     */
-    public function create($judul, $kategori_id, $isi, $targetData) {
+
+    public function create($judul, $kategori_id, $isi, $targetData)
+    {
         $query = "INSERT INTO pengumuman 
                   (judul, kategori_id, isi, target_type, target_jurusan_id, target_prodi_id, target_kelas) 
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+
         $stmt = $this->db->prepare($query);
-        
-        // Handle NULL values untuk target
-        $target_jurusan_id = !empty($targetData['target_jurusan_id']) ? $targetData['target_jurusan_id'] : null;
-        $target_prodi_id = !empty($targetData['target_prodi_id']) ? $targetData['target_prodi_id'] : null;
-        $target_kelas = !empty($targetData['target_kelas']) ? $targetData['target_kelas'] : null;
-        
+
         $stmt->bind_param(
             'sississ',
             $judul,
             $kategori_id,
             $isi,
             $targetData['target_type'],
-            $target_jurusan_id,
-            $target_prodi_id,
-            $target_kelas
+            $targetData['target_jurusan_id'],
+            $targetData['target_prodi_id'],
+            $targetData['target_kelas']
         );
-        
+
         return $stmt->execute();
     }
-    
-    /**
-     * Update pengumuman
-     */
-    public function update($id, $judul, $kategori_id, $isi, $targetData) {
+
+    public function update($id, $judul, $kategori_id, $isi, $targetData)
+    {
         $query = "UPDATE pengumuman 
-                  SET judul = ?, 
-                      kategori_id = ?, 
-                      isi = ?,
-                      target_type = ?,
-                      target_jurusan_id = ?,
-                      target_prodi_id = ?,
-                      target_kelas = ?
+                  SET judul = ?, kategori_id = ?, isi = ?, target_type = ?, 
+                      target_jurusan_id = ?, target_prodi_id = ?, target_kelas = ?
                   WHERE pengumuman_id = ?";
-        
+
         $stmt = $this->db->prepare($query);
-        
-        // Handle NULL values untuk target
-        $target_jurusan_id = !empty($targetData['target_jurusan_id']) ? $targetData['target_jurusan_id'] : null;
-        $target_prodi_id = !empty($targetData['target_prodi_id']) ? $targetData['target_prodi_id'] : null;
-        $target_kelas = !empty($targetData['target_kelas']) ? $targetData['target_kelas'] : null;
-        
+
         $stmt->bind_param(
-            'sississ i',
+            'sississi',
             $judul,
             $kategori_id,
             $isi,
             $targetData['target_type'],
-            $target_jurusan_id,
-            $target_prodi_id,
-            $target_kelas,
+            $targetData['target_jurusan_id'],
+            $targetData['target_prodi_id'],
+            $targetData['target_kelas'],
             $id
         );
-        
+
         return $stmt->execute();
     }
-    
-    /**
-     * Delete pengumuman
-     */
-    public function delete($id) {
+
+    public function delete($id)
+    {
         $query = "DELETE FROM pengumuman WHERE pengumuman_id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $id);
-        
         return $stmt->execute();
     }
+
+    /* =========================
+       ===== USER SECTION ======
+       ========================= */
+
+    public function countPengumuman($kategori = null, $bulan = null, $tahun = null)
+    {
+        $sql = "SELECT COUNT(*) as total FROM pengumuman WHERE 1=1";
+        $params = [];
+        $types = "";
+
+        if ($kategori) {
+            $sql .= " AND kategori_id = ?";
+            $params[] = $kategori;
+            $types .= "i";
+        }
+
+        if ($bulan) {
+            $sql .= " AND MONTH(created_at) = ?";
+            $params[] = $bulan;
+            $types .= "i";
+        }
+
+        if ($tahun) {
+            $sql .= " AND YEAR(created_at) = ?";
+            $params[] = $tahun;
+            $types .= "i";
+        }
+
+        $stmt = $this->db->prepare($sql);
+        if ($params) {
+            $stmt->bind_param($types, ...$params);
+        }
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_assoc()['total'] ?? 0;
+    }
+
+    public function filterPengumuman($kategori, $bulan, $tahun, $limit, $offset)
+    {
+        $sql = "SELECT 
+                    p.pengumuman_id,
+                    p.judul,
+                    p.isi,
+                    p.created_at,
+                    k.nama_kategori
+                FROM pengumuman p
+                LEFT JOIN kategori k ON p.kategori_id = k.kategori_id
+                WHERE 1=1";
+
+        $params = [];
+        $types = "";
+
+        if ($kategori) {
+            $sql .= " AND p.kategori_id = ?";
+            $params[] = $kategori;
+            $types .= "i";
+        }
+
+        if ($bulan) {
+            $sql .= " AND MONTH(p.created_at) = ?";
+            $params[] = $bulan;
+            $types .= "i";
+        }
+
+        if ($tahun) {
+            $sql .= " AND YEAR(p.created_at) = ?";
+            $params[] = $tahun;
+            $types .= "i";
+        }
+
+        $sql .= " ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        $types .= "ii";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        return $data;
+    }
+
+    public function getAvailableYears()
+    {
+        $query = "SELECT DISTINCT YEAR(created_at) AS tahun FROM pengumuman ORDER BY tahun DESC";
+        $result = $this->db->query($query);
+
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        return $data;
+    }
+
+    
+    // Di PBL8/app/models/pengumuman_model.php
+    // Tambahkan method ini di class PengumumanModel
+    public function getEmailMahasiswaByTarget($targetData)
+    {
+        $query = "SELECT DISTINCT m.email, m.nama_lengkap 
+              FROM mahasiswa m
+              WHERE 1=1";
+
+        $params = [];
+        $types = "";
+
+        if ($targetData['target_type'] === 'all') {
+            // Ambil semua email mahasiswa
+            $query .= " AND m.email IS NOT NULL AND m.email != ''";
+        } elseif ($targetData['target_type'] === 'jurusan') {
+            if ($targetData['target_kelas']) {
+                // Jurusan + Prodi + Kelas spesifik
+                $query .= " AND m.jurusan_id = ? AND m.prodi_id = ? AND m.kelas = ?";
+                $params = [$targetData['target_jurusan_id'], $targetData['target_prodi_id'], $targetData['target_kelas']];
+                $types = "iis";
+            } elseif ($targetData['target_prodi_id']) {
+                // Jurusan + Prodi tertentu
+                $query .= " AND m.jurusan_id = ? AND m.prodi_id = ?";
+                $params = [$targetData['target_jurusan_id'], $targetData['target_prodi_id']];
+                $types = "ii";
+            } else {
+                // Jurusan tertentu saja
+                $query .= " AND m.jurusan_id = ?";
+                $params = [$targetData['target_jurusan_id']];
+                $types = "i";
+            }
+        }
+
+        $stmt = $this->db->prepare($query);
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $emails = [];
+        while ($row = $result->fetch_assoc()) {
+            $emails[] = $row;
+        }
+        return $emails;
+    }
 }
-?>
+
