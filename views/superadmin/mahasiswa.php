@@ -20,7 +20,7 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
 }
 
 // Load controller
-require_once __DIR__ . '/../../app/controllers/admin/mahasiswa_controller.php';
+require_once __DIR__ . '/../../app/controllers/superadmin/mahasiswa_controller.php';
 $mahasiswaController = new MahasiswaControllerSuperadmin();
 
 // Handle AJAX requests
@@ -338,6 +338,31 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 justify-content: center;
             }
         }
+
+        main.container {
+            margin-bottom: 100px;
+            /* Atau sesuai jarak yang diinginkan */
+        }
+
+        main.container {
+            margin-bottom: 80px;
+        }
+
+        .table-section {
+            margin-bottom: 30px;
+        }
+
+        /* Memberi jarak antara konten dan footer */
+        main.container {
+            margin-bottom: 120px;
+            /* Sesuaikan jarak sesuai kebutuhan */
+        }
+
+        /* Opsional: jika ingin jarak ekstra pada table-section */
+        .table-section {
+            margin-bottom: 50px;
+            /* memberikan jarak tambahan sebelum footer */
+        }
     </style>
 </head>
 
@@ -455,15 +480,19 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 <div class="modal-body">
                     <form id="formTambahMahasiswa">
                         <input type="hidden" name="action" value="create">
-                        <div class="mb-3"><label class="form-label">Nama Lengkap <span class="text-danger">*</span></label><input type="text"
-                                name="nama_lengkap" class="form-control" required placeholder="Masukkan Nama Lengkap"></div>
-                        <div class="mb-3"><label class="form-label">NIM <span class="text-danger">*</span></label><input type="text" name="nim"
-                                class="form-control" required placeholder="Masukkan NIM"></div>
-                        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" name="username"
+                        <div class="mb-3"><label class="form-label">Nama Lengkap <span
+                                    class="text-danger">*</span></label><input type="text" name="nama_lengkap"
+                                class="form-control" required placeholder="Masukkan Nama Lengkap"></div>
+                        <div class="mb-3"><label class="form-label">NIM <span class="text-danger">*</span></label><input
+                                type="text" name="nim" class="form-control" required placeholder="Masukkan NIM"></div>
+                        <div class="mb-3"><label class="form-label">Username <span
+                                    class="text-danger">*</span></label><input type="text" name="username"
                                 class="form-control" required placeholder="Masukkan Username"></div>
-                        <div class="mb-3"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" name="password"
+                        <div class="mb-3"><label class="form-label">Password <span
+                                    class="text-danger">*</span></label><input type="password" name="password"
                                 class="form-control" required placeholder="Masukkan Password"></div>
-                        <div class="mb-3"><label class="form-label">Prodi <span class="text-danger">*</span></label><input type="text" name="prodi"
+                        <div class="mb-3"><label class="form-label">Prodi <span
+                                    class="text-danger">*</span></label><input type="text" name="prodi"
                                 class="form-control" required placeholder="Masukkan Prodi"></div>
                         <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email"
                                 class="form-control" placeholder="Masukkan Email"></div>
@@ -491,23 +520,28 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     <form id="formEditMahasiswa">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="mahasiswa_id" id="editMahasiswaId">
-                        <div class="mb-3"><label class="form-label">Nama Lengkap <span class="text-danger">*</span></label><input type="text"
-                                name="nama_lengkap" id="editNama" class="form-control" required></div>
-                        <div class="mb-3"><label class="form-label">NIM <span class="text-danger">*</span></label><input type="text" name="nim"
-                                id="editNim" class="form-control" required></div>
-                        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" name="username"
+                        <div class="mb-3"><label class="form-label">Nama Lengkap <span
+                                    class="text-danger">*</span></label><input type="text" name="nama_lengkap"
+                                id="editNama" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">NIM <span class="text-danger">*</span></label><input
+                                type="text" name="nim" id="editNim" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Username <span
+                                    class="text-danger">*</span></label><input type="text" name="username"
                                 id="editUsername" class="form-control" required></div>
                         <div class="mb-3">
-                            <label class="form-label">Password Baru <span class="text-muted">(Kosongkan jika tidak ingin mengubah)</span></label>
+                            <label class="form-label">Password Baru <span class="text-muted">(Kosongkan jika tidak ingin
+                                    mengubah)</span></label>
                             <div class="input-group">
-                                <input type="password" name="password" id="editPassword" class="form-control" placeholder="Masukkan password baru">
+                                <input type="password" name="password" id="editPassword" class="form-control"
+                                    placeholder="Masukkan password baru">
                                 <button class="btn btn-outline-secondary" type="button" id="toggleEditPassword">
                                     <i class="bi bi-eye" id="editPasswordIcon"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="mb-3"><label class="form-label">Prodi <span class="text-danger">*</span></label><input type="text" name="prodi"
-                                id="editProdi" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Prodi <span
+                                    class="text-danger">*</span></label><input type="text" name="prodi" id="editProdi"
+                                class="form-control" required></div>
                         <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email"
                                 id="editEmail" class="form-control"></div>
                         <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat"
@@ -534,7 +568,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         // ================= TAMBAH MAHASISWA =================
-        document.getElementById('formTambahMahasiswa').addEventListener('submit', async function(e) {
+        document.getElementById('formTambahMahasiswa').addEventListener('submit', async function (e) {
             e.preventDefault();
             const btn = document.getElementById('btnTambah');
             const btnText = btn.querySelector('.btn-text');
@@ -568,7 +602,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // ================= EDIT MAHASISWA =================
         document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', async function() {
+            button.addEventListener('click', async function () {
                 const id = this.getAttribute('data-id');
                 try {
                     const formData = new FormData();
@@ -595,7 +629,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
             });
         });
 
-        document.getElementById('formEditMahasiswa').addEventListener('submit', async function(e) {
+        document.getElementById('formEditMahasiswa').addEventListener('submit', async function (e) {
             e.preventDefault();
             const btn = document.getElementById('btnEdit');
             const btnText = btn.querySelector('.btn-text');
@@ -628,7 +662,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // ================= DELETE MAHASISWA =================
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', async function() {
+            button.addEventListener('click', async function () {
                 const id = this.getAttribute('data-id');
                 const nama = this.getAttribute('data-nama');
                 if (confirm(`Apakah Anda yakin ingin menghapus mahasiswa "${nama}"?`)) {
@@ -655,7 +689,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         });
 
         // ================= TOGGLE PASSWORD VISIBILITY =================
-        document.getElementById('toggleEditPassword').addEventListener('click', function() {
+        document.getElementById('toggleEditPassword').addEventListener('click', function () {
             const passwordInput = document.getElementById('editPassword');
             const passwordIcon = document.getElementById('editPasswordIcon');
 

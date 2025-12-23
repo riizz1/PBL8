@@ -1,17 +1,24 @@
 <?php
 // PBL8/app/models/mahasiswa_model.php
 
-class MahasiswaModel {
+class MahasiswaModel
+{
     private $db;
-    
-    public function __construct($config) {
-        $this->db = $config;
+
+    public function __construct()
+    {
+        // Buat koneksi ke database langsung
+        $this->db = new mysqli('localhost', 'root', '', 'db_pbl8'); // Ganti sesuai DB kamu
+        if ($this->db->connect_error) {
+            die("Koneksi gagal: " . $this->db->connect_error);
+        }
     }
-    
+
     /**
      * Get all mahasiswa with jurusan and prodi
      */
-    public function getAll() {
+    public function getAll()
+    {
         $query = "SELECT 
                     m.mahasiswa_id,
                     m.nim,
@@ -21,71 +28,68 @@ class MahasiswaModel {
                     m.alamat,
                     m.jurusan_id,
                     m.prodi_id,
-                    j.nama_jurusan,
-                    p.nama_prodi,
+                    j.nama_jurusan AS jurusan,
+                    p.nama_prodi AS prodi,
                     m.created_at
                   FROM mahasiswa m
                   LEFT JOIN jurusan j ON m.jurusan_id = j.jurusan_id
                   LEFT JOIN prodi p ON m.prodi_id = p.prodi_id
                   ORDER BY m.nama_lengkap ASC";
-        
+
         $result = $this->db->query($query);
-        
-        if (!$result) {
+        if (!$result)
             return [];
-        }
-        
+
         $data = [];
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         return $data;
     }
-    
+
     /**
      * Get all jurusan
      */
-    public function getAllJurusan() {
-        $query = "SELECT jurusan_id, nama_jurusan FROM jurusan ORDER BY nama_jurusan ASC";
+    public function getAllJurusan()
+    {
+        $query = "SELECT jurusan_id, nama_jurusan AS jurusan FROM jurusan ORDER BY nama_jurusan ASC";
         $result = $this->db->query($query);
-        
-        if (!$result) {
+        if (!$result)
             return [];
-        }
-        
+
         $data = [];
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         return $data;
     }
-    
+
     /**
      * Get all prodi with jurusan relation
      */
-    public function getAllProdi() {
-        $query = "SELECT prodi_id, nama_prodi, jurusan_id FROM prodi ORDER BY nama_prodi ASC";
+    public function getAllProdi()
+    {
+        $query = "SELECT prodi_id, nama_prodi AS prodi, jurusan_id FROM prodi ORDER BY nama_prodi ASC";
         $result = $this->db->query($query);
-        
-        if (!$result) {
+        if (!$result)
             return [];
-        }
-        
+
         $data = [];
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         return $data;
     }
-    
+
     /**
      * Get mahasiswa by ID
      */
-    public function getById($id) {
+    public function getById($id)
+    {
         $query = "SELECT 
                     m.*,
-                    j.nama_jurusan,
-                    p.nama_prodi
+                    j.nama_jurusan AS jurusan,
+                    p.nama_prodi AS prodi
                   FROM mahasiswa m
                   LEFT JOIN jurusan j ON m.jurusan_id = j.jurusan_id
                   LEFT JOIN prodi p ON m.prodi_id = p.prodi_id
@@ -96,19 +100,18 @@ class MahasiswaModel {
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
-    
+
     /**
      * Create new mahasiswa
      */
-    public function create($data) {
+    public function create($data)
+    {
         $query = "INSERT INTO mahasiswa (nim, nama_lengkap, username, password, jurusan_id, prodi_id, kelas, email, alamat) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
+
         $stmt = $this->db->prepare($query);
-        
-        // Hash password
         $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
-        
+
         $stmt->bind_param(
             'ssssiisss',
             $data['nim'],
@@ -121,7 +124,7 @@ class MahasiswaModel {
             $data['email'],
             $data['alamat']
         );
-        
+
         if ($stmt->execute()) {
             return [
                 'success' => true,
@@ -135,11 +138,12 @@ class MahasiswaModel {
             ];
         }
     }
-    
+
     /**
      * Update mahasiswa
      */
-    public function update($id, $data) {
+    public function update($id, $data)
+    {
         $query = "UPDATE mahasiswa 
                   SET nim = ?, 
                       nama_lengkap = ?, 
@@ -149,7 +153,7 @@ class MahasiswaModel {
                       email = ?, 
                       alamat = ?
                   WHERE mahasiswa_id = ?";
-        
+
         $stmt = $this->db->prepare($query);
         $stmt->bind_param(
             'ssiisssi',
@@ -162,7 +166,7 @@ class MahasiswaModel {
             $data['alamat'],
             $id
         );
-        
+
         if ($stmt->execute()) {
             return [
                 'success' => true,
@@ -175,15 +179,16 @@ class MahasiswaModel {
             ];
         }
     }
-    
+
     /**
      * Delete mahasiswa
      */
-    public function delete($id) {
+    public function delete($id)
+    {
         $query = "DELETE FROM mahasiswa WHERE mahasiswa_id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $id);
-        
+
         if ($stmt->execute()) {
             return [
                 'success' => true,
@@ -196,11 +201,12 @@ class MahasiswaModel {
             ];
         }
     }
-    
+
     /**
      * Check if NIM already exists
      */
-    public function nimExists($nim, $excludeId = null) {
+    public function nimExists($nim, $excludeId = null)
+    {
         if ($excludeId) {
             $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE nim = ? AND mahasiswa_id != ?";
             $stmt = $this->db->prepare($query);
@@ -210,17 +216,17 @@ class MahasiswaModel {
             $stmt = $this->db->prepare($query);
             $stmt->bind_param('s', $nim);
         }
-        
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
         return $row['count'] > 0;
     }
-    
+
     /**
      * Check if username already exists
      */
-    public function usernameExists($username, $excludeId = null) {
+    public function usernameExists($username, $excludeId = null)
+    {
         if ($excludeId) {
             $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE username = ? AND mahasiswa_id != ?";
             $stmt = $this->db->prepare($query);
@@ -230,21 +236,20 @@ class MahasiswaModel {
             $stmt = $this->db->prepare($query);
             $stmt->bind_param('s', $username);
         }
-        
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
         return $row['count'] > 0;
     }
-    
+
     /**
      * Check if email already exists
      */
-    public function emailExists($email, $excludeId = null) {
-        if (empty($email)) {
+    public function emailExists($email, $excludeId = null)
+    {
+        if (empty($email))
             return false;
-        }
-        
+
         if ($excludeId) {
             $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE email = ? AND mahasiswa_id != ?";
             $stmt = $this->db->prepare($query);
@@ -254,7 +259,6 @@ class MahasiswaModel {
             $stmt = $this->db->prepare($query);
             $stmt->bind_param('s', $email);
         }
-        
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();

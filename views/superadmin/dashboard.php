@@ -149,6 +149,18 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
         .activity-item:hover {
             background-color: #e9ecef;
         }
+
+        /* Memberi jarak antara konten dan footer */
+        .container-fluid {
+            margin-bottom: 100px;
+            /* Sesuaikan jarak sesuai kebutuhan */
+        }
+
+        /* Alternatif: beri padding-bottom pada body */
+        body {
+            padding-bottom: 100px;
+            /* Ruang untuk footer */
+        }
     </style>
 </head>
 

@@ -60,7 +60,7 @@ INSERT INTO `admin` (`user_id`, `username`, `nama_lengkap`, `nidn`, `email`, `no
 CREATE TABLE `jurusan` (
   `jurusan_id` int NOT NULL,
   `nama_jurusan` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `jurusan`
@@ -162,7 +162,7 @@ CREATE TABLE `prodi` (
   `prodi_id` int NOT NULL,
   `nama_prodi` varchar(100) NOT NULL,
   `jurusan_id` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `prodi`
