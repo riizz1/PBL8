@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 17, 2025 at 09:28 AM
+-- Generation Time: Dec 23, 2025 at 09:28 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.26
 
@@ -30,6 +30,14 @@ SET time_zone = "+00:00";
 CREATE TABLE `admin` (
   `user_id` int NOT NULL,
   `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nama_lengkap` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `nidn` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `no_telepon` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `alamat` text COLLATE utf8mb4_general_ci,
+  `jenis_kelamin` enum('L','P') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `jabatan` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status_aktif` enum('aktif','nonaktif') COLLATE utf8mb4_general_ci DEFAULT 'aktif',
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `role_id` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
@@ -39,9 +47,9 @@ CREATE TABLE `admin` (
 -- Dumping data for table `admin`
 --
 
-INSERT INTO `admin` (`user_id`, `username`, `password`, `role_id`, `created_at`) VALUES
-(1, 'superadmin', '$2y$10$qaxXzC496xa93Pr2mB6s5ee7toNS4CUtv2tXDRnxlNeXlxN7e4I/y', 1, '2025-12-08 07:05:21'),
-(2, 'admin', '$2y$10$mMi35bIhnfJF9V7rC3HVC.4bX7rIYBjwD1Gi6fdW5Z79QQFgZKKxq', 2, '2025-12-17 05:56:29');
+INSERT INTO `admin` (`user_id`, `username`, `nama_lengkap`, `nidn`, `email`, `no_telepon`, `alamat`, `jenis_kelamin`, `jabatan`, `status_aktif`, `password`, `role_id`, `created_at`) VALUES
+(1, 'superadmin', '', NULL, '', NULL, NULL, NULL, NULL, 'aktif', '$2y$10$qaxXzC496xa93Pr2mB6s5ee7toNS4CUtv2tXDRnxlNeXlxN7e4I/y', 1, '2025-12-08 07:05:21'),
+(2, 'admin', '', NULL, '', NULL, NULL, NULL, NULL, 'aktif', '$2y$10$mMi35bIhnfJF9V7rC3HVC.4bX7rIYBjwD1Gi6fdW5Z79QQFgZKKxq', 2, '2025-12-17 05:56:29');
 
 -- --------------------------------------------------------
 
@@ -81,9 +89,9 @@ CREATE TABLE `kategori` (
 --
 
 INSERT INTO `kategori` (`kategori_id`, `nama_kategori`, `deskripsi`) VALUES
-(3, 'tes', ''),
+(3, 'beasiswa', 'kategori ini berisi pengumuman khusus beasiswa'),
 (4, '213', ''),
-(5, 'tess', '');
+(5, 'ujian', 'kategori ini berisi tentang ujian');
 
 -- --------------------------------------------------------
 
@@ -99,7 +107,7 @@ CREATE TABLE `mahasiswa` (
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `jurusan_id` int DEFAULT NULL,
   `prodi_id` int DEFAULT NULL,
-  `kelas` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `kelas` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `alamat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
@@ -111,7 +119,8 @@ CREATE TABLE `mahasiswa` (
 
 INSERT INTO `mahasiswa` (`mahasiswa_id`, `nim`, `nama_lengkap`, `username`, `password`, `jurusan_id`, `prodi_id`, `kelas`, `email`, `alamat`, `created_at`) VALUES
 (19, '', 'user', 'user', '$2y$10$YCx2hsYuqH5umcd8KL805OhYGWCK/7qgUB65zRlYMrCoprlkn0T6.', NULL, NULL, '', NULL, NULL, '2025-12-16 07:57:19'),
-(20, '123', 'fariz', 'fariz', '$2y$10$Qcbns7HHZr79nDefrlytpOAR/M96uugOrqomeEoGO81Z8wsNm5uw2', 4, 5, 'IF1A-Pagi', 'fariz@gmail.com', 'fariz123', '2025-12-17 07:59:35');
+(23, '3312501027', 'Fariz Zikri Pohan', 'fariz', '$2y$10$ggm/WUCvTSjyJikIM3JW6umEb5RzzAVMcX3VJYU9bfJd4m88f12oe', 4, 5, 'IF1A-Pagi', 'farizpohan260107@gmail.com', 'Batam Center', '2025-12-23 07:59:40'),
+(24, '33125010277', 'Fariz Zikri Pohan', 'farizz', '$2y$10$owgo4lnSmHmKKFM.p68FLucHWdPpCNTARhOBjeDq8xaBg1BftNaKq', 4, 10, 'TRPL1A-Pagi', 'farizzp44@gmail.com', 'Batam Center', '2025-12-23 08:00:39');
 
 -- --------------------------------------------------------
 
@@ -123,10 +132,10 @@ CREATE TABLE `pengumuman` (
   `pengumuman_id` int NOT NULL,
   `judul` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `isi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `target_type` enum('all','jurusan','prodi','kelas') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'all',
+  `target_type` enum('all','jurusan','prodi','kelas') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'all',
   `target_jurusan_id` int DEFAULT NULL,
   `target_prodi_id` int DEFAULT NULL,
-  `target_kelas` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `target_kelas` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `kategori_id` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -136,12 +145,12 @@ CREATE TABLE `pengumuman` (
 --
 
 INSERT INTO `pengumuman` (`pengumuman_id`, `judul`, `isi`, `target_type`, `target_jurusan_id`, `target_prodi_id`, `target_kelas`, `kategori_id`, `created_at`) VALUES
-(17, '123', 'ISI', 'all', NULL, NULL, NULL, 3, '2025-12-17 07:56:51'),
 (18, '123', 'isi', 'jurusan', 4, 5, NULL, 3, '2025-12-17 07:57:21'),
 (19, '123', 'tes pengumuman', 'jurusan', 4, 5, 'IF1A-Pagi', 3, '2025-12-17 08:01:42'),
 (20, 'judul', 'isi', 'all', NULL, NULL, NULL, 4, '2025-12-17 08:07:33'),
-(21, 'judul2', 'isi', 'jurusan', 5, NULL, NULL, 3, '2025-12-17 08:10:47'),
-(22, 'judul3', 'isi pengumuman', 'jurusan', 4, 6, NULL, 3, '2025-12-17 08:11:59');
+(21, 'judul2', 'isi', 'jurusan', 7, NULL, NULL, 3, '2025-12-17 08:10:47'),
+(22, 'jadwal ujian ATS', 'isi pengumuman', 'jurusan', 4, NULL, NULL, 3, '2025-12-17 08:11:59'),
+(23, 'jadwal ujian ATS', 'jadwal ujian untuk jurusan informatika akan dikeluarkan pada bulan januari 2026', 'jurusan', 4, 5, NULL, 3, '2025-12-23 08:12:02');
 
 -- --------------------------------------------------------
 
@@ -274,7 +283,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `jurusan`
@@ -292,13 +301,13 @@ ALTER TABLE `kategori`
 -- AUTO_INCREMENT for table `mahasiswa`
 --
 ALTER TABLE `mahasiswa`
-  MODIFY `mahasiswa_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `mahasiswa_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `pengumuman`
 --
 ALTER TABLE `pengumuman`
-  MODIFY `pengumuman_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `pengumuman_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `prodi`
