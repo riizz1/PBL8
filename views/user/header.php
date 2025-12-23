@@ -1,7 +1,25 @@
 <?php
-// Pastikan session sudah dimulai
+// Cek apakah session sudah dimulai, jika belum baru start
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
+}
+
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+  echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+  exit();
+}
+
+// Proteksi role - hanya dosen yang bisa akses
+if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'mahasiswa') {
+  echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk mahasiswa.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+  exit();
 }
 
 // Ambil nama dari session
@@ -64,20 +82,25 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
       transition: transform 0.3s ease;
     }
 
+    /* Ganti bagian ini di ketiga file header */
+
     .nav-link:hover {
-      color: #667eea !important;
+      color: #1a1a1aff !important;
+      /* Black smoke */
       transform: translateY(-2px);
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba(26, 26, 26, 0.1);
     }
 
     .nav-link:hover svg {
       transform: scale(1.1);
     }
 
+    /* Active state */
     .nav-link.active {
       color: #fff !important;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #1acaffff 0%, #1acaffff 100%);
+      /* Black smoke gradient */
+      box-shadow: 0 4px 12px rgba(26, 26, 26, 0.4);
       position: relative;
     }
 
@@ -283,13 +306,13 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
     // Toggle dropdown manual
     const profileLink = document.getElementById('profileDropdown');
     const profileDropdown = profileLink.nextElementSibling;
-    profileLink.addEventListener('click', function (e) {
+    profileLink.addEventListener('click', function(e) {
       e.preventDefault();
       profileDropdown.classList.toggle('show');
     });
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function(e) {
       if (!profileLink.contains(e.target) && !profileDropdown.contains(e.target)) {
         profileDropdown.classList.remove('show');
       }

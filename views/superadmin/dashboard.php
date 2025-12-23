@@ -1,9 +1,21 @@
 <?php
 session_start();
 
-// Cek hanya superadmin yang bisa akses
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+    echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+    exit();
+}
+
+// Proteksi role - hanya mahasiswa yang bisa akses
 if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
-    header("Location: ../views/auth/login.php");
+    echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk superadmin.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
     exit();
 }
 
@@ -29,6 +41,7 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,90 +53,91 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        /* ================= DASHBOARD ================= */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
         }
-        
+
         .stat-card {
             border-radius: 10px;
             padding: 20px;
             color: white;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
-        
+
         .stat-card i {
             font-size: 2.5rem;
             opacity: 0.8;
         }
-        
+
         .stat-card h3 {
             font-size: 2rem;
             font-weight: bold;
             margin: 10px 0 5px 0;
         }
-        
+
         .stat-card p {
             margin: 0;
             opacity: 0.9;
         }
-        
+
         .bg-gradient-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
+
         .bg-gradient-success {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
-        
+
         .bg-gradient-info {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
-        
+
         .bg-gradient-warning {
             background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
         }
-        
+
         .card {
             border: none;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .card-header {
             background-color: white;
             border-bottom: 2px solid #f0f0f0;
             font-weight: 600;
             color: #333;
         }
-        
+
         .table thead th {
             background-color: #667eea;
             color: white;
             border: none;
         }
-        
+
         .badge-custom {
             padding: 5px 10px;
             border-radius: 5px;
             font-size: 0.85rem;
         }
-        
+
         .quick-action-btn {
             border-radius: 8px;
             padding: 15px;
             transition: all 0.3s ease;
         }
-        
+
         .quick-action-btn:hover {
             transform: scale(1.05);
         }
-        
+
         .activity-item {
             padding: 10px;
             border-left: 3px solid #667eea;
@@ -131,12 +145,13 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
             background-color: #f8f9fa;
             border-radius: 5px;
         }
-        
+
         .activity-item:hover {
             background-color: #e9ecef;
         }
     </style>
 </head>
+
 <body>
     <?php include('header.php'); ?>
 
@@ -166,7 +181,7 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-xl-3 col-md-6">
                 <div class="stat-card bg-gradient-success">
                     <div class="d-flex justify-content-between align-items-center">
@@ -178,7 +193,7 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-xl-3 col-md-6">
                 <div class="stat-card bg-gradient-info">
                     <div class="d-flex justify-content-between align-items-center">
@@ -190,7 +205,7 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-xl-3 col-md-6">
                 <div class="stat-card bg-gradient-warning">
                     <div class="d-flex justify-content-between align-items-center">
@@ -252,7 +267,7 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
                     </div>
                 </div>
             </div>
-            
+
             <!-- Trend Chart -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
@@ -285,7 +300,7 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php if(empty($categoryData)): ?>
+                                    <?php if (empty($categoryData)): ?>
                                         <tr>
                                             <td colspan="3" class="text-center text-muted">
                                                 <i class="fas fa-inbox fa-2x mb-2"></i>
@@ -293,7 +308,7 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
                                             </td>
                                         </tr>
                                     <?php else: ?>
-                                        <?php foreach($categoryData as $index => $category): ?>
+                                        <?php foreach ($categoryData as $index => $category): ?>
                                             <tr>
                                                 <td><?= $index + 1 ?></td>
                                                 <td>
@@ -323,13 +338,13 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
                         <a href="kelola_pengumuman.php" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
                     </div>
                     <div class="card-body">
-                        <?php if(empty($recentAnnouncements)): ?>
+                        <?php if (empty($recentAnnouncements)): ?>
                             <div class="text-center text-muted py-4">
                                 <i class="fas fa-inbox fa-3x mb-3"></i>
                                 <p class="mb-0">Belum ada pengumuman</p>
                             </div>
                         <?php else: ?>
-                            <?php foreach($recentAnnouncements as $announcement): ?>
+                            <?php foreach ($recentAnnouncements as $announcement): ?>
                                 <div class="activity-item">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="flex-grow-1">
@@ -355,14 +370,14 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
                         <i class="fas fa-users me-2"></i>User Terbaru
                     </div>
                     <div class="card-body">
-                        <?php if(empty($recentUsers)): ?>
+                        <?php if (empty($recentUsers)): ?>
                             <div class="text-center text-muted py-3">
                                 <i class="fas fa-user-slash fa-2x mb-2"></i>
                                 <p class="mb-0">Belum ada user baru</p>
                             </div>
                         <?php else: ?>
                             <div class="list-group list-group-flush">
-                                <?php foreach($recentUsers as $user): ?>
+                                <?php foreach ($recentUsers as $user): ?>
                                     <div class="list-group-item px-0">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div>
@@ -390,7 +405,7 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Chart.js Implementation -->
     <script>
         // Category Pie Chart
@@ -470,4 +485,5 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
         });
     </script>
 </body>
+
 </html>

@@ -1,3 +1,27 @@
+<?php
+// Cek apakah session sudah dimulai, jika belum baru start
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+  echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+  exit();
+}
+
+// Proteksi role - hanya dosen yang bisa akses
+if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
+  echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk superadmin.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+  exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,21 +81,23 @@
       transition: transform 0.3s ease;
     }
 
+    /* Ganti bagian ini di ketiga file header */
+
     .nav-link:hover {
-      color: #667eea !important;
+      color: #1a1a1a !important;
+      /* Black smoke */
       transform: translateY(-2px);
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba(26, 26, 26, 0.1);
     }
 
     .nav-link:hover svg {
       transform: scale(1.1);
     }
 
-    /* Active state */
     .nav-link.active {
       color: #fff !important;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #51c8e9 0%, #3ab0d9 100%);
+      box-shadow: 0 4px 12px rgba(81, 200, 233, 0.4);
       position: relative;
     }
 
@@ -139,36 +165,7 @@
       transform: translateY(0);
     }
 
-    /* Bell icon */
-    .nav-link[href="#"]:has([data-lucide="bell"]) {
-      position: relative;
-    }
-
-    .nav-link[href="#"]:has([data-lucide="bell"])::after {
-      content: '';
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 8px;
-      height: 8px;
-      background: #dc3545;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: 0.5;
-        transform: scale(1.2);
-      }
-    }
+    
 
     /* Profile dropdown icon */
     #profileDropdown {
@@ -285,9 +282,7 @@
 
         <!-- Icon kanan -->
         <ul class="navbar-nav align-items-center right-icons">
-          <li class="nav-item">
-            <a class="nav-link" href="#" title="Notifikasi"><i data-lucide="bell"></i></a>
-          </li>
+         
 
           <!-- Dropdown Profile -->
           <li class="nav-item dropdown">
@@ -311,12 +306,12 @@
     const profileLink = document.getElementById('profileDropdown');
     const dropdownMenu = profileLink.nextElementSibling;
 
-    profileLink.addEventListener('click', function (e) {
+    profileLink.addEventListener('click', function(e) {
       e.preventDefault();
       dropdownMenu.classList.toggle('show');
     });
 
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function(e) {
       if (!profileLink.contains(e.target) && !dropdownMenu.contains(e.target)) {
         dropdownMenu.classList.remove('show');
       }

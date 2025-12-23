@@ -20,28 +20,35 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'mahasiswa') {
 }
 
 require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
-$controller = new PengumumanControllerUser();
-$data = $controller->index();
+ $controller = new PengumumanControllerUser();
+ $data = $controller->index();
 
+// Ambil data mentah dari controller (bukan yang sudah dipaginasi oleh controller lama)
+// Menggunakan key yang sama seperti di admin
+ $allPengumuman = $data['pengumuman'] ?? [];
+ $kategoriList = $data['kategori'] ?? [];
+ $bulanList = $data['bulanList'] ?? [];
+ $tahunList = $data['tahunList'] ?? [];
 
-require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
-$controller = new PengumumanControllerUser();
-$data = $controller->index();
+ $kategoriDipilih = $data['kategoriDipilih'] ?? null;
+ $bulanDipilih = $data['bulanDipilih'] ?? null;
+ $tahunDipilih = $data['tahunDipilih'] ?? null;
 
-$pengumuman = $data['pengumuman'] ?? [];
-$kategoriList = $data['kategori'] ?? [];
-$bulanList = $data['bulanList'] ?? [];
-$tahunList = $data['tahunList'] ?? [];
+// ================= PAGINATION LOGIC (PERSIS ADMIN) =================
+ $itemsPerPage = 10;
+ $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+ $offset = ($currentPage - 1) * $itemsPerPage;
 
-$kategoriDipilih = $data['kategoriDipilih'] ?? null;
-$bulanDipilih = $data['bulanDipilih'] ?? null;
-$tahunDipilih = $data['tahunDipilih'] ?? null;
+ $totalData = count($allPengumuman);
+ $totalPages = ceil($totalData / $itemsPerPage);
 
-$currentPage = $data['currentPage'] ?? 1;
-$totalPages = $data['totalPages'] ?? 1;
-$totalData = $data['totalData'] ?? 0;
-$startData = $data['startData'] ?? 0;
-$endData = $data['endData'] ?? 0;
+// Slice data untuk current page
+ $pengumuman = array_slice($allPengumuman, $offset, $itemsPerPage);
+
+// Calculate display range
+ $startData = $totalData > 0 ? $offset + 1 : 0;
+ $endData = min($offset + $itemsPerPage, $totalData);
+// =========================================================================
 ?>
 
 <!DOCTYPE html>
@@ -53,7 +60,7 @@ $endData = $data['endData'] ?? 0;
     <title>Mahasiswa | Pengumuman</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* FILTER SECTION */
+        /* ================= PENGUMUMAN ================= */
         .filter-section {
             background: white;
             padding: 25px;
@@ -122,11 +129,11 @@ $endData = $data['endData'] ?? 0;
 
         .filter-select:focus {
             outline: none;
-            border-color: #2193b0;
+            border-color: #51c8e9;
         }
 
         .search-btn {
-            background: #2193b0;
+            background: #51c8e9;
             color: white;
             border: none;
             padding: 10px 30px;
@@ -138,7 +145,7 @@ $endData = $data['endData'] ?? 0;
         }
 
         .search-btn:hover {
-            background: #1a7a94;
+            background: #3ab0d9;
         }
 
         /* TABLE SECTION */
@@ -178,7 +185,7 @@ $endData = $data['endData'] ?? 0;
         }
 
         .pengumuman-table thead {
-            background: #6c757d;
+            background: #51c8e9;
         }
 
         .pengumuman-table thead th {
@@ -203,7 +210,7 @@ $endData = $data['endData'] ?? 0;
         }
 
         .pengumuman-table tbody tr:hover {
-            background: #f8f9fa;
+            background: #e8f8fd;
         }
 
         .pengumuman-table tbody tr:nth-child(even) {
@@ -211,7 +218,7 @@ $endData = $data['endData'] ?? 0;
         }
 
         .pengumuman-table tbody tr:nth-child(even):hover {
-            background-color: #f0f0f0;
+            background-color: #e8f8fd;
         }
 
         .badge {
@@ -251,7 +258,7 @@ $endData = $data['endData'] ?? 0;
 
         /* ACTION BUTTON */
         .action-btn {
-            background: #2193b0;
+            background: #51c8e9;
             color: white;
             border: none;
             padding: 7px 15px;
@@ -262,11 +269,11 @@ $endData = $data['endData'] ?? 0;
         }
 
         .action-btn:hover {
-            background: #1a7a94;
+            background: #3ab0d9;
             transform: scale(1.04);
         }
 
-        /* PAGINATION */
+        /* PAGINATION (COPY PASTE DARI ADMIN) */
         .pagination {
             padding: 20px 25px;
             display: flex;
@@ -278,6 +285,7 @@ $endData = $data['endData'] ?? 0;
         .page-info {
             font-size: 14px;
             color: #777;
+            margin-left: 10px;
         }
 
         .page-buttons {
@@ -298,9 +306,10 @@ $endData = $data['endData'] ?? 0;
         }
 
         .page-btn:hover:not(:disabled) {
-            background: #2193b0;
+            background: #51c8e9;
+            /* Warna biru cerah */
             color: white;
-            border-color: #2193b0;
+            border-color: #51c8e9;
         }
 
         .page-btn:disabled {
@@ -309,9 +318,10 @@ $endData = $data['endData'] ?? 0;
         }
 
         .page-btn.active {
-            background: #2193b0;
+            background: #51c8e9;
+            /* Warna biru cerah */
             color: white;
-            border-color: #2193b0;
+            border-color: #51c8e9;
         }
 
         .page-dots {
@@ -369,7 +379,7 @@ $endData = $data['endData'] ?? 0;
         }
 
         .modal-header {
-            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            background: linear-gradient(135deg, #51c8e9 0%, #3ab0d9 100%);
             padding: 25px 30px;
             color: white;
             border-radius: 12px 12px 0 0;
@@ -406,7 +416,7 @@ $endData = $data['endData'] ?? 0;
             font-size: 12px;
             font-weight: 600;
             background: white;
-            color: #2193b0;
+            color: #51c8e9;
         }
 
         .close-modal {
@@ -457,7 +467,7 @@ $endData = $data['endData'] ?? 0;
 
         .modal-divider {
             height: 2px;
-            background: linear-gradient(to right, #2193b0, transparent);
+            background: linear-gradient(to right, #51c8e9, transparent);
             margin: 25px 0;
         }
 
@@ -494,7 +504,7 @@ $endData = $data['endData'] ?? 0;
 
         .spinner {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #2193b0;
+            border-top: 3px solid #51c8e9;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -542,6 +552,16 @@ $endData = $data['endData'] ?? 0;
             .modal-meta {
                 flex-direction: column;
                 gap: 10px;
+            }
+            
+            .pagination {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .page-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
     </style>
@@ -656,8 +676,8 @@ $endData = $data['endData'] ?? 0;
                 </table>
             </div>
 
-            <!-- PAGINATION -->
-            <?php if ($totalPages > 1): ?>
+            <!-- PAGINATION (MENGGUNAKAN LOGIKA PHP DARI ADMIN) -->
+            <?php if ($totalData > 0): ?>
                 <div class="pagination">
                     <div class="page-info">
                         Halaman <?= $currentPage; ?> dari <?= $totalPages; ?>
@@ -666,10 +686,7 @@ $endData = $data['endData'] ?? 0;
                     <div class="page-buttons">
                         <!-- Previous Button -->
                         <?php if ($currentPage > 1): ?>
-                            <a href="?kategori=<?= urlencode($kategoriDipilih); ?>&bulan=<?= $bulanDipilih; ?>&tahun=<?= $tahunDipilih; ?>&page=<?= $currentPage - 1; ?>"
-                                class="page-btn">
-                                ← Sebelumnya
-                            </a>
+                            <a href="?kategori=<?= urlencode($kategoriDipilih); ?>&bulan=<?= $bulanDipilih; ?>&tahun=<?= $tahunDipilih; ?>&page=<?= $currentPage - 1; ?>" class="page-btn">← Sebelumnya</a>
                         <?php else: ?>
                             <button class="page-btn" disabled>← Sebelumnya</button>
                         <?php endif; ?>
@@ -700,10 +717,7 @@ $endData = $data['endData'] ?? 0;
 
                         <!-- Next Button -->
                         <?php if ($currentPage < $totalPages): ?>
-                            <a href="?kategori=<?= urlencode($kategoriDipilih); ?>&bulan=<?= $bulanDipilih; ?>&tahun=<?= $tahunDipilih; ?>&page=<?= $currentPage + 1; ?>"
-                                class="page-btn">
-                                Selanjutnya →
-                            </a>
+                            <a href="?kategori=<?= urlencode($kategoriDipilih); ?>&bulan=<?= $bulanDipilih; ?>&tahun=<?= $tahunDipilih; ?>&page=<?= $currentPage + 1; ?>" class="page-btn">Selanjutnya →</a>
                         <?php else: ?>
                             <button class="page-btn" disabled>Selanjutnya →</button>
                         <?php endif; ?>

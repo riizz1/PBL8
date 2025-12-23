@@ -142,8 +142,11 @@ class PengumumanModel
 
         $stmt = $this->db->prepare($query);
 
+        // FIX: Perbaikan tipe data binding
+        // target_kelas di database adalah varchar, gunakan 's'. 
+        // Jika null, bind_param tetap aman.
         $stmt->bind_param(
-            'sississ',
+            'sisssss', // s(string), i(int), s(string), s(string), s(int/null), s(int/null), s(string/null)
             $judul,
             $kategori_id,
             $isi,
@@ -165,8 +168,9 @@ class PengumumanModel
 
         $stmt = $this->db->prepare($query);
 
+        // FIX: Perbaikan tipe data binding
         $stmt->bind_param(
-            'sississi',
+            'sisssssi',
             $judul,
             $kategori_id,
             $isi,
@@ -287,9 +291,7 @@ class PengumumanModel
         return $data;
     }
 
-    
-    // Di PBL8/app/models/pengumuman_model.php
-    // Tambahkan method ini di class PengumumanModel
+    // Method untuk mendapatkan email mahasiswa berdasarkan target pengumuman
     public function getEmailMahasiswaByTarget($targetData)
     {
         $query = "SELECT DISTINCT m.email, m.nama_lengkap 
@@ -303,12 +305,12 @@ class PengumumanModel
             // Ambil semua email mahasiswa
             $query .= " AND m.email IS NOT NULL AND m.email != ''";
         } elseif ($targetData['target_type'] === 'jurusan') {
-            if ($targetData['target_kelas']) {
+            if (!empty($targetData['target_kelas'])) {
                 // Jurusan + Prodi + Kelas spesifik
                 $query .= " AND m.jurusan_id = ? AND m.prodi_id = ? AND m.kelas = ?";
                 $params = [$targetData['target_jurusan_id'], $targetData['target_prodi_id'], $targetData['target_kelas']];
                 $types = "iis";
-            } elseif ($targetData['target_prodi_id']) {
+            } elseif (!empty($targetData['target_prodi_id'])) {
                 // Jurusan + Prodi tertentu
                 $query .= " AND m.jurusan_id = ? AND m.prodi_id = ?";
                 $params = [$targetData['target_jurusan_id'], $targetData['target_prodi_id']];
@@ -319,6 +321,23 @@ class PengumumanModel
                 $params = [$targetData['target_jurusan_id']];
                 $types = "i";
             }
+        } elseif ($targetData['target_type'] === 'prodi') {
+            // Logika khusus jika target type hanya prodi (misal select prodi tapi jurusan null)
+             if (!empty($targetData['target_kelas'])) {
+                $query .= " AND m.prodi_id = ? AND m.kelas = ?";
+                $params = [$targetData['target_prodi_id'], $targetData['target_kelas']];
+                $types = "is";
+            } else {
+                $query .= " AND m.prodi_id = ?";
+                $params = [$targetData['target_prodi_id']];
+                $types = "i";
+            }
+        } elseif ($targetData['target_type'] === 'kelas') {
+             // Logika khusus jika target type hanya kelas
+             $query .= " AND m.prodi_id = ? AND m.kelas = ?";
+             // Note: Biasanya kelas butuh prodi context, jadi pakai prodi_id
+             $params = [$targetData['target_prodi_id'], $targetData['target_kelas']];
+             $types = "is";
         }
 
         $stmt = $this->db->prepare($query);
@@ -335,4 +354,3 @@ class PengumumanModel
         return $emails;
     }
 }
-

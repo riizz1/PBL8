@@ -1,7 +1,7 @@
 <?php
 // PBL8/app/controllers/admin/MahasiswaController.php
 
-class MahasiswaController {
+class MahasiswaControllerAdmin {
     private $mahasiswaModel;
     
     public function __construct() {

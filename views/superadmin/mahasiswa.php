@@ -1,15 +1,27 @@
 <?php
 session_start();
 
-// Cek login dan role
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+    echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+    exit();
+}
+
+// Proteksi role - hanya mahasiswa yang bisa akses
 if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
-    header("Location: ../auth/login.php");
+    echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk superadmin.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
     exit();
 }
 
 // Load controller
 require_once __DIR__ . '/../../app/controllers/admin/mahasiswa_controller.php';
-$mahasiswaController = new MahasiswaController();
+$mahasiswaController = new MahasiswaControllerSuperadmin();
 
 // Handle AJAX requests
 if (isset($_POST['action'])) {
@@ -63,7 +75,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        /* ================= TABLE SECTION ================= */
+        /* ================= MAHASISWA ================= */
         .table-section {
             background: white;
             border-radius: 12px;
@@ -95,7 +107,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
             overflow-x: auto;
         }
 
-        /* ================= HEADER TABEL BIRU ================= */
+        /* ================= HEADER TABEL BIRU CERAH ================= */
         table.table {
             margin-bottom: 0;
             width: 100%;
@@ -103,7 +115,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         table.table thead th {
-            background-color: #2193b0 !important;
+            background-color: #51c8e9 !important;
             color: white !important;
             text-align: center !important;
             padding: 15px 20px;
@@ -155,7 +167,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         table.table tbody tr:hover td {
-            background-color: #f0f0f0 !important;
+            background-color: #e8f8fd !important;
         }
 
         /* Nama mahasiswa rata kiri */
@@ -221,9 +233,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         .page-btn:hover:not(:disabled) {
-            background: #2193b0;
+            background: #51c8e9;
             color: white;
-            border-color: #2193b0;
+            border-color: #51c8e9;
         }
 
         .page-btn:disabled {
@@ -232,9 +244,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         .page-btn.active {
-            background: #2193b0;
+            background: #51c8e9;
             color: white;
-            border-color: #2193b0;
+            border-color: #51c8e9;
         }
 
         .page-dots {
@@ -256,15 +268,17 @@ $endData = min($offset + $itemsPerPage, $totalData);
             border: 1px solid #b0b0b0 !important;
             color: black !important;
             background-color: white !important;
+            transition: all 0.3s ease;
         }
 
         #modalTambahMahasiswa .modal-content input:focus,
         #modalTambahMahasiswa .modal-content textarea:focus,
         #modalEditMahasiswa .modal-content input:focus,
         #modalEditMahasiswa .modal-content textarea:focus {
-            border: 1px solid #8f8f8f !important;
+            border: 1px solid #51c8e9 !important;
             background-color: #f2f2f2 !important;
             color: black !important;
+            box-shadow: 0 0 0 0.2rem rgba(81, 200, 233, 0.25) !important;
         }
 
         .btn-close {
@@ -282,16 +296,22 @@ $endData = min($offset + $itemsPerPage, $totalData);
         .input-group .btn-outline-secondary {
             border-color: #b0b0b0;
             color: #666;
+            transition: all 0.3s ease;
         }
 
         .input-group .btn-outline-secondary:hover {
             background-color: #f2f2f2;
-            border-color: #8f8f8f;
+            border-color: #51c8e9;
             color: #333;
         }
 
+        .input-group .btn-outline-secondary:focus {
+            border-color: #51c8e9;
+            box-shadow: 0 0 0 0.2rem rgba(81, 200, 233, 0.25);
+        }
+
         .input-group input:focus+.btn-outline-secondary {
-            border-color: #8f8f8f;
+            border-color: #51c8e9;
         }
 
         /* Loading Spinner */

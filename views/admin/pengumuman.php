@@ -1,4 +1,23 @@
 <?php
+session_start();
+
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+    echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+    exit();
+}
+
+// Proteksi role - hanya mahasiswa yang bisa akses
+if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
+    echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk Dosen.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+    exit();
+}
 require_once __DIR__ . '/../../app/controllers/admin/pengumuman_controller.php';
 
 $controller = new PengumumanControllerAdmin();
@@ -90,7 +109,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        /* ================= TABLE SECTION ================= */
+        /* ================= PENGUMUMAN ================= */
         .table-section {
             background: white;
             border-radius: 12px;
@@ -122,13 +141,14 @@ $endData = min($offset + $itemsPerPage, $totalData);
             overflow-x: auto;
         }
 
-        /* ================= HEADER TABEL BIRU ================= */
+        /* ================= HEADER TABEL BIRU CERAH ================= */
         table.table {
             margin-bottom: 0;
         }
 
         table.table thead th {
-            background-color: #2193b0 !important;
+            background-color: #51c8e9 !important;
+            /* Warna biru cerah */
             color: white !important;
             text-align: center !important;
             padding: 15px 20px;
@@ -163,7 +183,8 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         table.table tbody tr:hover td {
-            background-color: #f0f0f0 !important;
+            background-color: #e8f8fd !important;
+            /* Hover dengan warna biru cerah transparan */
         }
 
         table.table tbody td:first-child {
@@ -234,9 +255,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         .page-btn:hover:not(:disabled) {
-            background: #2193b0;
+            background: #51c8e9;
+            /* Warna biru cerah */
             color: white;
-            border-color: #2193b0;
+            border-color: #51c8e9;
         }
 
         .page-btn:disabled {
@@ -245,9 +267,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         .page-btn.active {
-            background: #2193b0;
+            background: #51c8e9;
+            /* Warna biru cerah */
             color: white;
-            border-color: #2193b0;
+            border-color: #51c8e9;
         }
 
         .page-dots {
@@ -276,9 +299,12 @@ $endData = min($offset + $itemsPerPage, $totalData);
         .modal-content input:focus,
         .modal-content textarea:focus,
         .modal-content select:focus {
-            border: 1px solid #8f8f8f !important;
+            border: 1px solid #51c8e9 !important;
+            /* Border focus biru cerah */
             background-color: #f2f2f2 !important;
             color: black !important;
+            box-shadow: 0 0 0 0.2rem rgba(81, 200, 233, 0.25) !important;
+            /* Glow effect */
         }
 
         .btn-close {
@@ -759,7 +785,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
             document.getElementById('alertContainer').innerHTML = alertHtml;
 
             // Scroll ke alert
-            document.getElementById('alertContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('alertContainer').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
 
             setTimeout(() => {
                 const alert = document.querySelector('.alert');
@@ -869,7 +898,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         // TAMBAH PENGUMUMAN
-        document.getElementById('formTambahPengumuman').addEventListener('submit', async function (e) {
+        document.getElementById('formTambahPengumuman').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             if (!this.checkValidity()) {
@@ -914,7 +943,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // EDIT PENGUMUMAN - Setup button click
         document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', async function () {
+            button.addEventListener('click', async function() {
                 const pengumumanId = this.getAttribute('data-id');
 
                 try {
@@ -978,7 +1007,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         });
 
         // EDIT PENGUMUMAN - Form submit
-        document.getElementById('formEditPengumuman').addEventListener('submit', async function (e) {
+        document.getElementById('formEditPengumuman').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             if (!this.checkValidity()) {
@@ -1022,7 +1051,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // DELETE PENGUMUMAN
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', async function () {
+            button.addEventListener('click', async function() {
                 const pengumumanId = this.getAttribute('data-id');
                 const judulPengumuman = this.getAttribute('data-judul');
 
@@ -1056,7 +1085,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // KIRIM EMAIL - Setup button click
         document.querySelectorAll('.email-btn').forEach(button => {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function() {
                 const pengumumanId = this.getAttribute('data-id');
                 const judul = this.getAttribute('data-judul');
                 const target = this.getAttribute('data-target');
@@ -1068,7 +1097,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         });
 
         // KIRIM EMAIL - Form submit
-        document.getElementById('formKirimEmail').addEventListener('submit', async function (e) {
+        document.getElementById('formKirimEmail').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const btn = document.getElementById('btnKirimEmail');
@@ -1136,17 +1165,17 @@ $endData = min($offset + $itemsPerPage, $totalData);
         });
 
         // Reset modal saat ditutup
-        document.getElementById('modalTambahPengumuman').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('modalTambahPengumuman').addEventListener('hidden.bs.modal', function() {
             const form = document.getElementById('formTambahPengumuman');
             form.reset();
             document.querySelectorAll('.conditional-field').forEach(field => field.style.display = 'none');
         });
 
-        document.getElementById('modalEditPengumuman').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('modalEditPengumuman').addEventListener('hidden.bs.modal', function() {
             document.querySelectorAll('.conditional-field').forEach(field => field.style.display = 'none');
         });
 
-        document.getElementById('modalKirimEmail').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('modalKirimEmail').addEventListener('hidden.bs.modal', function() {
             // Reset form kirim email
             const form = document.getElementById('formKirimEmail');
             form.reset();

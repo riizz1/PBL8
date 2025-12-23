@@ -1,3 +1,27 @@
+<?php
+// Cek apakah session sudah dimulai, jika belum baru start
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+  echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+  exit();
+}
+
+// Proteksi role - hanya dosen yang bisa akses
+if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
+  echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk Dosen.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+  exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -58,20 +82,20 @@
     }
 
     .nav-link:hover {
-      color: #667eea !important;
+      color: #51c8e9 !important;
       transform: translateY(-2px);
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba(81, 200, 233, 0.1);
     }
 
     .nav-link:hover svg {
       transform: scale(1.1);
     }
 
-    /* Active state - Highlight halaman yang sedang dikunjungi */
+    /* Active state */
     .nav-link.active {
       color: #fff !important;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #51c8e9 0%, #3ab0d9 100%);
+      box-shadow: 0 4px 12px rgba(81, 200, 233, 0.4);
       position: relative;
     }
 
@@ -133,42 +157,10 @@
       transform: translateX(5px);
     }
 
-    /* Smooth dropdown show/hide */
     .dropdown-menu.show {
       display: block;
       opacity: 1;
       transform: translateY(0);
-    }
-
-    /* Bell icon dengan notif badge effect */
-    .nav-link[href="#"]:has([data-lucide="bell"]) {
-      position: relative;
-    }
-
-    .nav-link[href="#"]:has([data-lucide="bell"])::after {
-      content: '';
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 8px;
-      height: 8px;
-      background: #dc3545;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: 0.5;
-        transform: scale(1.2);
-      }
     }
 
     /* Profile dropdown icon */
@@ -209,7 +201,6 @@
         align-items: flex-start !important;
       }
 
-      /* Bell & Profile tetap kanan atas */
       .navbar-collapse .right-icons {
         position: absolute;
         top: 10px;
@@ -232,7 +223,6 @@
         margin-bottom: 0;
       }
 
-      /* Active state di mobile */
       .nav-link.active::before {
         left: 0;
         transform: translateX(0);
@@ -292,29 +282,17 @@
               Mahasiswa
             </a>
           </li>
-
-          <li class="nav-item me-3">
-            <a class="nav-link" href="laporan.php" data-page="laporan">
-              <i data-lucide="file-text"></i>
-              Laporan
-            </a>
-          </li>
         </ul>
-
 
         <!-- Icon kanan -->
         <ul class="navbar-nav align-items-center right-icons">
-          <li class="nav-item">
-            <a class="nav-link" href="#" title="Notifikasi"><i data-lucide="bell"></i></a>
-          </li>
-
           <!-- Dropdown Profile -->
           <li class="nav-item dropdown">
             <a class="nav-link" href="#" id="profileDropdown" role="button" title="Profile">
               <i data-lucide="user"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li><a class="dropdown-item" href="logout.php">Log Out</a></li>
+              <li><a class="dropdown-item" href="/PBL8/app/controllers/auth/logout.php">Log Out</a></li>
             </ul>
           </li>
         </ul>
@@ -330,12 +308,12 @@
     const profileLink = document.getElementById('profileDropdown');
     const dropdownMenu = profileLink.nextElementSibling;
 
-    profileLink.addEventListener('click', function (e) {
+    profileLink.addEventListener('click', function(e) {
       e.preventDefault();
       dropdownMenu.classList.toggle('show');
     });
 
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function(e) {
       if (!profileLink.contains(e.target) && !dropdownMenu.contains(e.target)) {
         dropdownMenu.classList.remove('show');
       }
@@ -345,27 +323,18 @@
     lucide.createIcons();
 
     // ===== ACTIVE STATE OTOMATIS =====
-    // Deteksi halaman saat ini dan beri highlight
     function setActivePage() {
-      // Dapatkan nama file halaman saat ini (misal: dashboard.php, pengumuman.php)
       const currentPage = window.location.pathname.split('/').pop().replace('.php', '');
-
-      // Hapus semua class active
       document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
       });
-
-      // Tambahkan class active ke link yang sesuai
       const activeLink = document.querySelector(`.nav-link[data-page="${currentPage}"]`);
       if (activeLink) {
         activeLink.classList.add('active');
       }
     }
 
-    // Jalankan saat halaman dimuat
     setActivePage();
-
-    // Optional: Update active state saat navigasi (untuk SPA)
     window.addEventListener('popstate', setActivePage);
   </script>
 </body>

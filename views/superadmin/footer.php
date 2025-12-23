@@ -29,7 +29,7 @@
         }
 
         footer a:hover {
-            color: #0d6efd;
+            color: #51c8e9;
             transform: scale(1.1);
         }
 

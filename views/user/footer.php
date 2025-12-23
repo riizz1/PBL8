@@ -21,7 +21,7 @@
         }
 
         footer a:hover {
-            color: #0d6efd;
+            color: #51c8e9;
             /* biru hover */
             transform: scale(1.1);
         }

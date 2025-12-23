@@ -1,10 +1,21 @@
 <?php
 session_start();
 
-// Cek hanya superadmin yang bisa akses
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+    echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+    exit();
+}
+
+// Proteksi role - hanya mahasiswa yang bisa akses
 if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
-    header("Location: ../views/auth/login.php");
-    header("Location: ../../views/auth/login.php");
+    echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk superadmin.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
     exit();
 }
 
@@ -64,7 +75,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        /* ================= TABLE SECTION ================= */
+        /* ================= DOSEN ================= */
         .table-section {
             background: white;
             border-radius: 12px;
@@ -97,13 +108,13 @@ $endData = min($offset + $itemsPerPage, $totalData);
             overflow-x: auto;
         }
 
-        /* ================= HEADER TABEL BIRU ================= */
+        /* ================= HEADER TABEL BIRU CERAH ================= */
         table.table {
             margin-bottom: 0;
         }
 
         table.table thead th {
-            background-color: #2193b0 !important;
+            background-color: #51c8e9 !important;
             color: white !important;
             text-align: center !important;
             padding: 15px 20px;
@@ -155,7 +166,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         table.table tbody tr:hover td {
-            background-color: #f0f0f0 !important;
+            background-color: #e8f8fd !important;
         }
 
         /* Nama dosen rata kiri */
@@ -222,9 +233,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         .page-btn:hover:not(:disabled) {
-            background: #2193b0;
+            background: #51c8e9;
             color: white;
-            border-color: #2193b0;
+            border-color: #51c8e9;
         }
 
         .page-btn:disabled {
@@ -233,9 +244,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         .page-btn.active {
-            background: #2193b0;
+            background: #51c8e9;
             color: white;
-            border-color: #2193b0;
+            border-color: #51c8e9;
         }
 
         .page-dots {
@@ -262,9 +273,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         #modalTambahDosen .modal-content input:focus,
         #modalTambahDosen .modal-content textarea:focus {
-            border: 1px solid #8f8f8f !important;
+            border: 1px solid #51c8e9 !important;
             background-color: #f2f2f2 !important;
             color: black !important;
+            box-shadow: 0 0 0 0.2rem rgba(81, 200, 233, 0.25) !important;
         }
 
         #modalEditDosen .modal-content input,
@@ -276,9 +288,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         #modalEditDosen .modal-content input:focus,
         #modalEditDosen .modal-content textarea:focus {
-            border: 1px solid #8f8f8f !important;
+            border: 1px solid #51c8e9 !important;
             background-color: #f2f2f2 !important;
             color: black !important;
+            box-shadow: 0 0 0 0.2rem rgba(81, 200, 233, 0.25) !important;
         }
 
         .btn-close {
@@ -370,15 +383,26 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         <tbody id="dosenTableBody">
                             <?php foreach ($dosenList as $dosen): ?>
                                 <tr data-id="<?= $dosen['dosen_id'] ?>">
+                                    <!-- Pastikan key 'nama_lengkap' ada (ada di select model) -->
                                     <td class="col-nama"><?= htmlspecialchars($dosen['nama_lengkap']) ?></td>
+
+                                    <!-- Pastikan key 'nidn' ada (ada di select model) -->
                                     <td class="col-nidn"><?= htmlspecialchars($dosen['nidn']) ?></td>
+
+                                    <!-- Pastikan key 'email' ada (ada di select model) -->
                                     <td class="col-email"><?= htmlspecialchars($dosen['email']) ?></td>
+
+                                    <!-- KODE YANG BENAR -->
                                     <td class="col-aksi">
-                                        <button class="btn btn-warning btn-sm edit-btn" data-id="<?= $dosen['dosen_id'] ?>"
-                                            data-bs-toggle="modal" data-bs-target="#modalEditDosen">
+                                        <button class="btn btn-warning btn-sm edit-btn"
+                                            data-id="<?= $dosen['dosen_id'] ?>"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEditDosen">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
-                                        <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $dosen['dosen_id'] ?>"
+
+                                        <button class="btn btn-danger btn-sm delete-btn"
+                                            data-id="<?= $dosen['dosen_id'] ?>"
                                             data-nama="<?= htmlspecialchars($dosen['nama_lengkap']) ?>">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
@@ -572,7 +596,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         // ================= TAMBAH DOSEN =================
-        document.getElementById('formTambahDosen').addEventListener('submit', async function (e) {
+        document.getElementById('formTambahDosen').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const btn = document.getElementById('btnTambah');
@@ -622,7 +646,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // ================= EDIT DOSEN =================
         document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', async function () {
+            button.addEventListener('click', async function() {
                 const dosenId = this.getAttribute('data-id');
 
                 try {
@@ -651,7 +675,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
             });
         });
 
-        document.getElementById('formEditDosen').addEventListener('submit', async function (e) {
+        document.getElementById('formEditDosen').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const btn = document.getElementById('btnEdit');
@@ -698,7 +722,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // ================= DELETE DOSEN =================
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', async function () {
+            button.addEventListener('click', async function() {
                 const dosenId = this.getAttribute('data-id');
                 const namaDosen = this.getAttribute('data-nama');
 

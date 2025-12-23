@@ -54,12 +54,18 @@ class PengumumanControllerAdmin
             ];
         }
 
+        // FIX: Normalisasi data target
+        // Ubah string kosong menjadi NULL agar sesuai tipe database
+        $targetJurusan = (!empty($post['target_jurusan_id'])) ? $post['target_jurusan_id'] : null;
+        $targetProdi = (!empty($post['target_prodi_id'])) ? $post['target_prodi_id'] : null;
+        $targetKelas = (!empty($post['target_kelas'])) ? $post['target_kelas'] : null;
+
         // Prepare target data
         $targetData = [
             'target_type' => $post['target_type'],
-            'target_jurusan_id' => $post['target_jurusan_id'] ?? null,
-            'target_prodi_id' => $post['target_prodi_id'] ?? null,
-            'target_kelas' => $post['target_kelas'] ?? null
+            'target_jurusan_id' => $targetJurusan,
+            'target_prodi_id' => $targetProdi,
+            'target_kelas' => $targetKelas
         ];
 
         $result = $this->model->create(
@@ -77,7 +83,7 @@ class PengumumanControllerAdmin
         } else {
             return [
                 'success' => false,
-                'message' => 'Gagal menambahkan pengumuman'
+                'message' => 'Gagal menambahkan pengumuman. Periksa kembali inputan Anda.'
             ];
         }
     }
@@ -94,12 +100,17 @@ class PengumumanControllerAdmin
             ];
         }
 
+        // FIX: Normalisasi data target (Sama seperti tambah)
+        $targetJurusan = (!empty($post['target_jurusan_id'])) ? $post['target_jurusan_id'] : null;
+        $targetProdi = (!empty($post['target_prodi_id'])) ? $post['target_prodi_id'] : null;
+        $targetKelas = (!empty($post['target_kelas'])) ? $post['target_kelas'] : null;
+
         // Prepare target data
         $targetData = [
             'target_type' => $post['target_type'],
-            'target_jurusan_id' => $post['target_jurusan_id'] ?? null,
-            'target_prodi_id' => $post['target_prodi_id'] ?? null,
-            'target_kelas' => $post['target_kelas'] ?? null
+            'target_jurusan_id' => $targetJurusan,
+            'target_prodi_id' => $targetProdi,
+            'target_kelas' => $targetKelas
         ];
 
         $result = $this->model->update(
@@ -149,8 +160,6 @@ class PengumumanControllerAdmin
             ];
         }
     }
-    // Di PBL8/app/controllers/admin/pengumuman_controller.php
-// Tambahkan method ini di class PengumumanControllerAdmin
 
     /**
      * KIRIM EMAIL
@@ -224,7 +233,7 @@ class PengumumanControllerAdmin
                     <span class='kategori'>" . htmlspecialchars($pengumuman['nama_kategori']) . "</span>
                 </div>
                 <div class='content'>
-                    <p>Halo <strong>" . htmlspecialchars($recipient['nama']) . "</strong>,</p>
+                    <p>Halo <strong>" . htmlspecialchars($recipient['nama_lengkap']) . "</strong>,</p>
                     <h2>" . htmlspecialchars($pengumuman['judul']) . "</h2>
                     <p>" . nl2br(htmlspecialchars($pengumuman['isi'])) . "</p>
                     <hr>

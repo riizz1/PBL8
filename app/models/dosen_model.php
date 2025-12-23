@@ -1,5 +1,4 @@
 <?php
-// File: app/models/dosen_model.php
 require_once __DIR__ . '/../../config/config.php';
 
 class DosenModel
@@ -8,92 +7,150 @@ class DosenModel
 
     public function __construct()
     {
-        global $config;         // dari config.php
-        $this->db = $config;    // mysqli connection
+        global $config;
+        $this->db = $config;
     }
 
-    /**
-     * Ambil semua dosen (role_id = 2)
-     */
-    public function getAllDosen()
+    public function getAll()
     {
-        $query = "SELECT 
-                    user_id,
-                    username,
-                    password,
-                    role_id,
-                    created_at
-                  FROM admin
-                  WHERE role_id = 2
-                  ORDER BY username ASC";
-
-        $result = $this->db->query($query);
+        // Ambil data dosen (role_id = 2)
+        // Alias user_id -> dosen_id biar nyambung dengan view
+        $sql = "SELECT user_id as dosen_id, nama_lengkap, nidn, username, email, no_telepon, alamat 
+                FROM admin 
+                WHERE role_id = 2 
+                ORDER BY nama_lengkap ASC";
+        
+        $result = $this->db->query($sql);
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
-    /**
-     * Ambil dosen berdasarkan user_id
-     */
-    public function getDosenById($id)
+    public function getById($id)
     {
-        $stmt = $this->db->prepare("SELECT user_id, username, role_id, created_at 
-                                    FROM admin 
-                                    WHERE user_id = ? AND role_id = 2");
+        $sql = "SELECT user_id as dosen_id, nama_lengkap, nidn, username, email, no_telepon, alamat 
+                FROM admin 
+                WHERE user_id = ? AND role_id = 2";
+        
+        $stmt = $this->db->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
-
         return $stmt->get_result()->fetch_assoc();
     }
 
-    /**
-     * Tambah dosen baru
-     */
-    public function createDosen($data)
+    public function create($data)
     {
-        $password = password_hash($data['password'], PASSWORD_BCRYPT);
-        $role_id = 2; // otomatis dosen
-
-        $stmt = $this->db->prepare(
-            "INSERT INTO admin (username, password, role_id, created_at)
-             VALUES (?, ?, ?, NOW())"
+        // Insert data lengkap ke tabel admin
+        // Password sudah di-hash di Controller, jadi langsung masuk
+        $sql = "INSERT INTO admin 
+                (nama_lengkap, nidn, username, password, email, no_telepon, alamat, role_id) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, 2)";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        // Binding parameter: s=string, i=integer (2 adalah role_id dosen)
+        $stmt->bind_param(
+            "sssssss",
+            $data['nama_lengkap'],
+            $data['nidn'],
+            $data['username'],
+            $data['password'], 
+            $data['email'],
+            $data['no_telepon'],
+            $data['alamat']
         );
 
-        $stmt->bind_param("ssi", $data['username'], $password, $role_id);
+        return $stmt->execute();
+    }
+
+    public function update($id, $data)
+    {
+        // Update data (Tidak mengubah password untuk keamanan di mode ini)
+        $sql = "UPDATE admin SET 
+                    nama_lengkap = ?, 
+                    nidn = ?, 
+                    email = ?, 
+                    no_telepon = ?, 
+                    alamat = ?
+                WHERE user_id = ? AND role_id = 2";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        $stmt->bind_param(
+            "sssssi",
+            $data['nama_lengkap'],
+            $data['nidn'],
+            $data['email'],
+            $data['no_telepon'],
+            $data['alamat'],
+            $id
+        );
 
         return $stmt->execute();
     }
 
-    /**
-     * Update dosen
-     */
-    public function updateDosen($id, $data)
+    public function delete($id)
     {
-        if (!empty($data['password'])) {
-            $password = password_hash($data['password'], PASSWORD_BCRYPT);
-            $stmt = $this->db->prepare(
-                "UPDATE admin SET username = ?, password = ? WHERE user_id = ? AND role_id = 2"
-            );
-            $stmt->bind_param("ssi", $data['username'], $password, $id);
+        $sql = "DELETE FROM admin WHERE user_id = ? AND role_id = 2";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $id);
+        return $stmt->execute();
+    }
 
-        } else {
-            // tanpa update password
-            $stmt = $this->db->prepare(
-                "UPDATE admin SET username = ? WHERE user_id = ? AND role_id = 2"
-            );
-            $stmt->bind_param("si", $data['username'], $id);
+    /* ===== VALIDASI ===== */
+    
+    // Cek apakah username sudah dipakai
+    public function usernameExists($username, $excludeId = null)
+    {
+        $sql = "SELECT user_id FROM admin WHERE username = ?";
+        $params = ["s", $username];
+        $types = "s";
+
+        if ($excludeId) {
+            $sql .= " AND user_id != ?";
+            $types .= "i";
+            $params[] = $excludeId;
         }
 
-        return $stmt->execute();
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        return $stmt->get_result()->num_rows > 0;
     }
 
-    /**
-     * Hapus dosen
-     */
-    public function deleteDosen($id)
+    // Cek apakah NIDN sudah dipakai
+    public function nidnExists($nidn, $excludeId = null)
     {
-        $stmt = $this->db->prepare("DELETE FROM admin WHERE user_id = ? AND role_id = 2");
-        $stmt->bind_param("i", $id);
+        $sql = "SELECT user_id FROM admin WHERE nidn = ?";
+        $params = ["s", $nidn];
+        $types = "s";
 
-        return $stmt->execute();
+        if ($excludeId) {
+            $sql .= " AND user_id != ?";
+            $types .= "i";
+            $params[] = $excludeId;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        return $stmt->get_result()->num_rows > 0;
+    }
+
+    // Cek apakah Email sudah dipakai
+    public function emailExists($email, $excludeId = null)
+    {
+        $sql = "SELECT user_id FROM admin WHERE email = ?";
+        $params = ["s", $email];
+        $types = "s";
+
+        if ($excludeId) {
+            $sql .= " AND user_id != ?";
+            $types .= "i";
+            $params[] = $excludeId;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        return $stmt->get_result()->num_rows > 0;
     }
 }

@@ -1,13 +1,32 @@
 <?php
+session_start();
+
+// Proteksi halaman - harus login dulu
+if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
+  echo "<script>
+        alert('Anda harus login terlebih dahulu!');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+  exit();
+}
+
+// Proteksi role - hanya mahasiswa yang bisa akses
+if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
+  echo "<script>
+        alert('Akses ditolak! Halaman ini hanya untuk Dosen.');
+        location.href='/PBL8/views/auth/login.php';
+    </script>";
+  exit();
+}
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../app/controllers/admin/dashboard_controller.php';
 
- $controller = new DashboardController($config);
- $data = $controller->index();
+$controller = new DashboardController($config);
+$data = $controller->index();
 
- $total_pengumuman = $data['total_pengumuman'];
- $total_kategori = $data['total_kategori'];
- $pengumuman_terbaru = $data['pengumuman_terbaru'];
+$total_pengumuman = $data['total_pengumuman'];
+$total_kategori = $data['total_kategori'];
+$pengumuman_terbaru = $data['pengumuman_terbaru'];
 ?>
 
 <!DOCTYPE html>
@@ -21,13 +40,15 @@ require_once __DIR__ . '/../../app/controllers/admin/dashboard_controller.php';
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
+    /* ================= DASHBOARD ================= */
     :root {
       --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       --success-gradient: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
     }
 
     body {
-      background: #ffffff; /* Diubah menjadi putih */
+      background: #ffffff;
+      /* Diubah menjadi putih */
       min-height: 100vh;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
@@ -338,7 +359,7 @@ require_once __DIR__ . '/../../app/controllers/admin/dashboard_controller.php';
         $count++;
         if ($count > 5)
           break; // Batasi hanya 5 pengumuman
-        ?>
+      ?>
         <div class="announcement-item">
           <div class="announcement-icon 
           <?php
@@ -388,7 +409,7 @@ require_once __DIR__ . '/../../app/controllers/admin/dashboard_controller.php';
 
   <script>
     // Animasi counter untuk statistik
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
       const statNumbers = document.querySelectorAll('.stat-number');
 
       statNumbers.forEach(stat => {

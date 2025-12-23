@@ -10,79 +10,73 @@ class PengumumanControllerUser
     public function __construct()
     {
         global $config;
-        $this->model = new PengumumanModel($config); // ✅ FIX ERROR
+        $this->model = new PengumumanModel($config);
     }
 
     public function index()
     {
-        // Ambil filter dari URL
-        $kategori = isset($_GET['kategori']) ? $_GET['kategori'] : null;
-        $bulan    = isset($_GET['bulan']) ? $_GET['bulan'] : null;
-        $tahun    = isset($_GET['tahun']) ? $_GET['tahun'] : null;
+        // Ambil parameter filter
+        // FIX: Kita ambil NAMA kategori dari URL untuk keperluan selected di dropdown
+        $namaKategoriDipilih = isset($_GET['kategori']) ? $_GET['kategori'] : null;
+        $bulanDipilih = isset($_GET['bulan']) ? $_GET['bulan'] : null;
+        $tahunDipilih = isset($_GET['tahun']) ? $_GET['tahun'] : null;
 
-        // Pagination
-        $page   = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-        $limit  = 20;
-        $offset = ($page - 1) * $limit;
+        // Ambil data untuk dropdown filter
+        $kategoriList = $this->model->getKategori();
+        
+        // LOGIKA BARU: Cari ID Kategori berdasarkan Nama yang dipilih
+        $kategoriIdDipilih = null;
+        if (!empty($namaKategoriDipilih)) {
+            foreach ($kategoriList as $kat) {
+                // Case insensitive comparison biar aman
+                if (strtolower($kat['nama_kategori']) === strtolower($namaKategoriDipilih)) {
+                    $kategoriIdDipilih = $kat['kategori_id'];
+                    break;
+                }
+            }
+        }
 
-        // Total data
-        $totalData  = $this->model->countPengumuman($kategori, $bulan, $tahun);
-        $totalPages = ceil($totalData / $limit);
+        // List Bulan (Manual)
+        $bulanList = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $bulanList[] = [
+                'bulan' => $i,
+                'nama_bulan' => date('F', mktime(0, 0, 0, $i, 1))
+            ];
+        }
 
-        // Ambil data pengumuman
+        $tahunList = $this->model->getAvailableYears();
+
+        // Kirim ID Kategori ke Model, bukan Nama
         $pengumuman = $this->model->filterPengumuman(
-            $kategori,
-            $bulan,
-            $tahun,
-            $limit,
-            $offset
+            $kategoriIdDipilih, 
+            $bulanDipilih, 
+            $tahunDipilih, 
+            1000000, 
+            0 
         );
 
-        // Data pendukung
-        $kategoriList = $this->model->getKategori();
-        $tahunList    = $this->model->getAvailableYears();
-
-        $bulanList = [
-            ['bulan' => 1, 'nama_bulan' => 'Januari'],
-            ['bulan' => 2, 'nama_bulan' => 'Februari'],
-            ['bulan' => 3, 'nama_bulan' => 'Maret'],
-            ['bulan' => 4, 'nama_bulan' => 'April'],
-            ['bulan' => 5, 'nama_bulan' => 'Mei'],
-            ['bulan' => 6, 'nama_bulan' => 'Juni'],
-            ['bulan' => 7, 'nama_bulan' => 'Juli'],
-            ['bulan' => 8, 'nama_bulan' => 'Agustus'],
-            ['bulan' => 9, 'nama_bulan' => 'September'],
-            ['bulan' => 10, 'nama_bulan' => 'Oktober'],
-            ['bulan' => 11, 'nama_bulan' => 'November'],
-            ['bulan' => 12, 'nama_bulan' => 'Desember']
-        ];
-
         return [
-            'pengumuman'      => $pengumuman,
-            'kategori'        => $kategoriList,
-            'bulanList'       => $bulanList,
-            'tahunList'       => $tahunList,
-            'kategoriDipilih' => $kategori,
-            'bulanDipilih'    => $bulan,
-            'tahunDipilih'    => $tahun,
-            'currentPage'     => $page,
-            'totalPages'      => $totalPages,
-            'totalData'       => $totalData,
-            'startData'       => $offset + 1,
-            'endData'         => min($offset + $limit, $totalData)
+            "pengumuman" => $pengumuman,
+            "kategori" => $kategoriList,
+            "bulanList" => $bulanList,
+            "tahunList" => $tahunList,
+            "kategoriDipilih" => $namaKategoriDipilih, // Kembalikan nama untuk view (dropdown)
+            "bulanDipilih" => $bulanDipilih,
+            "tahunDipilih" => $tahunDipilih
         ];
     }
 
+    // TAMBAHKAN FUNGSI INI (Sering menyebabkan error karena tidak ada)
     public function detail($id)
     {
-        $pengumuman = $this->model->getById($id);
-
-        if (!$pengumuman) {
-            return null;
-        }
-
+        // Gunakan fungsi getById yang sudah ada di Model
+        $data = $this->model->getById($id);
+        
+        // Bungkus dalam struktur array yang sesuai dengan get_detail.php
         return [
-            'pengumuman' => $pengumuman
+            'pengumuman' => $data
         ];
     }
 }
+?>

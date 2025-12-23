@@ -1,209 +1,68 @@
 <?php
-// PBL8/app/models/Mahasiswa.php
+require_once __DIR__ . '/../../models/mahasiswa_model.php';
+require_once __DIR__ . '/../../config/database.php';
 
-class MahasiswaModel {
-    private $db;
-    
-    public function __construct($config) {
-        $this->db = $config;
+class MahasiswaControllerSuperadmin {
+    private $model;
+
+    public function __construct() {
+        global $db;
+        $this->model = new MahasiswaModel($db);
     }
-    
-    /**
-     * Get all mahasiswa
-     */
-    public function getAll() {
-        $query = "SELECT 
-                    mahasiswa_id,
-                    nim,
-                    nama_lengkap,
-                    prodi,
-                    email,
-                    alamat,
-                    created_at
-                  FROM mahasiswa 
-                  ORDER BY nama_lengkap ASC";
-        
-        $result = $this->db->query($query);
-        
-        if (!$result) {
-            return [];
+
+    public function index() { return $this->model->getAll(); }
+    public function getById($id) { return $this->model->getById($id); }
+
+    public function create() {
+        $required = ['nim', 'nama_lengkap', 'username', 'password', 'jurusan_id', 'prodi_id', 'kelas'];
+        foreach ($required as $field) {
+            if (empty($_POST[$field])) return ['success' => false, 'message' => 'Field ' . $field . ' wajib diisi'];
         }
-        
-        $data = [];
-        while($row = $result->fetch_assoc()) {
-            $data[] = $row;
-        }
-        return $data;
+        if ($this->model->nimExists($_POST['nim'])) return ['success' => false, 'message' => 'NIM sudah digunakan'];
+        if ($this->model->usernameExists($_POST['username'])) return ['success' => false, 'message' => 'Username sudah digunakan'];
+        if (!empty($_POST['email']) && $this->model->emailExists($_POST['email'])) return ['success' => false, 'message' => 'Email sudah digunakan'];
+
+        $data = [
+            'nim' => trim($_POST['nim']),
+            'nama_lengkap' => trim($_POST['nama_lengkap']),
+            'username' => trim($_POST['username']),
+            'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
+            'jurusan_id' => (int)$_POST['jurusan_id'],
+            'prodi_id' => (int)$_POST['prodi_id'],
+            'kelas' => trim($_POST['kelas']),
+            'email' => $_POST['email'] ?? null,
+            'alamat' => $_POST['alamat'] ?? null
+        ];
+
+        return $this->model->create($data) ? ['success' => true, 'message' => 'Mahasiswa berhasil ditambahkan'] : ['success' => false, 'message' => 'Gagal menambahkan'];
     }
-    
-    /**
-     * Get mahasiswa by ID
-     */
-    public function getById($id) {
-        $query = "SELECT * FROM mahasiswa WHERE mahasiswa_id = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('i', $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+
+    public function update() {
+        if (empty($_POST['mahasiswa_id'])) return ['success' => false, 'message' => 'ID tidak valid'];
+        $id = (int)$_POST['mahasiswa_id'];
+
+        if ($this->model->nimExists($_POST['nim'], $id)) return ['success' => false, 'message' => 'NIM sudah digunakan'];
+        if ($this->model->usernameExists($_POST['username'], $id)) return ['success' => false, 'message' => 'Username sudah digunakan'];
+        if (!empty($_POST['email']) && $this->model->emailExists($_POST['email'], $id)) return ['success' => false, 'message' => 'Email sudah digunakan'];
+
+        $data = [
+            'nim' => trim($_POST['nim']),
+            'nama_lengkap' => trim($_POST['nama_lengkap']),
+            'username' => trim($_POST['username']),
+            'password' => !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_DEFAULT) : null,
+            'jurusan_id' => (int)$_POST['jurusan_id'],
+            "prodi_id" => (int)$_POST['prodi_id'],
+            'kelas' => trim($_POST['kelas']),
+            'email' => $_POST['email'] ?? null,
+            'alamat' => $_POST['alamat'] ?? null
+        ];
+
+        return $this->model->update($id, $data) ? ['success' => true, 'message' => 'Data diperbarui'] : ['success' => false, 'message' => 'Gagal memperbarui'];
     }
-    
-    /**
-     * Create new mahasiswa
-     */
-    public function create($data) {
-        $query = "INSERT INTO mahasiswa (nim, nama_lengkap, username, password, prodi, email, alamat) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
-        $stmt = $this->db->prepare($query);
-        
-        // Hash password
-        $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
-        
-        $stmt->bind_param(
-            'sssssss',
-            $data['nim'],
-            $data['nama_lengkap'],
-            $data['username'],
-            $hashedPassword,
-            $data['prodi'],
-            $data['email'],
-            $data['alamat']
-        );
-        
-        if ($stmt->execute()) {
-            return [
-                'success' => true,
-                'message' => 'Mahasiswa berhasil ditambahkan',
-                'id' => $this->db->insert_id
-            ];
-        } else {
-            return [
-                'success' => false,
-                'message' => 'Gagal menambahkan mahasiswa: ' . $stmt->error
-            ];
-        }
-    }
-    
-    /**
-     * Update mahasiswa
-     */
-    public function update($id, $data) {
-        $query = "UPDATE mahasiswa 
-                  SET nim = ?, 
-                      nama_lengkap = ?, 
-                      prodi = ?, 
-                      email = ?, 
-                      alamat = ?
-                  WHERE mahasiswa_id = ?";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param(
-            'sssssi',
-            $data['nim'],
-            $data['nama_lengkap'],
-            $data['prodi'],
-            $data['email'],
-            $data['alamat'],
-            $id
-        );
-        
-        if ($stmt->execute()) {
-            return [
-                'success' => true,
-                'message' => 'Data mahasiswa berhasil diperbarui'
-            ];
-        } else {
-            return [
-                'success' => false,
-                'message' => 'Gagal memperbarui data: ' . $stmt->error
-            ];
-        }
-    }
-    
-    /**
-     * Delete mahasiswa
-     */
-    public function delete($id) {
-        $query = "DELETE FROM mahasiswa WHERE mahasiswa_id = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('i', $id);
-        
-        if ($stmt->execute()) {
-            return [
-                'success' => true,
-                'message' => 'Mahasiswa berhasil dihapus'
-            ];
-        } else {
-            return [
-                'success' => false,
-                'message' => 'Gagal menghapus mahasiswa: ' . $stmt->error
-            ];
-        }
-    }
-    
-    /**
-     * Check if NIM already exists
-     */
-    public function nimExists($nim, $excludeId = null) {
-        if ($excludeId) {
-            $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE nim = ? AND mahasiswa_id != ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param('si', $nim, $excludeId);
-        } else {
-            $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE nim = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param('s', $nim);
-        }
-        
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        return $row['count'] > 0;
-    }
-    
-    /**
-     * Check if username already exists
-     */
-    public function usernameExists($username, $excludeId = null) {
-        if ($excludeId) {
-            $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE username = ? AND mahasiswa_id != ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param('si', $username, $excludeId);
-        } else {
-            $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE username = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param('s', $username);
-        }
-        
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        return $row['count'] > 0;
-    }
-    
-    /**
-     * Check if email already exists
-     */
-    public function emailExists($email, $excludeId = null) {
-        if (empty($email)) {
-            return false; // Email kosong dianggap tidak duplikat
-        }
-        
-        if ($excludeId) {
-            $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE email = ? AND mahasiswa_id != ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param('si', $email, $excludeId);
-        } else {
-            $query = "SELECT COUNT(*) as count FROM mahasiswa WHERE email = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param('s', $email);
-        }
-        
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        return $row['count'] > 0;
+
+    public function delete() {
+        if (empty($_POST['mahasiswa_id'])) return ['success' => false, 'message' => 'ID tidak valid'];
+        return $this->model->delete((int)$_POST['mahasiswa_id']) ? ['success' => true, 'message' => 'Mahasiswa berhasil dihapus'] : ['success' => false, 'message' => 'Gagal menghapus'];
     }
 }
 ?>
