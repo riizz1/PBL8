@@ -21,7 +21,7 @@ if (!isset($_SESSION['role_name']) || ($_SESSION['role_name'] !== 'admin' && $_S
 
 // Load controller ADMIN
 require_once __DIR__ . '/../../app/controllers/admin/mahasiswa_controller.php';
- $mahasiswaController = new MahasiswaControllerAdmin();
+$mahasiswaController = new MahasiswaControllerAdmin();
 
 // Handle AJAX requests
 if (isset($_POST['action'])) {
@@ -66,29 +66,30 @@ if (isset($_POST['action'])) {
 }
 
 // Pagination settings
- $itemsPerPage = 10;
- $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
- $offset = ($currentPage - 1) * $itemsPerPage;
+$itemsPerPage = 10;
+$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($currentPage - 1) * $itemsPerPage;
 
 // Get all mahasiswa (Model getAll sudah difilter otomatis oleh controller admin)
- $allMahasiswa = $mahasiswaController->index();
- $totalData = count($allMahasiswa);
- $totalPages = ceil($totalData / $itemsPerPage);
+$allMahasiswa = $mahasiswaController->index();
+$totalData = count($allMahasiswa);
+$totalPages = ceil($totalData / $itemsPerPage);
 
 // Slice data for current page
- $mahasiswaList = array_slice($allMahasiswa, $offset, $itemsPerPage);
+$mahasiswaList = array_slice($allMahasiswa, $offset, $itemsPerPage);
 
 // Calculate display range
- $startData = $totalData > 0 ? $offset + 1 : 0;
- $endData = min($offset + $itemsPerPage, $totalData);
+$startData = $totalData > 0 ? $offset + 1 : 0;
+$endData = min($offset + $itemsPerPage, $totalData);
 
 // Get jurusan dan prodi untuk dropdown
- $jurusanList = $mahasiswaController->getAllJurusan();
- $prodiList = $mahasiswaController->getAllProdi();
+$jurusanList = $mahasiswaController->getAllJurusan();
+$prodiList = $mahasiswaController->getAllProdi();
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -149,7 +150,8 @@ if (isset($_POST['action'])) {
         }
 
         table.table thead th:first-child {
-            text-align: center !important; /* Nomor rata tengah */
+            text-align: center !important;
+            /* Nomor rata tengah */
         }
 
         /* ================= TBODY STYLING ================= */
@@ -178,7 +180,8 @@ if (isset($_POST['action'])) {
         }
 
         table.table tbody td:first-child {
-            text-align: center !important; /* Nomor rata tengah */
+            text-align: center !important;
+            /* Nomor rata tengah */
             font-weight: bold;
         }
 
@@ -371,11 +374,11 @@ if (isset($_POST['action'])) {
                             </tr>
                         </thead>
                         <tbody id="mahasiswaTableBody">
-                            <?php 
+                            <?php
                             // Logika Nomor: Offset + Index
-                            foreach ($mahasiswaList as $index => $mahasiswa): 
+                            foreach ($mahasiswaList as $index => $mahasiswa):
                                 $nomor = $offset + $index + 1;
-                            ?>
+                                ?>
                                 <tr data-id="<?= $mahasiswa['mahasiswa_id'] ?>">
                                     <td><?= $nomor ?></td>
                                     <td class="col-nama"><?= htmlspecialchars($mahasiswa['nama_lengkap']) ?></td>
@@ -455,29 +458,55 @@ if (isset($_POST['action'])) {
     </main>
 
     <!-- MODAL TAMBAH MAHASISWA -->
-    <div class="modal fade" id="modalTambahMahasiswa" tabindex="-1" aria-labelledby="modalTambahMahasiswaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalTambahMahasiswa" tabindex="-1" aria-labelledby="modalTambahMahasiswaLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title w-100 text-center" id="modalTambahMahasiswaLabel">
                         Penambahan Akun Mahasiswa
                     </h5>
-                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="formTambahMahasiswa">
                         <input type="hidden" name="action" value="create">
-                        <div class="mb-3"><label class="form-label">Nama Lengkap <span class="text-danger">*</span></label><input type="text" name="nama_lengkap" class="form-control" required placeholder="Masukkan Nama Lengkap"></div>
-                        <div class="mb-3"><label class="form-label">NIM <span class="text-danger">*</span></label><input type="text" name="nim" id="tambahNim" class="form-control" required placeholder="Masukkan NIM"></div>
-                        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" name="username" id="tambahUsername" class="form-control" required placeholder="Masukkan Username"></div>
-                        <div class="mb-3"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" name="password" class="form-control" required placeholder="Masukkan Password"></div>
+                        <div class="mb-3"><label class="form-label">Nama Lengkap <span
+                                    class="text-danger">*</span></label><input type="text" name="nama_lengkap"
+                                class="form-control" required placeholder="Masukkan Nama Lengkap"></div>
+                        <div class="mb-3"><label class="form-label">NIM <span class="text-danger">*</span></label><input
+                                type="text" name="nim" id="tambahNim" class="form-control" required
+                                placeholder="Masukkan NIM"></div>
+                        <div class="mb-3"><label class="form-label">Username <span
+                                    class="text-danger">*</span></label><input type="text" name="username"
+                                id="tambahUsername" class="form-control" required placeholder="Masukkan Username"></div>
+                        <div class="mb-3"><label class="form-label">Password <span
+                                    class="text-danger">*</span></label><input type="password" name="password"
+                                class="form-control" required placeholder="Masukkan Password"></div>
                         <!-- Dropdown Jurusan & Prodi -->
-                        <div class="mb-3"><label class="form-label">Jurusan <span class="text-danger">*</span></label><select name="jurusan_id" id="tambahJurusan" class="form-select" required onchange="filterProdi('tambah')"><option value="">Pilih Jurusan</option><?php foreach ($jurusanList as $j): ?><option value="<?= $j['jurusan_id'] ?>"><?= htmlspecialchars($j['nama_jurusan']) ?></option><?php endforeach; ?></select></div>
-                        <div class="mb-3"><label class="form-label">Prodi <span class="text-danger">*</span></label><select name="prodi_id" id="tambahProdi" class="form-select" required><option value="">Pilih Prodi</option></select></div>
-                        <div class="mb-3"><label class="form-label">Kelas <span class="text-danger">*</span></label><input type="text" name="kelas" class="form-control" required placeholder="Contoh: IF1A-Pagi"></div>
-                        <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" id="tambahEmail" class="form-control" placeholder="Masukkan Email"></div>
-                        <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat" class="form-control" rows="2" placeholder="Masukkan Alamat"></textarea></div>
-                        <button type="submit" class="btn btn-primary w-100" id="btnTambah"><span class="btn-text">Simpan</span><span class="spinner-border spinner-border-sm d-none"></span></button>
+                        <div class="mb-3"><label class="form-label">Jurusan <span
+                                    class="text-danger">*</span></label><select name="jurusan_id" id="tambahJurusan"
+                                class="form-select" required onchange="filterProdi('tambah')">
+                                <option value="">Pilih Jurusan</option><?php foreach ($jurusanList as $j): ?>
+                                    <option value="<?= $j['jurusan_id'] ?>"><?= htmlspecialchars($j['nama_jurusan']) ?>
+                                    </option><?php endforeach; ?>
+                            </select></div>
+                        <div class="mb-3"><label class="form-label">Prodi <span
+                                    class="text-danger">*</span></label><select name="prodi_id" id="tambahProdi"
+                                class="form-select" required>
+                                <option value="">Pilih Prodi</option>
+                            </select></div>
+                        <div class="mb-3"><label class="form-label">Kelas <span
+                                    class="text-danger">*</span></label><input type="text" name="kelas"
+                                class="form-control" required placeholder="Contoh: IF1A-Pagi"></div>
+                        <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email"
+                                id="tambahEmail" class="form-control" placeholder="Masukkan Email"></div>
+                        <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat"
+                                class="form-control" rows="2" placeholder="Masukkan Alamat"></textarea></div>
+                        <button type="submit" class="btn btn-primary w-100" id="btnTambah"><span
+                                class="btn-text">Simpan</span><span
+                                class="spinner-border spinner-border-sm d-none"></span></button>
                     </form>
                 </div>
             </div>
@@ -485,36 +514,61 @@ if (isset($_POST['action'])) {
     </div>
 
     <!-- MODAL EDIT MAHASISWA -->
-    <div class="modal fade" id="modalEditMahasiswa" tabindex="-1" aria-labelledby="modalEditMahasiswaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditMahasiswa" tabindex="-1" aria-labelledby="modalEditMahasiswaLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title w-100 text-center" id="modalEditMahasiswaLabel">
                         Edit Data Mahasiswa
                     </h5>
-                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="formEditMahasiswa">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="mahasiswa_id" id="editMahasiswaId">
-                        <div class="mb-3"><label class="form-label">Nama Lengkap <span class="text-danger">*</span></label><input type="text" name="nama_lengkap" id="editNama" class="form-control" required></div>
-                        <div class="mb-3"><label class="form-label">NIM <span class="text-danger">*</span></label><input type="text" name="nim" id="editNim" class="form-control" required></div>
-                        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" name="username" id="editUsername" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Nama Lengkap <span
+                                    class="text-danger">*</span></label><input type="text" name="nama_lengkap"
+                                id="editNama" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">NIM <span class="text-danger">*</span></label><input
+                                type="text" name="nim" id="editNim" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Username <span
+                                    class="text-danger">*</span></label><input type="text" name="username"
+                                id="editUsername" class="form-control" required></div>
                         <div class="mb-3">
-                            <label class="form-label">Password Baru <span class="text-muted">(Kosongkan jika tidak ingin mengubah)</span></label>
+                            <label class="form-label">Password Baru <span class="text-muted">(Kosongkan jika tidak ingin
+                                    mengubah)</span></label>
                             <div class="input-group">
-                                <input type="password" name="password" id="editPassword" class="form-control" placeholder="Masukkan password baru">
-                                <button class="btn btn-outline-secondary" type="button" id="toggleEditPassword"><i class="bi bi-eye" id="editPasswordIcon"></i></button>
+                                <input type="password" name="password" id="editPassword" class="form-control"
+                                    placeholder="Masukkan password baru">
+                                <button class="btn btn-outline-secondary" type="button" id="toggleEditPassword"><i
+                                        class="bi bi-eye" id="editPasswordIcon"></i></button>
                             </div>
                         </div>
                         <!-- Dropdown Jurusan & Prodi -->
-                        <div class="mb-3"><label class="form-label">Jurusan <span class="text-danger">*</span></label><select name="jurusan_id" id="editJurusan" class="form-select" required onchange="filterProdi('edit')"><option value="">Pilih Jurusan</option><?php foreach ($jurusanList as $j): ?><option value="<?= $j['jurusan_id'] ?>"><?= htmlspecialchars($j['nama_jurusan']) ?></option><?php endforeach; ?></select></div>
-                        <div class="mb-3"><label class="form-label">Prodi <span class="text-danger">*</span></label><select name="prodi_id" id="editProdi" class="form-select" required><option value="">Pilih Prodi</option></select></div>
-                        <div class="mb-3"><label class="form-label">Kelas <span class="text-danger">*</span></label><input type="text" name="kelas" id="editKelas" class="form-control" required></div>
-                        <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" id="editEmail" class="form-control"></div>
-                        <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat" id="editAlamat" class="form-control" rows="2"></textarea></div>
-                        <button type="submit" class="btn btn-success w-100" id="btnEdit"><span class="btn-text">Simpan Perubahan</span><span class="spinner-border spinner-border-sm d-none"></span></button>
+                        <div class="mb-3"><label class="form-label">Jurusan <span
+                                    class="text-danger">*</span></label><select name="jurusan_id" id="editJurusan"
+                                class="form-select" required onchange="filterProdi('edit')">
+                                <option value="">Pilih Jurusan</option><?php foreach ($jurusanList as $j): ?>
+                                    <option value="<?= $j['jurusan_id'] ?>"><?= htmlspecialchars($j['nama_jurusan']) ?>
+                                    </option><?php endforeach; ?>
+                            </select></div>
+                        <div class="mb-3"><label class="form-label">Prodi <span
+                                    class="text-danger">*</span></label><select name="prodi_id" id="editProdi"
+                                class="form-select" required>
+                                <option value="">Pilih Prodi</option>
+                            </select></div>
+                        <div class="mb-3"><label class="form-label">Kelas <span
+                                    class="text-danger">*</span></label><input type="text" name="kelas" id="editKelas"
+                                class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email"
+                                id="editEmail" class="form-control"></div>
+                        <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat"
+                                id="editAlamat" class="form-control" rows="2"></textarea></div>
+                        <button type="submit" class="btn btn-success w-100" id="btnEdit"><span class="btn-text">Simpan
+                                Perubahan</span><span class="spinner-border spinner-border-sm d-none"></span></button>
                     </form>
                 </div>
             </div>
@@ -529,68 +583,32 @@ if (isset($_POST['action'])) {
         const prodiData = <?= json_encode($prodiList) ?>;
 
         function filterProdi(type) {
-            const jurusanId = document.getElementById(type + 'Jurusan').value;
+            const jurusanSelect = document.getElementById(type + 'Jurusan');
             const prodiSelect = document.getElementById(type + 'Prodi');
+
+            // Reset dropdown Prodi
             prodiSelect.innerHTML = '<option value="">Pilih Prodi</option>';
-            if (jurusanId) {
-                const filteredProdi = prodiData.filter(p => p.jurusan_id == jurusanId);
-                filteredProdi.forEach(p => {
-                    const option = document.createElement('option');
-                    option.value = p.prodi_id;
-                    option.textContent = p.nama_prodi;
-                    prodiSelect.appendChild(option);
-                });
-            }
+
+            // Ambil value jurusan
+            const jurusanId = jurusanSelect.value;
+
+            if (!jurusanId) return; // Jika belum pilih jurusan, langsung return
+
+            // Filter prodi sesuai jurusanId
+            const filteredProdi = prodiData.filter(p => String(p.jurusan_id) === String(jurusanId));
+
+            // Tambahkan option ke dropdown Prodi
+            filteredProdi.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.prodi_id;
+                option.textContent = p.nama_prodi;
+                prodiSelect.appendChild(option);
+            });
         }
 
-        // Show Alert
-        function showAlert(message, type = 'success') {
-            const a = document.getElementById('alertContainer');
-            a.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert"><i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
-            setTimeout(() => {
-                const e = document.querySelector('.alert');
-                if (e) e.remove();
-            }, 5000);
-        }
-
-        // ================= TAMBAH MAHASISWA =================
-        document.getElementById('formTambahMahasiswa').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnTambah');
-            const btnText = btn.querySelector('.btn-text');
-            const spinner = btn.querySelector('.spinner-border');
-            btn.disabled = true;
-            btnText.classList.add('d-none');
-            spinner.classList.remove('d-none');
-
-            try {
-                const formData = new FormData(this);
-                const response = await fetch(window.location.pathname, {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-
-                if (result.success) {
-                    showAlert(result.message, 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('modalTambahMahasiswa')).hide();
-                    this.reset();
-                    setTimeout(() => { window.location.href = window.location.pathname; }, 1000);
-                } else {
-                    showAlert(result.message, 'danger');
-                }
-            } catch (err) {
-                showAlert('Terjadi kesalahan: ' + err.message, 'danger');
-            } finally {
-                btn.disabled = false;
-                btnText.classList.remove('d-none');
-                spinner.classList.add('d-none');
-            }
-        });
-
-        // ================= EDIT MAHASISWA =================
+        // Event untuk modal Edit: setelah set jurusan, set Prodi
         document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', async function() {
+            button.addEventListener('click', async function () {
                 const id = this.getAttribute('data-id');
                 try {
                     const formData = new FormData();
@@ -611,98 +629,24 @@ if (isset($_POST['action'])) {
                         document.getElementById('editKelas').value = data.kelas;
                         document.getElementById('editEmail').value = data.email || '';
                         document.getElementById('editAlamat').value = data.alamat || '';
-                        
-                        // Set jurusan dulu, baru update prodi
+
+                        // Set jurusan dulu
                         document.getElementById('editJurusan').value = data.jurusan_id || '';
+
+                        // Filter prodi berdasarkan jurusan yang dipilih
                         filterProdi('edit');
-                        setTimeout(() => {
-                            document.getElementById('editProdi').value = data.prodi_id || '';
-                        }, 50);
+
+                        // Set prodi yang sesuai mahasiswa
+                        document.getElementById('editProdi').value = data.prodi_id || '';
                     }
                 } catch (err) {
                     showAlert('Gagal memuat data', 'danger');
                 }
             });
         });
-
-        document.getElementById('formEditMahasiswa').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnEdit');
-            const btnText = btn.querySelector('.btn-text');
-            const spinner = btn.querySelector('.spinner-border');
-            btn.disabled = true;
-            btnText.classList.add('d-none');
-            spinner.classList.remove('d-none');
-
-            try {
-                const formData = new FormData(this);
-                const response = await fetch(window.location.pathname, {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-
-                if (result.success) {
-                    showAlert(result.message, 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('modalEditMahasiswa')).hide();
-                    setTimeout(() => { window.location.href = window.location.pathname; }, 1000);
-                } else {
-                    showAlert(result.message, 'danger');
-                }
-            } catch (err) {
-                showAlert('Terjadi kesalahan: ' + err.message, 'danger');
-            } finally {
-                btn.disabled = false;
-                btnText.classList.remove('d-none');
-                spinner.classList.add('d-none');
-            }
-        });
-
-        // ================= DELETE MAHASISWA =================
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', async function() {
-                const id = this.getAttribute('data-id');
-                const nama = this.getAttribute('data-nama');
-                if (confirm(`Apakah Anda yakin ingin menghapus mahasiswa "${nama}"?`)) {
-                    try {
-                        const formData = new FormData();
-                        formData.append('action', 'delete');
-                        formData.append('mahasiswa_id', id);
-                        const response = await fetch(window.location.pathname, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        const result = await response.json();
-
-                        if (result.success) {
-                            showAlert(result.message, 'success');
-                            setTimeout(() => { window.location.href = window.location.pathname; }, 1000);
-                        } else {
-                            showAlert(result.message, 'danger');
-                        }
-                    } catch (err) {
-                        showAlert('Terjadi kesalahan', 'danger');
-                    }
-                }
-            });
-        });
-
-        // ================= TOGGLE PASSWORD VISIBILITY =================
-        document.getElementById('toggleEditPassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('editPassword');
-            const passwordIcon = document.getElementById('editPasswordIcon');
-
-            if (passwordInput.type === 'text') {
-                passwordInput.type = 'password';
-                passwordIcon.classList.remove('bi-eye-slash');
-                passwordIcon.classList.add('bi-eye');
-            } else {
-                passwordInput.type = 'text';
-                passwordIcon.classList.remove('bi-eye');
-                passwordIcon.classList.add('bi-eye-slash');
-            }
-        });
     </script>
 
+
 </body>
+
 </html>

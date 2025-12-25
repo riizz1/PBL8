@@ -8,7 +8,7 @@ class MahasiswaModel
     public function __construct()
     {
         // Buat koneksi ke database langsung
-        $this->db = new mysqli('localhost', 'root', '', 'db_pbl8'); // Ganti sesuai DB kamu
+        $this->db = new mysqli('localhost', 'root', '', 'db_pbl8', 3307); // Ganti sesuai DB kamu
         if ($this->db->connect_error) {
             die("Koneksi gagal: " . $this->db->connect_error);
         }
@@ -23,13 +23,13 @@ class MahasiswaModel
                     m.mahasiswa_id,
                     m.nim,
                     m.nama_lengkap,
-                    m.kelas,
                     m.email,
                     m.alamat,
                     m.jurusan_id,
                     m.prodi_id,
-                    j.nama_jurusan AS jurusan,
-                    p.nama_prodi AS prodi,
+                    m.kelas,
+                    j.nama_jurusan AS nama_jurusan,
+                    p.nama_prodi AS nama_prodi,
                     m.created_at
                   FROM mahasiswa m
                   LEFT JOIN jurusan j ON m.jurusan_id = j.jurusan_id
@@ -52,7 +52,7 @@ class MahasiswaModel
      */
     public function getAllJurusan()
     {
-        $query = "SELECT jurusan_id, nama_jurusan AS jurusan FROM jurusan ORDER BY nama_jurusan ASC";
+        $query = "SELECT jurusan_id, nama_jurusan FROM jurusan ORDER BY nama_jurusan ASC";
         $result = $this->db->query($query);
         if (!$result)
             return [];

@@ -399,7 +399,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
                             <tr>
                                 <th>Nama Mahasiswa</th>
                                 <th>NIM</th>
+                                <th>Jurusan</th>
                                 <th>Prodi</th>
+                                <th>Kelas</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -408,7 +410,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
                                 <tr data-id="<?= $mahasiswa['mahasiswa_id'] ?>">
                                     <td class="col-nama"><?= htmlspecialchars($mahasiswa['nama_lengkap']) ?></td>
                                     <td class="col-nim"><?= htmlspecialchars($mahasiswa['nim']) ?></td>
+                                    <td class="col-jurusan"><?= htmlspecialchars($mahasiswa['jurusan']) ?></td>
                                     <td class="col-prodi"><?= htmlspecialchars($mahasiswa['prodi']) ?></td>
+                                    <td class="col-kelas"><?= htmlspecialchars($mahasiswa['kelas']) ?></td>
                                     <td class="col-aksi">
                                         <button class="btn btn-warning btn-sm edit-btn"
                                             data-id="<?= $mahasiswa['mahasiswa_id'] ?>" data-bs-toggle="modal"
@@ -491,9 +495,17 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         <div class="mb-3"><label class="form-label">Password <span
                                     class="text-danger">*</span></label><input type="password" name="password"
                                 class="form-control" required placeholder="Masukkan Password"></div>
+                        <div class="mb-3">
+                            <label class="form-label">Jurusan <span class="text-danger">*</span></label>
+                            <input type="text" name="jurusan" class="form-control" required
+                                placeholder="Masukkan Jurusan">
+                        </div>
                         <div class="mb-3"><label class="form-label">Prodi <span
                                     class="text-danger">*</span></label><input type="text" name="prodi"
                                 class="form-control" required placeholder="Masukkan Prodi"></div>
+                        <div class="mb-3"><label class="form-label">Kelas <span
+                                    class="text-danger">*</span></label><input type="text" name="kelas"
+                                class="form-control" required placeholder="Masukkan Kelas"></div>
                         <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email"
                                 class="form-control" placeholder="Masukkan Email"></div>
                         <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat"
@@ -539,9 +551,17 @@ $endData = min($offset + $itemsPerPage, $totalData);
                                 </button>
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Jurusan <span class="text-danger">*</span></label>
+                            <input type="text" name="jurusan" id="editJurusan" class="form-control" required>
+                        </div>
                         <div class="mb-3"><label class="form-label">Prodi <span
                                     class="text-danger">*</span></label><input type="text" name="prodi" id="editProdi"
                                 class="form-control" required></div>
+                        <div class="mb-3">
+                            <label class="form-label">Kelas <span class="text-danger">*</span></label>
+                            <input type="text" name="kelas" id="editKelas" class="form-control" required>
+                        </div>
                         <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email"
                                 id="editEmail" class="form-control"></div>
                         <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat"
@@ -619,7 +639,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         document.getElementById('editNim').value = data.nim;
                         document.getElementById('editUsername').value = data.username;
                         document.getElementById('editPassword').value = '';
+                        document.getElementById('editJurusan').value = data.jurusan;
                         document.getElementById('editProdi').value = data.prodi;
+                        document.getElementById('editKelas').value = data.kelas;
                         document.getElementById('editEmail').value = data.email || '';
                         document.getElementById('editAlamat').value = data.alamat || '';
                     }
