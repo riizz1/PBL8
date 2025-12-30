@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 23, 2025 at 09:28 AM
+-- Generation Time: Dec 30, 2025 at 04:33 AM
 -- Server version: 8.0.30
--- PHP Version: 8.3.26
+-- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -30,14 +30,14 @@ SET time_zone = "+00:00";
 CREATE TABLE `admin` (
   `user_id` int NOT NULL,
   `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_lengkap` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nidn` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `no_telepon` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `alamat` text COLLATE utf8mb4_general_ci,
-  `jenis_kelamin` enum('L','P') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `jabatan` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `status_aktif` enum('aktif','nonaktif') COLLATE utf8mb4_general_ci DEFAULT 'aktif',
+  `nama_lengkap` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nidn` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `no_telepon` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `alamat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `jenis_kelamin` enum('L','P') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `jabatan` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status_aktif` enum('aktif','nonaktif') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'aktif',
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `role_id` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
@@ -59,7 +59,7 @@ INSERT INTO `admin` (`user_id`, `username`, `nama_lengkap`, `nidn`, `email`, `no
 
 CREATE TABLE `jurusan` (
   `jurusan_id` int NOT NULL,
-  `nama_jurusan` varchar(100) NOT NULL
+  `nama_jurusan` varchar(100) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -67,10 +67,10 @@ CREATE TABLE `jurusan` (
 --
 
 INSERT INTO `jurusan` (`jurusan_id`, `nama_jurusan`) VALUES
-(5, 'Manajemen dan Bisnis'),
-(7, 'Teknik Elektro'),
-(4, 'Teknik Informatika'),
-(6, 'Teknik Mesin');
+(2, 'Manajemen dan Bisnis'),
+(4, 'Teknik Elektro'),
+(1, 'Teknik Informatika'),
+(3, 'Teknik Mesin');
 
 -- --------------------------------------------------------
 
@@ -83,15 +83,6 @@ CREATE TABLE `kategori` (
   `nama_kategori` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `deskripsi` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `kategori`
---
-
-INSERT INTO `kategori` (`kategori_id`, `nama_kategori`, `deskripsi`) VALUES
-(3, 'beasiswa', 'kategori ini berisi pengumuman khusus beasiswa'),
-(4, '213', ''),
-(5, 'ujian', 'kategori ini berisi tentang ujian');
 
 -- --------------------------------------------------------
 
@@ -110,6 +101,7 @@ CREATE TABLE `mahasiswa` (
   `kelas` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `alamat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `role_id` int NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -117,10 +109,8 @@ CREATE TABLE `mahasiswa` (
 -- Dumping data for table `mahasiswa`
 --
 
-INSERT INTO `mahasiswa` (`mahasiswa_id`, `nim`, `nama_lengkap`, `username`, `password`, `jurusan_id`, `prodi_id`, `kelas`, `email`, `alamat`, `created_at`) VALUES
-(19, '', 'user', 'user', '$2y$10$YCx2hsYuqH5umcd8KL805OhYGWCK/7qgUB65zRlYMrCoprlkn0T6.', NULL, NULL, '', NULL, NULL, '2025-12-16 07:57:19'),
-(23, '3312501027', 'Fariz Zikri Pohan', 'fariz', '$2y$10$ggm/WUCvTSjyJikIM3JW6umEb5RzzAVMcX3VJYU9bfJd4m88f12oe', 4, 5, 'IF1A-Pagi', 'farizpohan260107@gmail.com', 'Batam Center', '2025-12-23 07:59:40'),
-(24, '33125010277', 'Fariz Zikri Pohan', 'farizz', '$2y$10$owgo4lnSmHmKKFM.p68FLucHWdPpCNTARhOBjeDq8xaBg1BftNaKq', 4, 10, 'TRPL1A-Pagi', 'farizzp44@gmail.com', 'Batam Center', '2025-12-23 08:00:39');
+INSERT INTO `mahasiswa` (`mahasiswa_id`, `nim`, `nama_lengkap`, `username`, `password`, `jurusan_id`, `prodi_id`, `kelas`, `email`, `alamat`, `role_id`, `created_at`) VALUES
+(1, '', '', 'user', '$2y$10$8CoVrsPiwLNQCurpADi8CeBVWNGMTIcc3nrxvw9gIJYx2BhJAcPh.', NULL, NULL, '', NULL, NULL, 3, '2025-12-30 02:50:49');
 
 -- --------------------------------------------------------
 
@@ -140,18 +130,6 @@ CREATE TABLE `pengumuman` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `pengumuman`
---
-
-INSERT INTO `pengumuman` (`pengumuman_id`, `judul`, `isi`, `target_type`, `target_jurusan_id`, `target_prodi_id`, `target_kelas`, `kategori_id`, `created_at`) VALUES
-(18, '123', 'isi', 'jurusan', 4, 5, NULL, 3, '2025-12-17 07:57:21'),
-(19, '123', 'tes pengumuman', 'jurusan', 4, 5, 'IF1A-Pagi', 3, '2025-12-17 08:01:42'),
-(20, 'judul', 'isi', 'all', NULL, NULL, NULL, 4, '2025-12-17 08:07:33'),
-(21, 'judul2', 'isi', 'jurusan', 7, NULL, NULL, 3, '2025-12-17 08:10:47'),
-(22, 'jadwal ujian ATS', 'isi pengumuman', 'jurusan', 4, NULL, NULL, 3, '2025-12-17 08:11:59'),
-(23, 'jadwal ujian ATS', 'jadwal ujian untuk jurusan informatika akan dikeluarkan pada bulan januari 2026', 'jurusan', 4, 5, NULL, 3, '2025-12-23 08:12:02');
-
 -- --------------------------------------------------------
 
 --
@@ -160,7 +138,7 @@ INSERT INTO `pengumuman` (`pengumuman_id`, `judul`, `isi`, `target_type`, `targe
 
 CREATE TABLE `prodi` (
   `prodi_id` int NOT NULL,
-  `nama_prodi` varchar(100) NOT NULL,
+  `nama_prodi` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `jurusan_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -169,31 +147,31 @@ CREATE TABLE `prodi` (
 --
 
 INSERT INTO `prodi` (`prodi_id`, `nama_prodi`, `jurusan_id`) VALUES
-(5, 'Teknik Informatika-IF', 4),
-(6, 'Teknologi Geomatika-GM', 4),
-(7, 'Terapan Animasi-AN', 4),
-(8, 'Terapan Teknologi Rekayasa Multimedia-TRM', 4),
-(9, 'Terapan Rekayasa Keamanan Siber-RKS', 4),
-(10, 'Terapan Rekayasa Perangkat Lunak-TRPL', 4),
-(11, 'Teknik Komputer-TTK/S2', 4),
-(12, 'Teknologi Permainan-TP', 4),
-(13, 'Akuntansi-AK', 5),
-(14, 'Akuntansi Manajerial-AM', 5),
-(15, 'Administrasi Bisnis Terapan-AB', 5),
-(16, 'Logistik Perdagangan Internasional-LPI', 5),
-(17, 'Jalur Cepat Distribusi Barang-DB', 5),
-(18, 'Teknik Elektronika Manufaktur-EM', 7),
-(19, 'Teknologi Rekayasa Elektronika-TRE', 7),
-(20, 'Teknik Instrumentasi-IN', 7),
-(21, 'Teknik Mekatronika-MK', 7),
-(22, 'Teknologi Rekayasa Pembangkit Energi-RPE', 7),
-(23, 'Teknologi Rekayasa Robotika-TRR', 7),
-(24, 'Teknik Mesin-MS', 6),
-(25, 'Teknik Perawatan Pesawat Udara-TPPU', 6),
-(26, 'Teknologi Rekayasa Konstruksi Perkapalan-TRKP', 6),
-(27, 'Teknologi Rekayasa Pengelasan dan Fabrikasi-TRPF', 6),
-(28, 'Program Profesi Insinyur-PSPPI', 6),
-(29, 'Teknologi Rekayasa Metalurgi-MET', 6);
+(1, 'Teknik Informatika-IF', 1),
+(2, 'Teknologi Geomatika-GM', 1),
+(3, 'Terapan Animasi-AN', 1),
+(4, 'Terapan Teknologi Rekayasa Multimedia-TRM', 1),
+(5, 'Terapan Rekayasa Keamanan Siber-RKS', 1),
+(6, 'Terapan Rekayasa Perangkat Lunak-TRPL', 1),
+(7, 'Teknik Komputer-TTK/S2', 1),
+(8, 'Teknologi Permainan-TP', 1),
+(9, 'Akuntansi-AK', 2),
+(10, 'Akuntansi Manajerial-AM', 2),
+(11, 'Administrasi Bisnis Terapan-AB', 2),
+(12, 'Logistik Perdagangan Internasional-LPI', 2),
+(13, 'Jalur Cepat Distribusi Barang-DB', 2),
+(14, 'Teknik Mesin-MS', 3),
+(15, 'Teknik Perawatan Pesawat Udara-TPPU', 3),
+(16, 'Teknologi Rekayasa Konstruksi Perkapalan-TRKP', 3),
+(17, 'Teknologi Rekayasa Pengelasan dan Fabrikasi-TRPF', 3),
+(18, 'Program Profesi Insinyur-PSPPI', 3),
+(19, 'Teknologi Rekayasa Metalurgi-MET', 3),
+(20, 'Teknik Elektronika Manufaktur-EM', 4),
+(21, 'Teknologi Rekayasa Elektronika-TRE', 4),
+(22, 'Teknik Instrumentasi-IN', 4),
+(23, 'Teknik Mekatronika-MK', 4),
+(24, 'Teknologi Rekayasa Pembangkit Energi-RPE', 4),
+(25, 'Teknologi Rekayasa Robotika-TRR', 4);
 
 -- --------------------------------------------------------
 
@@ -249,7 +227,8 @@ ALTER TABLE `mahasiswa`
   ADD UNIQUE KEY `nim` (`nim`),
   ADD UNIQUE KEY `username` (`username`),
   ADD KEY `fk_mhs_jurusan` (`jurusan_id`),
-  ADD KEY `fk_mhs_prodi` (`prodi_id`);
+  ADD KEY `fk_mhs_prodi` (`prodi_id`),
+  ADD KEY `fk_mhs_role` (`role_id`);
 
 --
 -- Indexes for table `pengumuman`
@@ -289,31 +268,31 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `jurusan`
 --
 ALTER TABLE `jurusan`
-  MODIFY `jurusan_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `jurusan_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `kategori`
 --
 ALTER TABLE `kategori`
-  MODIFY `kategori_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `kategori_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `mahasiswa`
 --
 ALTER TABLE `mahasiswa`
-  MODIFY `mahasiswa_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `mahasiswa_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `pengumuman`
 --
 ALTER TABLE `pengumuman`
-  MODIFY `pengumuman_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `pengumuman_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `prodi`
 --
 ALTER TABLE `prodi`
-  MODIFY `prodi_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `prodi_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -336,7 +315,8 @@ ALTER TABLE `admin`
 --
 ALTER TABLE `mahasiswa`
   ADD CONSTRAINT `fk_mhs_jurusan` FOREIGN KEY (`jurusan_id`) REFERENCES `jurusan` (`jurusan_id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_mhs_prodi` FOREIGN KEY (`prodi_id`) REFERENCES `prodi` (`prodi_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_mhs_prodi` FOREIGN KEY (`prodi_id`) REFERENCES `prodi` (`prodi_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_mhs_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
 -- Constraints for table `pengumuman`

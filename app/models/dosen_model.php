@@ -13,23 +13,30 @@ class DosenModel
 
     public function getAll()
     {
-        // Ambil data dosen (role_id = 2)
-        // Alias user_id -> dosen_id biar nyambung dengan view
-        $sql = "SELECT user_id as dosen_id, nama_lengkap, nidn, username, email, no_telepon, alamat 
-                FROM admin 
-                WHERE role_id = 2 
-                ORDER BY nama_lengkap ASC";
-        
+        $sql = "SELECT 
+                user_id AS dosen_id,
+                nama_lengkap,
+                nidn,
+                username,
+                email,
+                no_telepon,
+                alamat
+            FROM admin
+            WHERE role_id = 2
+              AND username NOT IN ('admin', 'superadmin')
+            ORDER BY nama_lengkap ASC";
+
         $result = $this->db->query($sql);
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
+
 
     public function getById($id)
     {
         $sql = "SELECT user_id as dosen_id, nama_lengkap, nidn, username, email, no_telepon, alamat 
                 FROM admin 
                 WHERE user_id = ? AND role_id = 2";
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -43,16 +50,16 @@ class DosenModel
         $sql = "INSERT INTO admin 
                 (nama_lengkap, nidn, username, password, email, no_telepon, alamat, role_id) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, 2)";
-        
+
         $stmt = $this->db->prepare($sql);
-        
+
         // Binding parameter: s=string, i=integer (2 adalah role_id dosen)
         $stmt->bind_param(
             "sssssss",
             $data['nama_lengkap'],
             $data['nidn'],
             $data['username'],
-            $data['password'], 
+            $data['password'],
             $data['email'],
             $data['no_telepon'],
             $data['alamat']
@@ -71,9 +78,9 @@ class DosenModel
                     no_telepon = ?, 
                     alamat = ?
                 WHERE user_id = ? AND role_id = 2";
-        
+
         $stmt = $this->db->prepare($sql);
-        
+
         $stmt->bind_param(
             "sssssi",
             $data['nama_lengkap'],
@@ -96,7 +103,7 @@ class DosenModel
     }
 
     /* ===== VALIDASI ===== */
-    
+
     // Cek apakah username sudah dipakai
     public function usernameExists($username, $excludeId = null)
     {

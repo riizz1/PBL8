@@ -1,12 +1,4 @@
-<footer class="bg-dark text-white text-center py-4"
-    style="
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        z-index: 999;
-    ">
-    
+<footer class="bg-dark text-white text-center py-4 mt-auto">
     <style>
         footer {
             font-family: 'Poppins', sans-serif;

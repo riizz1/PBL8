@@ -98,9 +98,8 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
     /* Active state */
     .nav-link.active {
       color: #fff !important;
-      background: linear-gradient(135deg, #1acaffff 0%, #1acaffff 100%);
-      /* Black smoke gradient */
-      box-shadow: 0 4px 12px rgba(26, 26, 26, 0.4);
+      background: linear-gradient(135deg, #51c8e9 0%, #3ab0d9 100%);
+      box-shadow: 0 4px 12px rgba(81, 200, 233, 0.4);
       position: relative;
     }
 

@@ -11,9 +11,9 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
 }
 
 // Proteksi role - hanya admin/dosen yang bisa akses
-if (!isset($_SESSION['role_name']) || ($_SESSION['role_name'] !== 'admin' && $_SESSION['role_name'] !== 'dosen')) {
+if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
     echo "<script>
-        alert('Akses ditolak! Halaman ini hanya untuk Admin/Dosen.');
+        alert('Akses ditolak! Halaman ini hanya untuk Dosen.');
         location.href='/PBL8/views/auth/login.php';
     </script>";
     exit();
@@ -328,11 +328,11 @@ $prodiList = $mahasiswaController->getAllProdi();
     </style>
 </head>
 
-<body class="mahasiswa-page">
+<body class="mahasiswa-page d-flex flex-column min-vh-100">
     <?php include("header.php"); ?>
 
     <!-- ================= KONTEN ================= -->
-    <main class="container my-4 mb-5 pb-5">
+    <main class="container my-4 flex-fill">
         <div class="mb-3">
             <h4 class="fw-bold mb-1">Mahasiswa</h4>
             <button class="btn btn-secondary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalTambahMahasiswa">
@@ -470,7 +470,7 @@ $prodiList = $mahasiswaController->getAllProdi();
                         data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formTambahMahasiswa">
+                    <form id="formTambahMahasiswa" method="POST">
                         <input type="hidden" name="action" value="create">
                         <div class="mb-3"><label class="form-label">Nama Lengkap <span
                                     class="text-danger">*</span></label><input type="text" name="nama_lengkap"
@@ -499,7 +499,7 @@ $prodiList = $mahasiswaController->getAllProdi();
                             </select></div>
                         <div class="mb-3"><label class="form-label">Kelas <span
                                     class="text-danger">*</span></label><input type="text" name="kelas"
-                                class="form-control" required placeholder="Contoh: IF1A-Pagi"></div>
+                                class="form-control" required placeholder="Masukkan Kelas | Contoh: IF1A-Pagi"></div>
                         <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email"
                                 id="tambahEmail" class="form-control" placeholder="Masukkan Email"></div>
                         <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat"
@@ -514,14 +514,11 @@ $prodiList = $mahasiswaController->getAllProdi();
     </div>
 
     <!-- MODAL EDIT MAHASISWA -->
-    <div class="modal fade" id="modalEditMahasiswa" tabindex="-1" aria-labelledby="modalEditMahasiswaLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="modalEditMahasiswa" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title w-100 text-center" id="modalEditMahasiswaLabel">
-                        Edit Data Mahasiswa
-                    </h5>
+                    <h5 class="modal-title w-100 text-center">Edit Data Mahasiswa</h5>
                     <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
                         data-bs-dismiss="modal"></button>
                 </div>
@@ -534,20 +531,7 @@ $prodiList = $mahasiswaController->getAllProdi();
                                 id="editNama" class="form-control" required></div>
                         <div class="mb-3"><label class="form-label">NIM <span class="text-danger">*</span></label><input
                                 type="text" name="nim" id="editNim" class="form-control" required></div>
-                        <div class="mb-3"><label class="form-label">Username <span
-                                    class="text-danger">*</span></label><input type="text" name="username"
-                                id="editUsername" class="form-control" required></div>
-                        <div class="mb-3">
-                            <label class="form-label">Password Baru <span class="text-muted">(Kosongkan jika tidak ingin
-                                    mengubah)</span></label>
-                            <div class="input-group">
-                                <input type="password" name="password" id="editPassword" class="form-control"
-                                    placeholder="Masukkan password baru">
-                                <button class="btn btn-outline-secondary" type="button" id="toggleEditPassword"><i
-                                        class="bi bi-eye" id="editPasswordIcon"></i></button>
-                            </div>
-                        </div>
-                        <!-- Dropdown Jurusan & Prodi -->
+                        <!-- TIDAK ADA USERNAME & PASSWORD -->
                         <div class="mb-3"><label class="form-label">Jurusan <span
                                     class="text-danger">*</span></label><select name="jurusan_id" id="editJurusan"
                                 class="form-select" required onchange="filterProdi('edit')">
@@ -575,11 +559,32 @@ $prodiList = $mahasiswaController->getAllProdi();
         </div>
     </div>
 
+
     <?php include("footer.php"); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Data prodi untuk Dropdown Dinamis
+        // ================= HELPER FUNCTIONS =================
+        function showAlert(message, type = 'success') {
+            const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+            document.getElementById('alertContainer').innerHTML = alertHtml;
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // ================= FILTER PRODI BERDASARKAN JURUSAN =================
         const prodiData = <?= json_encode($prodiList) ?>;
 
         function filterProdi(type) {
@@ -592,7 +597,7 @@ $prodiList = $mahasiswaController->getAllProdi();
             // Ambil value jurusan
             const jurusanId = jurusanSelect.value;
 
-            if (!jurusanId) return; // Jika belum pilih jurusan, langsung return
+            if (!jurusanId) return;
 
             // Filter prodi sesuai jurusanId
             const filteredProdi = prodiData.filter(p => String(p.jurusan_id) === String(jurusanId));
@@ -601,31 +606,129 @@ $prodiList = $mahasiswaController->getAllProdi();
             filteredProdi.forEach(p => {
                 const option = document.createElement('option');
                 option.value = p.prodi_id;
-                option.textContent = p.nama_prodi;
+                option.textContent = p.prodi;
                 prodiSelect.appendChild(option);
             });
         }
 
-        // Event untuk modal Edit: setelah set jurusan, set Prodi
+        // ================= FORM TAMBAH MAHASISWA =================
+        document.getElementById('formTambahMahasiswa').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnTambah');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner-border');
+
+            // Show loading
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+
+            try {
+                const formData = new FormData(this);
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Tutup modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalTambahMahasiswa'));
+                    modal.hide();
+
+                    // Reset form
+                    this.reset();
+
+                    // Tampilkan notifikasi sukses
+                    showAlert(result.message, 'success');
+
+                    // Reload page setelah 1 detik
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Terjadi kesalahan: ' + error.message, 'danger');
+            } finally {
+                // Hide loading
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                spinner.classList.add('d-none');
+            }
+        });
+
+        // ================= FORM EDIT MAHASISWA =================
+        document.getElementById('formEditMahasiswa').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnEdit');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner-border');
+
+            // Show loading
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+
+            try {
+                const formData = new FormData(this);
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Tutup modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditMahasiswa'));
+                    modal.hide();
+
+                    // Tampilkan notifikasi sukses
+                    showAlert(result.message, 'success');
+
+                    // Reload page setelah 1 detik
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Terjadi kesalahan: ' + error.message, 'danger');
+            } finally {
+                // Hide loading
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                spinner.classList.add('d-none');
+            }
+        });
+
+        // ================= LOAD DATA UNTUK EDIT =================
         document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', async function () {
                 const id = this.getAttribute('data-id');
+
                 try {
                     const formData = new FormData();
                     formData.append('action', 'get');
                     formData.append('mahasiswa_id', id);
+
                     const response = await fetch(window.location.pathname, {
                         method: 'POST',
                         body: formData
                     });
+
                     const data = await response.json();
 
                     if (data) {
                         document.getElementById('editMahasiswaId').value = data.mahasiswa_id;
                         document.getElementById('editNama').value = data.nama_lengkap;
                         document.getElementById('editNim').value = data.nim;
-                        document.getElementById('editUsername').value = data.username;
-                        document.getElementById('editPassword').value = '';
                         document.getElementById('editKelas').value = data.kelas;
                         document.getElementById('editEmail').value = data.email || '';
                         document.getElementById('editAlamat').value = data.alamat || '';
@@ -641,6 +744,42 @@ $prodiList = $mahasiswaController->getAllProdi();
                     }
                 } catch (err) {
                     showAlert('Gagal memuat data', 'danger');
+                }
+            });
+        });
+
+        // ================= DELETE MAHASISWA =================
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', async function () {
+                const id = this.getAttribute('data-id');
+                const nama = this.getAttribute('data-nama');
+
+                if (!confirm(`Apakah Anda yakin ingin menghapus mahasiswa ${nama}?`)) {
+                    return;
+                }
+
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'delete');
+                    formData.append('mahasiswa_id', id);
+
+                    const response = await fetch(window.location.pathname, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showAlert(result.message, 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showAlert(result.message, 'danger');
+                    }
+                } catch (error) {
+                    showAlert('Terjadi kesalahan: ' + error.message, 'danger');
                 }
             });
         });

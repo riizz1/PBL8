@@ -20,34 +20,34 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'mahasiswa') {
 }
 
 require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
- $controller = new PengumumanControllerUser();
- $data = $controller->index();
+$controller = new PengumumanControllerUser();
+$data = $controller->index();
 
 // Ambil data mentah dari controller (bukan yang sudah dipaginasi oleh controller lama)
 // Menggunakan key yang sama seperti di admin
- $allPengumuman = $data['pengumuman'] ?? [];
- $kategoriList = $data['kategori'] ?? [];
- $bulanList = $data['bulanList'] ?? [];
- $tahunList = $data['tahunList'] ?? [];
+$allPengumuman = $data['pengumuman'] ?? [];
+$kategoriList = $data['kategori'] ?? [];
+$bulanList = $data['bulanList'] ?? [];
+$tahunList = $data['tahunList'] ?? [];
 
- $kategoriDipilih = $data['kategoriDipilih'] ?? null;
- $bulanDipilih = $data['bulanDipilih'] ?? null;
- $tahunDipilih = $data['tahunDipilih'] ?? null;
+$kategoriDipilih = $data['kategoriDipilih'] ?? null;
+$bulanDipilih = $data['bulanDipilih'] ?? null;
+$tahunDipilih = $data['tahunDipilih'] ?? null;
 
 // ================= PAGINATION LOGIC (PERSIS ADMIN) =================
- $itemsPerPage = 10;
- $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
- $offset = ($currentPage - 1) * $itemsPerPage;
+$itemsPerPage = 10;
+$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($currentPage - 1) * $itemsPerPage;
 
- $totalData = count($allPengumuman);
- $totalPages = ceil($totalData / $itemsPerPage);
+$totalData = count($allPengumuman);
+$totalPages = ceil($totalData / $itemsPerPage);
 
 // Slice data untuk current page
- $pengumuman = array_slice($allPengumuman, $offset, $itemsPerPage);
+$pengumuman = array_slice($allPengumuman, $offset, $itemsPerPage);
 
 // Calculate display range
- $startData = $totalData > 0 ? $offset + 1 : 0;
- $endData = min($offset + $itemsPerPage, $totalData);
+$startData = $totalData > 0 ? $offset + 1 : 0;
+$endData = min($offset + $itemsPerPage, $totalData);
 // =========================================================================
 ?>
 
@@ -553,7 +553,7 @@ require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
                 flex-direction: column;
                 gap: 10px;
             }
-            
+
             .pagination {
                 flex-direction: column;
                 gap: 15px;
@@ -677,6 +677,7 @@ require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
             </div>
 
             <!-- PAGINATION (MENGGUNAKAN LOGIKA PHP DARI ADMIN) -->
+            <!-- PAGINATION (MENGGUNAKAN LOGIKA PHP DARI ADMIN) -->
             <?php if ($totalData > 0): ?>
                 <div class="pagination">
                     <div class="page-info">
@@ -684,9 +685,21 @@ require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
                     </div>
 
                     <div class="page-buttons">
+                        <?php
+                        // Build query string untuk pagination
+                        $queryParams = [];
+                        if (!empty($kategoriDipilih))
+                            $queryParams[] = 'kategori=' . urlencode($kategoriDipilih);
+                        if (!empty($bulanDipilih))
+                            $queryParams[] = 'bulan=' . $bulanDipilih;
+                        if (!empty($tahunDipilih))
+                            $queryParams[] = 'tahun=' . $tahunDipilih;
+                        $baseQuery = !empty($queryParams) ? '&' . implode('&', $queryParams) : '';
+                        ?>
+
                         <!-- Previous Button -->
                         <?php if ($currentPage > 1): ?>
-                            <a href="?kategori=<?= urlencode($kategoriDipilih); ?>&bulan=<?= $bulanDipilih; ?>&tahun=<?= $tahunDipilih; ?>&page=<?= $currentPage - 1; ?>" class="page-btn">← Sebelumnya</a>
+                            <a href="?page=<?= $currentPage - 1; ?><?= $baseQuery; ?>" class="page-btn">← Sebelumnya</a>
                         <?php else: ?>
                             <button class="page-btn" disabled>← Sebelumnya</button>
                         <?php endif; ?>
@@ -698,26 +711,26 @@ require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
                         $end = min($totalPages, $currentPage + $range);
 
                         if ($start > 1) {
-                            echo '<a href="?kategori=' . urlencode($kategoriDipilih) . '&bulan=' . $bulanDipilih . '&tahun=' . $tahunDipilih . '&page=1" class="page-btn">1</a>';
+                            echo '<a href="?page=1' . $baseQuery . '" class="page-btn">1</a>';
                             if ($start > 2)
                                 echo '<span class="page-dots">...</span>';
                         }
 
                         for ($i = $start; $i <= $end; $i++) {
                             $active = ($i == $currentPage) ? 'active' : '';
-                            echo '<a href="?kategori=' . urlencode($kategoriDipilih) . '&bulan=' . $bulanDipilih . '&tahun=' . $tahunDipilih . '&page=' . $i . '" class="page-btn ' . $active . '">' . $i . '</a>';
+                            echo '<a href="?page=' . $i . $baseQuery . '" class="page-btn ' . $active . '">' . $i . '</a>';
                         }
 
                         if ($end < $totalPages) {
                             if ($end < $totalPages - 1)
                                 echo '<span class="page-dots">...</span>';
-                            echo '<a href="?kategori=' . urlencode($kategoriDipilih) . '&bulan=' . $bulanDipilih . '&tahun=' . $tahunDipilih . '&page=' . $totalPages . '" class="page-btn">' . $totalPages . '</a>';
+                            echo '<a href="?page=' . $totalPages . $baseQuery . '" class="page-btn">' . $totalPages . '</a>';
                         }
                         ?>
 
                         <!-- Next Button -->
                         <?php if ($currentPage < $totalPages): ?>
-                            <a href="?kategori=<?= urlencode($kategoriDipilih); ?>&bulan=<?= $bulanDipilih; ?>&tahun=<?= $tahunDipilih; ?>&page=<?= $currentPage + 1; ?>" class="page-btn">Selanjutnya →</a>
+                            <a href="?page=<?= $currentPage + 1; ?><?= $baseQuery; ?>" class="page-btn">Selanjutnya →</a>
                         <?php else: ?>
                             <button class="page-btn" disabled>Selanjutnya →</button>
                         <?php endif; ?>
@@ -793,13 +806,13 @@ require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
             document.body.style.overflow = 'auto';
         }
 
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == document.getElementById('detailModal')) {
                 closeModal();
             }
         }
 
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape') closeModal();
         });
 

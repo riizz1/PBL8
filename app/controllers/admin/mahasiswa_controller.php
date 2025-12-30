@@ -1,49 +1,32 @@
 <?php
-// PBL8/app/controllers/admin/MahasiswaController.php
+// PBL8/app/controllers/admin/mahasiswa_controller.php
 
 class MahasiswaControllerAdmin {
     private $mahasiswaModel;
     
     public function __construct() {
-        // Load config
-        include __DIR__ . '/../../../config/config.php';
-        
-        // Load model
         require_once __DIR__ . '/../../models/mahasiswa_model.php';
-        
-        $this->mahasiswaModel = new MahasiswaModel($config);
+        $this->mahasiswaModel = new MahasiswaModelAdmin();
     }
     
-    /**
-     * Get all mahasiswa
-     */
     public function index() {
         return $this->mahasiswaModel->getAll();
     }
     
-    /**
-     * Get all jurusan
-     */
     public function getAllJurusan() {
         return $this->mahasiswaModel->getAllJurusan();
     }
     
-    /**
-     * Get all prodi
-     */
     public function getAllProdi() {
         return $this->mahasiswaModel->getAllProdi();
     }
     
-    /**
-     * Create mahasiswa
-     */
     public function create() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return ['success' => false, 'message' => 'Invalid request method'];
         }
         
-        // Validasi input
+        // Validasi input required
         $required = ['nim', 'nama_lengkap', 'username', 'password', 'jurusan_id', 'prodi_id', 'kelas'];
         foreach ($required as $field) {
             if (empty($_POST[$field])) {
@@ -51,17 +34,17 @@ class MahasiswaControllerAdmin {
             }
         }
         
-        // Check if NIM already exists
+        // Check NIM
         if ($this->mahasiswaModel->nimExists($_POST['nim'])) {
             return ['success' => false, 'message' => 'NIM sudah terdaftar'];
         }
         
-        // Check if username already exists
+        // Check username
         if ($this->mahasiswaModel->usernameExists($_POST['username'])) {
             return ['success' => false, 'message' => 'Username sudah digunakan'];
         }
         
-        // Check if email already exists (if provided)
+        // Check email (jika ada)
         if (!empty($_POST['email']) && $this->mahasiswaModel->emailExists($_POST['email'])) {
             return ['success' => false, 'message' => 'Email sudah digunakan'];
         }
@@ -78,12 +61,15 @@ class MahasiswaControllerAdmin {
             'alamat' => trim($_POST['alamat'] ?? '')
         ];
         
-        return $this->mahasiswaModel->create($data);
+        $result = $this->mahasiswaModel->create($data);
+        
+        if ($result) {
+            return ['success' => true, 'message' => 'Mahasiswa berhasil ditambahkan'];
+        } else {
+            return ['success' => false, 'message' => 'Gagal menambahkan mahasiswa'];
+        }
     }
     
-    /**
-     * Update mahasiswa
-     */
     public function update() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return ['success' => false, 'message' => 'Invalid request method'];
@@ -91,7 +77,7 @@ class MahasiswaControllerAdmin {
         
         $id = intval($_POST['mahasiswa_id']);
         
-        // Validasi input
+        // Validasi input required
         $required = ['nim', 'nama_lengkap', 'jurusan_id', 'prodi_id', 'kelas'];
         foreach ($required as $field) {
             if (empty($_POST[$field])) {
@@ -99,12 +85,12 @@ class MahasiswaControllerAdmin {
             }
         }
         
-        // Check if NIM already exists (exclude current mahasiswa)
+        // Check NIM (exclude current)
         if ($this->mahasiswaModel->nimExists($_POST['nim'], $id)) {
             return ['success' => false, 'message' => 'NIM sudah digunakan oleh mahasiswa lain'];
         }
         
-        // Check if email already exists (if provided and exclude current mahasiswa)
+        // Check email (jika ada, exclude current)
         if (!empty($_POST['email']) && $this->mahasiswaModel->emailExists($_POST['email'], $id)) {
             return ['success' => false, 'message' => 'Email sudah digunakan oleh mahasiswa lain'];
         }
@@ -119,12 +105,15 @@ class MahasiswaControllerAdmin {
             'alamat' => trim($_POST['alamat'] ?? '')
         ];
         
-        return $this->mahasiswaModel->update($id, $data);
+        $result = $this->mahasiswaModel->update($id, $data);
+        
+        if ($result) {
+            return ['success' => true, 'message' => 'Data mahasiswa berhasil diperbarui'];
+        } else {
+            return ['success' => false, 'message' => 'Gagal memperbarui data mahasiswa'];
+        }
     }
     
-    /**
-     * Delete mahasiswa
-     */
     public function delete() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return ['success' => false, 'message' => 'Invalid request method'];
@@ -136,33 +125,27 @@ class MahasiswaControllerAdmin {
             return ['success' => false, 'message' => 'ID tidak valid'];
         }
         
-        return $this->mahasiswaModel->delete($id);
+        $result = $this->mahasiswaModel->delete($id);
+        
+        if ($result) {
+            return ['success' => true, 'message' => 'Mahasiswa berhasil dihapus'];
+        } else {
+            return ['success' => false, 'message' => 'Anda tidak memiliki izin untuk menghapus data'];
+        }
     }
     
-    /**
-     * Get mahasiswa by ID (for edit)
-     */
     public function getById($id) {
         return $this->mahasiswaModel->getById($id);
     }
     
-    /**
-     * Check if NIM exists (for AJAX validation)
-     */
     public function checkNimExists($nim, $excludeId = null) {
         return $this->mahasiswaModel->nimExists($nim, $excludeId);
     }
     
-    /**
-     * Check if username exists (for AJAX validation)
-     */
     public function checkUsernameExists($username, $excludeId = null) {
         return $this->mahasiswaModel->usernameExists($username, $excludeId);
     }
     
-    /**
-     * Check if email exists (for AJAX validation)
-     */
     public function checkEmailExists($email, $excludeId = null) {
         return $this->mahasiswaModel->emailExists($email, $excludeId);
     }
