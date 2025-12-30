@@ -10,7 +10,7 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
     exit();
 }
 
-// Proteksi role - hanya mahasiswa yang bisa akses
+// Proteksi role - hanya superadmin yang bisa akses
 if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
     echo "<script>
         alert('Akses ditolak! Halaman ini hanya untuk superadmin.');
@@ -43,6 +43,24 @@ if (isset($_POST['action'])) {
         case 'get':
             $id = intval($_POST['dosen_id']);
             echo json_encode($dosenController->getById($id));
+            exit();
+
+        case 'checkUsername':
+            $username = $_POST['username'];
+            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+            echo json_encode(['exists' => $dosenController->checkUsernameExists($username, $excludeId)]);
+            exit();
+
+        case 'checkNidn':
+            $nidn = $_POST['nidn'];
+            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+            echo json_encode(['exists' => $dosenController->checkNidnExists($nidn, $excludeId)]);
+            exit();
+
+        case 'checkEmail':
+            $email = $_POST['email'];
+            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+            echo json_encode(['exists' => $dosenController->checkEmailExists($email, $excludeId)]);
             exit();
     }
 }
@@ -111,52 +129,39 @@ $endData = min($offset + $itemsPerPage, $totalData);
         /* ================= HEADER TABEL BIRU CERAH ================= */
         table.table {
             margin-bottom: 0;
+            width: 100%;
+            border-collapse: collapse;
         }
 
         table.table thead th {
             background-color: #51c8e9 !important;
             color: white !important;
             text-align: center !important;
-            padding: 15px 20px;
+            padding: 15px 10px;
             font-weight: 600;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
         table.table thead th:first-child {
-            text-align: left !important;
-        }
-
-        table.table thead th:nth-child(1) {
-            width: 40%;
-        }
-
-        table.table thead th:nth-child(2) {
-            width: 20%;
-        }
-
-        table.table thead th:nth-child(3) {
-            width: 30%;
-        }
-
-        table.table thead th:nth-child(4) {
-            width: 10%;
+            text-align: center !important;
         }
 
         /* ================= TBODY STYLING ================= */
         table.table tbody td {
-            padding: 15px 20px;
+            padding: 15px 10px;
             border-bottom: 1px solid #f0f0f0;
             color: #333;
             font-size: 14px;
+            vertical-align: middle;
         }
 
         table.table tbody tr {
             transition: background 0.2s;
         }
 
-        /* Zebra stripe baris tabel */
         table.table tbody tr:nth-child(odd) td {
             background-color: #ffffff !important;
         }
@@ -169,9 +174,9 @@ $endData = min($offset + $itemsPerPage, $totalData);
             background-color: #e8f8fd !important;
         }
 
-        /* Nama dosen rata kiri */
         table.table tbody td:first-child {
-            text-align: left !important;
+            text-align: center !important;
+            font-weight: bold;
         }
 
         /* ================= EMPTY STATE ================= */
@@ -255,39 +260,24 @@ $endData = min($offset + $itemsPerPage, $totalData);
             font-weight: bold;
         }
 
-        /* ================= MODAL GELAP ================= */
+        /* ================= MODAL ================= */
         .modal-content {
-            background-color: #0000004f;
-            color: white;
             border-radius: 10px;
             padding: 20px;
         }
 
-        /* Border input pada modal */
-        #modalTambahDosen .modal-content input,
-        #modalTambahDosen .modal-content textarea {
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select {
             border: 1px solid #b0b0b0 !important;
             color: black !important;
             background-color: white !important;
+            transition: all 0.3s ease;
         }
 
-        #modalTambahDosen .modal-content input:focus,
-        #modalTambahDosen .modal-content textarea:focus {
-            border: 1px solid #51c8e9 !important;
-            background-color: #f2f2f2 !important;
-            color: black !important;
-            box-shadow: 0 0 0 0.2rem rgba(81, 200, 233, 0.25) !important;
-        }
-
-        #modalEditDosen .modal-content input,
-        #modalEditDosen .modal-content textarea {
-            border: 1px solid #b0b0b0 !important;
-            color: black !important;
-            background-color: white !important;
-        }
-
-        #modalEditDosen .modal-content input:focus,
-        #modalEditDosen .modal-content textarea:focus {
+        .modal-content input:focus,
+        .modal-content textarea:focus,
+        .modal-content select:focus {
             border: 1px solid #51c8e9 !important;
             background-color: #f2f2f2 !important;
             color: black !important;
@@ -311,12 +301,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
             height: 1rem;
         }
 
-        /* Container utama */
-        main.container {
-            margin-bottom: 100px !important;
-            padding-bottom: 50px !important;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .table-header {
@@ -338,11 +322,11 @@ $endData = min($offset + $itemsPerPage, $totalData);
     </style>
 </head>
 
-<body class="dosen-page">
+<body class="dosen-page d-flex flex-column min-vh-100">
     <?php include("header.php"); ?>
 
     <!-- ================= KONTEN ================= -->
-    <main class="container my-4 mb-5 pb-5">
+    <main class="container my-4 flex-fill">
         <div class="mb-3">
             <h4 class="fw-bold mb-1">Dosen</h4>
             <button class="btn btn-secondary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalTambahDosen">
@@ -374,38 +358,33 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Nama Dosen</th>
-                                <th>NIDN</th>
-                                <th>Email</th>
-                                <th>Aksi</th>
+                                <th style="width: 5%;">No</th>
+                                <th style="width: 30%;">Nama Dosen</th>
+                                <th style="width: 15%;">NIDN</th>
+                                <th style="width: 15%;">Username</th>
+                                <th style="width: 22%;">Email</th>
+                                <th style="width: 13%;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="dosenTableBody">
-                            <?php foreach ($dosenList as $dosen): ?>
-                                <tr data-id="<?= $dosen['dosen_id'] ?>">
-                                    <!-- Pastikan key 'nama_lengkap' ada (ada di select model) -->
+                            <?php
+                            foreach ($dosenList as $index => $dosen):
+                                $nomor = $offset + $index + 1;
+                                ?>
+                                <tr data-id="<?= $dosen['user_id'] ?>">
+                                    <td><?= $nomor ?></td>
                                     <td class="col-nama"><?= htmlspecialchars($dosen['nama_lengkap']) ?></td>
-
-                                    <!-- Pastikan key 'nidn' ada (ada di select model) -->
                                     <td class="col-nidn"><?= htmlspecialchars($dosen['nidn']) ?></td>
-
-                                    <!-- Pastikan key 'email' ada (ada di select model) -->
+                                    <td class="col-username"><?= htmlspecialchars($dosen['username']) ?></td>
                                     <td class="col-email"><?= htmlspecialchars($dosen['email']) ?></td>
-
-                                    <!-- KODE YANG BENAR -->
                                     <td class="col-aksi">
                                         <button class="btn btn-warning btn-sm edit-btn"
-                                            data-id="<?= $dosen['dosen_id'] ?>"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modalEditDosen">
-                                            <i class="bi bi-pencil-fill"></i>
-                                        </button>
-
+                                            data-id="<?= $dosen['user_id'] ?>" data-bs-toggle="modal"
+                                            data-bs-target="#modalEditDosen"><i class="bi bi-pencil-fill"></i></button>
                                         <button class="btn btn-danger btn-sm delete-btn"
-                                            data-id="<?= $dosen['dosen_id'] ?>"
-                                            data-nama="<?= htmlspecialchars($dosen['nama_lengkap']) ?>">
-                                            <i class="bi bi-trash-fill"></i>
-                                        </button>
+                                            data-id="<?= $dosen['user_id'] ?>"
+                                            data-nama="<?= htmlspecialchars($dosen['nama_lengkap']) ?>"><i
+                                                class="bi bi-trash-fill"></i></button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -413,7 +392,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     </table>
                 </div>
 
-                <!-- PAGINATION -->
+                <!-- Pagination -->
                 <?php if ($totalData > 0): ?>
                     <div class="pagination">
                         <div class="page-info">
@@ -469,7 +448,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         <?php endif; ?>
     </main>
 
-    <!-- ================= MODAL TAMBAH DOSEN ================= -->
+    <!-- MODAL TAMBAH DOSEN -->
     <div class="modal fade" id="modalTambahDosen" tabindex="-1" aria-labelledby="modalTambahDosenLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -482,44 +461,69 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formTambahDosen">
+                    <form id="formTambahDosen" method="POST">
                         <input type="hidden" name="action" value="create">
+                        
                         <div class="mb-3">
                             <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="nama_lengkap" required
+                            <input type="text" name="nama_lengkap" class="form-control" required
                                 placeholder="Masukkan Nama Lengkap">
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">NIDN <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="nidn" required placeholder="Masukkan NIDN">
+                            <input type="text" name="nidn" id="tambahNidn" class="form-control" required
+                                placeholder="Masukkan NIDN">
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Username <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="username" required
+                            <input type="text" name="username" id="tambahUsername" class="form-control" required
                                 placeholder="Masukkan Username">
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Password <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control" name="password" required
+                            <input type="password" name="password" class="form-control" required
                                 placeholder="Masukkan Password">
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" name="email" required placeholder="Masukkan Email">
+                            <input type="email" name="email" id="tambahEmail" class="form-control" required
+                                placeholder="Masukkan Email">
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">No. Telepon</label>
-                            <input type="text" class="form-control" name="no_telepon"
+                            <input type="text" name="no_telepon" class="form-control"
                                 placeholder="Masukkan No. Telepon">
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select name="jenis_kelamin" class="form-select">
+                                <option value="">Pilih Jenis Kelamin</option>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jabatan</label>
+                            <input type="text" name="jabatan" class="form-control"
+                                placeholder="Contoh: Dosen, Kepala Program Studi">
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Alamat</label>
-                            <textarea class="form-control" name="alamat" rows="2"
+                            <textarea name="alamat" class="form-control" rows="2"
                                 placeholder="Masukkan Alamat"></textarea>
                         </div>
+
                         <button type="submit" class="btn btn-primary w-100" id="btnTambah">
                             <span class="btn-text">Simpan</span>
-                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                            <span class="spinner-border spinner-border-sm d-none"></span>
                         </button>
                     </form>
                 </div>
@@ -527,14 +531,12 @@ $endData = min($offset + $itemsPerPage, $totalData);
         </div>
     </div>
 
-    <!-- ================= MODAL EDIT DOSEN ================= -->
-    <div class="modal fade" id="modalEditDosen" tabindex="-1" aria-labelledby="modalEditDosenLabel" aria-hidden="true">
+    <!-- MODAL EDIT DOSEN -->
+    <div class="modal fade" id="modalEditDosen" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title w-100 text-center" id="modalEditDosenLabel">
-                        Edit Data Dosen
-                    </h5>
+                    <h5 class="modal-title w-100 text-center">Edit Data Dosen</h5>
                     <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
                         data-bs-dismiss="modal"></button>
                 </div>
@@ -542,29 +544,63 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     <form id="formEditDosen">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="dosen_id" id="editDosenId">
+
                         <div class="mb-3">
                             <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="nama_lengkap" id="editNama" required>
+                            <input type="text" name="nama_lengkap" id="editNama" class="form-control" required>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">NIDN <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="nidn" id="editNidn" required>
+                            <input type="text" name="nidn" id="editNidn" class="form-control" required>
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Username <span class="text-danger">*</span></label>
+                            <input type="text" name="username" id="editUsername" class="form-control" required
+                                placeholder="Masukkan Username">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password <small class="text-muted">(Kosongkan jika tidak ingin
+                                    diubah)</small></label>
+                            <input type="password" name="password" id="editPassword" class="form-control"
+                                placeholder="Masukkan Password Baru (Opsional)">
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" name="email" id="editEmail" required>
+                            <input type="email" name="email" id="editEmail" class="form-control" required>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">No. Telepon</label>
-                            <input type="text" class="form-control" name="no_telepon" id="editTelepon">
+                            <input type="text" name="no_telepon" id="editTelepon" class="form-control">
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select name="jenis_kelamin" id="editJenisKelamin" class="form-select">
+                                <option value="">Pilih Jenis Kelamin</option>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jabatan</label>
+                            <input type="text" name="jabatan" id="editJabatan" class="form-control"
+                                placeholder="Contoh: Dosen, Kepala Program Studi">
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Alamat</label>
-                            <textarea class="form-control" name="alamat" id="editAlamat" rows="2"></textarea>
+                            <textarea name="alamat" id="editAlamat" class="form-control" rows="2"></textarea>
                         </div>
+
                         <button type="submit" class="btn btn-success w-100" id="btnEdit">
                             <span class="btn-text">Simpan Perubahan</span>
-                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                            <span class="spinner-border spinner-border-sm d-none"></span>
                         </button>
                     </form>
                 </div>
@@ -576,7 +612,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Show Alert
+        // ================= HELPER FUNCTIONS =================
         function showAlert(message, type = 'success') {
             const alertHtml = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert">
@@ -595,15 +631,14 @@ $endData = min($offset + $itemsPerPage, $totalData);
             }, 5000);
         }
 
-        // ================= TAMBAH DOSEN =================
-        document.getElementById('formTambahDosen').addEventListener('submit', async function(e) {
+        // ================= FORM TAMBAH DOSEN =================
+        document.getElementById('formTambahDosen').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const btn = document.getElementById('btnTambah');
             const btnText = btn.querySelector('.btn-text');
             const spinner = btn.querySelector('.spinner-border');
 
-            // Show loading
             btn.disabled = true;
             btnText.classList.add('d-none');
             spinner.classList.remove('d-none');
@@ -618,18 +653,12 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 const result = await response.json();
 
                 if (result.success) {
-                    showAlert(result.message, 'success');
-
-                    // Close modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalTambahDosen'));
                     modal.hide();
-
-                    // Reset form
                     this.reset();
-
-                    // Reload page after 1 second
+                    showAlert(result.message, 'success');
                     setTimeout(() => {
-                        window.location.href = window.location.pathname;
+                        window.location.reload();
                     }, 1000);
                 } else {
                     showAlert(result.message, 'danger');
@@ -637,22 +666,61 @@ $endData = min($offset + $itemsPerPage, $totalData);
             } catch (error) {
                 showAlert('Terjadi kesalahan: ' + error.message, 'danger');
             } finally {
-                // Hide loading
                 btn.disabled = false;
                 btnText.classList.remove('d-none');
                 spinner.classList.add('d-none');
             }
         });
 
-        // ================= EDIT DOSEN =================
+        // ================= FORM EDIT DOSEN =================
+        document.getElementById('formEditDosen').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnEdit');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner-border');
+
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+
+            try {
+                const formData = new FormData(this);
+                const response = await fetch(window.location.pathname, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditDosen'));
+                    modal.hide();
+                    showAlert(result.message, 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Terjadi kesalahan: ' + error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                spinner.classList.add('d-none');
+            }
+        });
+
+        // ================= LOAD DATA UNTUK EDIT =================
         document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', async function() {
-                const dosenId = this.getAttribute('data-id');
+            button.addEventListener('click', async function () {
+                const id = this.getAttribute('data-id');
 
                 try {
                     const formData = new FormData();
                     formData.append('action', 'get');
-                    formData.append('dosen_id', dosenId);
+                    formData.append('dosen_id', id);
 
                     const response = await fetch(window.location.pathname, {
                         method: 'POST',
@@ -662,78 +730,37 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     const data = await response.json();
 
                     if (data) {
-                        document.getElementById('editDosenId').value = data.dosen_id;
+                        document.getElementById('editDosenId').value = data.user_id;
                         document.getElementById('editNama').value = data.nama_lengkap;
                         document.getElementById('editNidn').value = data.nidn;
+                        document.getElementById('editUsername').value = data.username;
+                        document.getElementById('editPassword').value = '';
                         document.getElementById('editEmail').value = data.email || '';
                         document.getElementById('editTelepon').value = data.no_telepon || '';
+                        document.getElementById('editJenisKelamin').value = data.jenis_kelamin || '';
+                        document.getElementById('editJabatan').value = data.jabatan || '';
                         document.getElementById('editAlamat').value = data.alamat || '';
                     }
-                } catch (error) {
-                    showAlert('Gagal memuat data: ' + error.message, 'danger');
+                } catch (err) {
+                    showAlert('Gagal memuat data', 'danger');
                 }
             });
         });
 
-        document.getElementById('formEditDosen').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const btn = document.getElementById('btnEdit');
-            const btnText = btn.querySelector('.btn-text');
-            const spinner = btn.querySelector('.spinner-border');
-
-            // Show loading
-            btn.disabled = true;
-            btnText.classList.add('d-none');
-            spinner.classList.remove('d-none');
-
-            try {
-                const formData = new FormData(this);
-                const response = await fetch(window.location.pathname, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showAlert(result.message, 'success');
-
-                    // Close modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditDosen'));
-                    modal.hide();
-
-                    // Reload page after 1 second
-                    setTimeout(() => {
-                        window.location.href = window.location.pathname;
-                    }, 1000);
-                } else {
-                    showAlert(result.message, 'danger');
-                }
-            } catch (error) {
-                showAlert('Terjadi kesalahan: ' + error.message, 'danger');
-            } finally {
-                // Hide loading
-                btn.disabled = false;
-                btnText.classList.remove('d-none');
-                spinner.classList.add('d-none');
-            }
-        });
-
         // ================= DELETE DOSEN =================
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', async function() {
-                const dosenId = this.getAttribute('data-id');
-                const namaDosen = this.getAttribute('data-nama');
+            button.addEventListener('click', async function () {
+                const id = this.getAttribute('data-id');
+                const nama = this.getAttribute('data-nama');
 
-                if (!confirm(`Apakah Anda yakin ingin menghapus dosen "${namaDosen}"?`)) {
+                if (!confirm(`Apakah Anda yakin ingin menghapus dosen ${nama}?`)) {
                     return;
                 }
 
                 try {
                     const formData = new FormData();
                     formData.append('action', 'delete');
-                    formData.append('dosen_id', dosenId);
+                    formData.append('dosen_id', id);
 
                     const response = await fetch(window.location.pathname, {
                         method: 'POST',
@@ -744,10 +771,8 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
                     if (result.success) {
                         showAlert(result.message, 'success');
-
-                        // Reload page after 1 second
                         setTimeout(() => {
-                            window.location.href = window.location.pathname;
+                            window.location.reload();
                         }, 1000);
                     } else {
                         showAlert(result.message, 'danger');

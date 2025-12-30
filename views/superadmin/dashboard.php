@@ -10,7 +10,7 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
     exit();
 }
 
-// Proteksi role - hanya mahasiswa yang bisa akses
+// Proteksi role - hanya superadmin yang bisa akses
 if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
     echo "<script>
         alert('Akses ditolak! Halaman ini hanya untuk superadmin.');
@@ -26,17 +26,7 @@ $dashboardController = new DashboardController();
 
 // Get data dari controller
 $stats = $dashboardController->getStatistics();
-$categoryData = $dashboardController->getAnnouncementsByCategory();
 $recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
-$monthlyTrend = $dashboardController->getMonthlyTrend();
-$recentUsers = $dashboardController->getRecentAdmin(5);
-
-// Prepare data untuk Chart.js
-$categoryLabels = array_column($categoryData, 'nama_kategori');
-$categoryValues = array_column($categoryData, 'jumlah_pengumuman');
-
-$trendLabels = array_column($monthlyTrend, 'bulan');
-$trendValues = array_column($monthlyTrend, 'jumlah');
 ?>
 
 <!DOCTYPE html>
@@ -45,121 +35,260 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Superadmin Dashboard | Polibatam</title>
-    <!-- Bootstrap CSS -->
+    <title>Superadmin | Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        /* ================= DASHBOARD ================= */
+        /* ================= DASHBOARD SIMPLE & CLEAN ================= */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
         }
 
+        .main-content {
+            padding: 40px;
+            min-height: calc(100vh - 150px);
+        }
+
+        /* ===== HEADER ===== */
+        .dashboard-header {
+            margin-bottom: 35px;
+        }
+
+        .dashboard-header h2 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 2rem;
+        }
+
+        .dashboard-header p {
+            color: #718096;
+            margin: 0;
+        }
+
+        /* ===== STAT CARD SIMPLE ===== */
         .stat-card {
-            border-radius: 10px;
-            padding: 20px;
-            color: white;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            height: 100%;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
 
-        .stat-card i {
-            font-size: 2.5rem;
-            opacity: 0.8;
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
         }
 
-        .stat-card h3 {
+        .stat-icon.icon-dosen {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .stat-icon.icon-mahasiswa {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .stat-icon.icon-pengumuman {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .stat-icon.icon-kategori {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .stat-number {
             font-size: 2rem;
-            font-weight: bold;
+            font-weight: 700;
+            color: #2d3748;
             margin: 10px 0 5px 0;
         }
 
-        .stat-card p {
-            margin: 0;
-            opacity: 0.9;
+        .stat-label {
+            font-size: 0.9rem;
+            color: #718096;
+            font-weight: 500;
         }
 
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* ===== QUICK ACCESS ===== */
+        .quick-access-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
         }
 
-        .bg-gradient-success {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        .quick-access-card h5 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
         }
 
-        .bg-gradient-info {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .bg-gradient-warning {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        }
-
-        .card {
-            border: none;
+        .quick-btn {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            background-color: white;
-            border-bottom: 2px solid #f0f0f0;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .table thead th {
-            background-color: #667eea;
-            color: white;
-            border: none;
-        }
-
-        .badge-custom {
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.85rem;
-        }
-
-        .quick-action-btn {
-            border-radius: 8px;
-            padding: 15px;
+            padding: 20px;
+            text-align: center;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+            color: #2d3748;
         }
 
-        .quick-action-btn:hover {
-            transform: scale(1.05);
+        .quick-btn:hover {
+            border-color: #cbd5e0;
+            background-color: #f7fafc;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: #2d3748;
         }
 
-        .activity-item {
-            padding: 10px;
-            border-left: 3px solid #667eea;
+        .quick-btn i {
+            font-size: 2rem;
             margin-bottom: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
+            display: block;
         }
 
-        .activity-item:hover {
-            background-color: #e9ecef;
+        .quick-btn .btn-dosen i {
+            color: #1976d2;
         }
 
-        /* Memberi jarak antara konten dan footer */
-        .container-fluid {
-            margin-bottom: 100px;
-            /* Sesuaikan jarak sesuai kebutuhan */
+        .quick-btn .btn-mahasiswa i {
+            color: #7b1fa2;
         }
 
-        /* Alternatif: beri padding-bottom pada body */
-        body {
-            padding-bottom: 100px;
-            /* Ruang untuk footer */
+        .quick-btn .btn-pengumuman i {
+            color: #388e3c;
+        }
+
+        .quick-btn .btn-kategori i {
+            color: #f57c00;
+        }
+
+        .quick-btn span {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* ===== PENGUMUMAN TERBARU ===== */
+        .announcement-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .announcement-card h5 {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .announcement-item {
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .announcement-item:hover {
+            border-color: #cbd5e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transform: translateX(3px);
+        }
+
+        .announcement-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .announcement-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .announcement-meta {
+            font-size: 0.8rem;
+            color: #718096;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .announcement-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a0aec0;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .dashboard-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+
+            .quick-btn i {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -167,335 +296,128 @@ $trendValues = array_column($monthlyTrend, 'jumlah');
 <body>
     <?php include('header.php'); ?>
 
-    <div class="container-fluid my-4">
-        <!-- Page Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold mb-1">Dashboard Superadmin</h2>
-                <p class="text-muted mb-0">Selamat datang, <?= htmlspecialchars($_SESSION['username']) ?>!</p>
-            </div>
-            <div class="text-muted">
-                <i class="fas fa-calendar-alt me-2"></i>
-                <?= date('d F Y') ?>
-            </div>
+    <div class="main-content">
+        <!-- ===== HEADER ===== -->
+        <div class="dashboard-header">
+            <h2><i class="bi bi-speedometer2 me-2"></i>Dashboard Superadmin</h2>
+            <p>Selamat datang, <?= htmlspecialchars($_SESSION['username']) ?>!</p>
         </div>
 
-        <!-- Statistics Cards -->
+        <!-- ===== STATISTIK ===== -->
         <div class="row g-3 mb-4">
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card bg-gradient-primary">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="mb-1">Total Dosen</p>
-                            <h3><?= number_format($stats['total_dosen']) ?></h3>
-                        </div>
-                        <i class="fas fa-chalkboard-teacher"></i>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon icon-dosen">
+                        <i class="bi bi-person-badge"></i>
                     </div>
+                    <div class="stat-number"><?= number_format($stats['total_dosen']) ?></div>
+                    <div class="stat-label">Total Dosen</div>
                 </div>
             </div>
 
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card bg-gradient-success">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="mb-1">Total Mahasiswa</p>
-                            <h3><?= number_format($stats['total_mahasiswa']) ?></h3>
-                        </div>
-                        <i class="fas fa-user-graduate"></i>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon icon-mahasiswa">
+                        <i class="bi bi-people"></i>
                     </div>
+                    <div class="stat-number"><?= number_format($stats['total_mahasiswa']) ?></div>
+                    <div class="stat-label">Total Mahasiswa</div>
                 </div>
             </div>
 
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card bg-gradient-info">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="mb-1">Total Pengumuman</p>
-                            <h3><?= number_format($stats['total_pengumuman']) ?></h3>
-                        </div>
-                        <i class="fas fa-bullhorn"></i>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon icon-pengumuman">
+                        <i class="bi bi-megaphone"></i>
                     </div>
+                    <div class="stat-number"><?= number_format($stats['total_pengumuman']) ?></div>
+                    <div class="stat-label">Total Pengumuman</div>
                 </div>
             </div>
 
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card bg-gradient-warning">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="mb-1">Total Kategori</p>
-                            <h3><?= number_format($stats['total_kategori']) ?></h3>
-                        </div>
-                        <i class="fas fa-tags"></i>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon icon-kategori">
+                        <i class="bi bi-tags"></i>
                     </div>
+                    <div class="stat-number"><?= number_format($stats['total_kategori']) ?></div>
+                    <div class="stat-label">Total Kategori</div>
                 </div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-bolt me-2"></i>Quick Actions
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <a href="kelola_dosen.php" class="btn btn-primary w-100 quick-action-btn">
-                            <i class="fas fa-user-plus fa-2x mb-2 d-block"></i>
-                            Tambah Dosen
-                        </a>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="kelola_mahasiswa.php" class="btn btn-success w-100 quick-action-btn">
-                            <i class="fas fa-users fa-2x mb-2 d-block"></i>
-                            Kelola Mahasiswa
-                        </a>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="kelola_pengumuman.php" class="btn btn-info w-100 quick-action-btn">
-                            <i class="fas fa-clipboard-list fa-2x mb-2 d-block"></i>
-                            Kelola Pengumuman
-                        </a>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="kelola_kategori.php" class="btn btn-warning w-100 quick-action-btn">
-                            <i class="fas fa-folder fa-2x mb-2 d-block"></i>
-                            Kelola Kategori
-                        </a>
-                    </div>
+        <!-- ===== QUICK ACCESS ===== -->
+        <div class="quick-access-card">
+            <h5>Akses Cepat</h5>
+            <div class="row g-3">
+                <div class="col-lg-3 col-md-6">
+                    <a href="dosen.php" class="quick-btn">
+                        <div class="btn-dosen">
+                            <i class="bi bi-person-plus"></i>
+                            <span>Kelola Dosen</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <a href="mahasiswa.php" class="quick-btn">
+                        <div class="btn-mahasiswa">
+                            <i class="bi bi-people"></i>
+                            <span>Kelola Mahasiswa</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <a href="pengumuman.php" class="quick-btn">
+                        <div class="btn-pengumuman">
+                            <i class="bi bi-megaphone"></i>
+                            <span>Kelola Pengumuman</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <a href="kategori.php" class="quick-btn">
+                        <div class="btn-kategori">
+                            <i class="bi bi-tags"></i>
+                            <span>Kelola Kategori</span>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Charts Row -->
-        <div class="row mb-4">
-            <!-- Category Chart -->
-            <div class="col-lg-6 mb-3">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-pie me-2"></i>Pengumuman Per Kategori
-                    </div>
-                    <div class="card-body">
-                        <canvas id="categoryChart"></canvas>
-                    </div>
-                </div>
-            </div>
+        <!-- ===== PENGUMUMAN TERBARU ===== -->
+        <div class="announcement-card">
+            <h5>
+                <span><i class="bi bi-clock-history me-2"></i>Pengumuman Terbaru</span>
+                <a href="pengumuman.php" class="btn btn-sm btn-outline-secondary">Lihat Semua</a>
+            </h5>
 
-            <!-- Trend Chart -->
-            <div class="col-lg-6 mb-3">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-line me-2"></i>Trend Pengumuman (6 Bulan Terakhir)
-                    </div>
-                    <div class="card-body">
-                        <canvas id="trendChart"></canvas>
-                    </div>
+            <?php if (empty($recentAnnouncements)): ?>
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>Belum ada pengumuman</p>
                 </div>
-            </div>
-        </div>
-
-        <!-- Tables Row -->
-        <div class="row">
-            <!-- Category Report Table -->
-            <div class="col-lg-6 mb-3">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-table me-2"></i>Laporan Per Kategori
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Kategori</th>
-                                        <th class="text-center">Jumlah</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (empty($categoryData)): ?>
-                                        <tr>
-                                            <td colspan="3" class="text-center text-muted">
-                                                <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                <p class="mb-0">Belum ada data kategori</p>
-                                            </td>
-                                        </tr>
-                                    <?php else: ?>
-                                        <?php foreach ($categoryData as $index => $category): ?>
-                                            <tr>
-                                                <td><?= $index + 1 ?></td>
-                                                <td>
-                                                    <i class="fas fa-tag text-primary me-2"></i>
-                                                    <?= htmlspecialchars($category['nama_kategori']) ?>
-                                                </td>
-                                                <td class="text-center">
-                                                    <span class="badge bg-primary badge-custom">
-                                                        <?= $category['jumlah_pengumuman'] ?> Pengumuman
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+            <?php else: ?>
+                <?php foreach ($recentAnnouncements as $announcement): ?>
+                    <div class="announcement-item">
+                        <div class="announcement-title">
+                            <?= htmlspecialchars($announcement['judul']) ?>
+                        </div>
+                        <div class="announcement-meta">
+                            <span><i class="bi bi-calendar3 me-1"></i><?= date('d M Y', strtotime($announcement['created_at'])) ?></span>
+                            <span class="announcement-badge">
+                                <i class="bi bi-tag me-1"></i><?= htmlspecialchars($announcement['nama_kategori'] ?? 'Umum') ?>
+                            </span>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Recent Activities -->
-            <div class="col-lg-6 mb-3">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <span><i class="fas fa-clock me-2"></i>Pengumuman Terbaru</span>
-                        <a href="kelola_pengumuman.php" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
-                    </div>
-                    <div class="card-body">
-                        <?php if (empty($recentAnnouncements)): ?>
-                            <div class="text-center text-muted py-4">
-                                <i class="fas fa-inbox fa-3x mb-3"></i>
-                                <p class="mb-0">Belum ada pengumuman</p>
-                            </div>
-                        <?php else: ?>
-                            <?php foreach ($recentAnnouncements as $announcement): ?>
-                                <div class="activity-item">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="flex-grow-1">
-                                            <h6 class="mb-1"><?= htmlspecialchars($announcement['judul']) ?></h6>
-                                            <small class="text-muted">
-                                                <i class="fas fa-tag me-1"></i>
-                                                <?= htmlspecialchars($announcement['nama_kategori'] ?? 'Umum') ?>
-                                            </small>
-                                        </div>
-                                        <small class="text-muted ms-2">
-                                            <?= date('d M Y', strtotime($announcement['created_at'])) ?>
-                                        </small>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <!-- Recent Users Card -->
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <i class="fas fa-users me-2"></i>User Terbaru
-                    </div>
-                    <div class="card-body">
-                        <?php if (empty($recentUsers)): ?>
-                            <div class="text-center text-muted py-3">
-                                <i class="fas fa-user-slash fa-2x mb-2"></i>
-                                <p class="mb-0">Belum ada user baru</p>
-                            </div>
-                        <?php else: ?>
-                            <div class="list-group list-group-flush">
-                                <?php foreach ($recentUsers as $user): ?>
-                                    <div class="list-group-item px-0">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <i class="fas fa-user-circle text-primary me-2"></i>
-                                                <strong><?= htmlspecialchars($user['username']) ?></strong>
-                                                <span class="badge bg-secondary ms-2">
-                                                    <?= htmlspecialchars($user['role_name']) ?>
-                                                </span>
-                                            </div>
-                                            <small class="text-muted">
-                                                <?= date('d M Y', strtotime($user['created_at'])) ?>
-                                            </small>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 
     <?php include('footer.php'); ?>
 
-    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Chart.js Implementation -->
-    <script>
-        // Category Pie Chart
-        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-        const categoryChart = new Chart(categoryCtx, {
-            type: 'doughnut',
-            data: {
-                labels: <?= json_encode($categoryLabels) ?>,
-                datasets: [{
-                    label: 'Jumlah Pengumuman',
-                    data: <?= json_encode($categoryValues) ?>,
-                    backgroundColor: [
-                        'rgba(102, 126, 234, 0.8)',
-                        'rgba(245, 87, 108, 0.8)',
-                        'rgba(79, 172, 254, 0.8)',
-                        'rgba(250, 112, 154, 0.8)',
-                        'rgba(118, 75, 162, 0.8)',
-                        'rgba(254, 225, 64, 0.8)',
-                        'rgba(0, 242, 254, 0.8)'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    title: {
-                        display: false
-                    }
-                }
-            }
-        });
-
-        // Trend Line Chart
-        const trendCtx = document.getElementById('trendChart').getContext('2d');
-        const trendChart = new Chart(trendCtx, {
-            type: 'line',
-            data: {
-                labels: <?= json_encode($trendLabels) ?>,
-                datasets: [{
-                    label: 'Jumlah Pengumuman',
-                    data: <?= json_encode($trendValues) ?>,
-                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                    borderColor: 'rgba(102, 126, 234, 1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,
-                    pointBackgroundColor: 'rgba(102, 126, 234, 1)',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointHoverRadius: 7
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                }
-            }
-        });
-    </script>
 </body>
 
 </html>

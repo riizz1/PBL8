@@ -164,6 +164,9 @@ class PengumumanControllerAdmin
     /**
      * KIRIM EMAIL
      */
+    /**
+     * KIRIM EMAIL - UPDATED dengan PHPMailer
+     */
     public function kirimEmail($post)
     {
         if (!isset($post['pengumuman_id'])) {
@@ -172,6 +175,12 @@ class PengumumanControllerAdmin
                 'message' => 'ID pengumuman tidak valid'
             ];
         }
+
+        // Load PHPMailer & Email Service
+        require_once __DIR__ . '/../../../vendor/phpmailer/src/Exception.php';
+        require_once __DIR__ . '/../../../vendor/phpmailer/src/PHPMailer.php';
+        require_once __DIR__ . '/../../../vendor/phpmailer/src/SMTP.php';
+        require_once __DIR__ . '/../../services/email_service.php';
 
         // Get detail pengumuman
         $pengumuman = $this->model->getById($post['pengumuman_id']);
@@ -201,76 +210,73 @@ class PengumumanControllerAdmin
             ];
         }
 
+        // Filter recipients yang punya email valid
+        $validRecipients = array_filter($recipients, function ($r) {
+            return !empty($r['email']) && filter_var($r['email'], FILTER_VALIDATE_EMAIL);
+        });
+
+        if (empty($validRecipients)) {
+            return [
+                'success' => false,
+                'message' => 'Tidak ada email mahasiswa yang valid'
+            ];
+        }
+
+        // Initialize Email Service
+        $emailService = new EmailService();
+
         // Kirim email
         $successCount = 0;
         $failCount = 0;
+        $errors = [];
 
-        foreach ($recipients as $recipient) {
-            $to = $recipient['email'];
-            $subject = "[Pengumuman] " . $pengumuman['judul'];
+        foreach ($validRecipients as $recipient) {
+            try {
+                if ($emailService->sendPengumuman($recipient, $pengumuman)) {
+                    $successCount++;
+                } else {
+                    $failCount++;
+                    $errors[] = $recipient['email'];
+                }
 
-            // HTML Email Template
-            $message = "
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); 
-                          color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-                .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-                .footer { text-align: center; margin-top: 20px; color: #777; font-size: 12px; }
-                h1 { margin: 0; font-size: 24px; }
-                .kategori { display: inline-block; background: #fff; color: #2193b0; 
-                           padding: 5px 15px; border-radius: 20px; margin-top: 10px; font-size: 14px; }
-            </style>
-        </head>
-        <body>
-            <div class='container'>
-                <div class='header'>
-                    <h1>📢 Pengumuman Baru</h1>
-                    <span class='kategori'>" . htmlspecialchars($pengumuman['nama_kategori']) . "</span>
-                </div>
-                <div class='content'>
-                    <p>Halo <strong>" . htmlspecialchars($recipient['nama_lengkap']) . "</strong>,</p>
-                    <h2>" . htmlspecialchars($pengumuman['judul']) . "</h2>
-                    <p>" . nl2br(htmlspecialchars($pengumuman['isi'])) . "</p>
-                    <hr>
-                    <p><small>Dikirim pada: " . date('d F Y, H:i', strtotime($pengumuman['created_at'])) . " WIB</small></p>
-                </div>
-                <div class='footer'>
-                    <p>Email ini dikirim secara otomatis. Mohon tidak membalas email ini.</p>
-                    <p>&copy; " . date('Y') . " Sistem Informasi Kampus</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        ";
+                // Delay kecil untuk menghindari spam detection
+                usleep(100000); // 0.1 detik
 
-            // Headers untuk HTML email
-            $headers = "MIME-Version: 1.0" . "\r\n";
-            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $headers .= "From: noreply@kampus.ac.id" . "\r\n";
-
-            // Kirim email
-            if (mail($to, $subject, $message, $headers)) {
-                $successCount++;
-            } else {
+            } catch (Exception $e) {
                 $failCount++;
+                $errors[] = $recipient['email'];
+                error_log("Email Error: " . $e->getMessage());
             }
         }
 
-        return [
-            'success' => true,
-            'message' => "Email berhasil dikirim ke {$successCount} mahasiswa" .
-                ($failCount > 0 ? " ({$failCount} gagal)" : ""),
-            'detail' => [
-                'total' => count($recipients),
-                'success' => $successCount,
-                'failed' => $failCount
-            ]
-        ];
+        // Response
+        if ($successCount > 0) {
+            $message = "✅ Email berhasil dikirim ke {$successCount} mahasiswa";
+            if ($failCount > 0) {
+                $message .= " ({$failCount} gagal)";
+            }
+
+            return [
+                'success' => true,
+                'message' => $message,
+                'detail' => [
+                    'total' => count($validRecipients),
+                    'success' => $successCount,
+                    'failed' => $failCount
+                ]
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => "❌ Gagal mengirim email ke semua penerima",
+                'detail' => [
+                    'total' => count($validRecipients),
+                    'success' => 0,
+                    'failed' => $failCount,
+                    'errors' => $errors
+                ]
+            ];
+        }
     }
 }
 ?>

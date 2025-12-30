@@ -294,7 +294,7 @@ class PengumumanModel
     // Method untuk mendapatkan email mahasiswa berdasarkan target pengumuman
     public function getEmailMahasiswaByTarget($targetData)
     {
-        $query = "SELECT DISTINCT m.email, m.nama_lengkap 
+        $query = "SELECT DISTINCT m.email, m.nama_lengkap, m.nim 
               FROM mahasiswa m
               WHERE 1=1";
 
@@ -323,7 +323,7 @@ class PengumumanModel
             }
         } elseif ($targetData['target_type'] === 'prodi') {
             // Logika khusus jika target type hanya prodi (misal select prodi tapi jurusan null)
-             if (!empty($targetData['target_kelas'])) {
+            if (!empty($targetData['target_kelas'])) {
                 $query .= " AND m.prodi_id = ? AND m.kelas = ?";
                 $params = [$targetData['target_prodi_id'], $targetData['target_kelas']];
                 $types = "is";
@@ -333,11 +333,11 @@ class PengumumanModel
                 $types = "i";
             }
         } elseif ($targetData['target_type'] === 'kelas') {
-             // Logika khusus jika target type hanya kelas
-             $query .= " AND m.prodi_id = ? AND m.kelas = ?";
-             // Note: Biasanya kelas butuh prodi context, jadi pakai prodi_id
-             $params = [$targetData['target_prodi_id'], $targetData['target_kelas']];
-             $types = "is";
+            // Logika khusus jika target type hanya kelas
+            $query .= " AND m.prodi_id = ? AND m.kelas = ?";
+            // Note: Biasanya kelas butuh prodi context, jadi pakai prodi_id
+            $params = [$targetData['target_prodi_id'], $targetData['target_kelas']];
+            $types = "is";
         }
 
         $stmt = $this->db->prepare($query);

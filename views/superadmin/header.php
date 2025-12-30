@@ -81,19 +81,17 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
       transition: transform 0.3s ease;
     }
 
-    /* Ganti bagian ini di ketiga file header */
-
     .nav-link:hover {
-      color: #1a1a1a !important;
-      /* Black smoke */
+      color: #51c8e9 !important;
       transform: translateY(-2px);
-      background: rgba(26, 26, 26, 0.1);
+      background: rgba(81, 200, 233, 0.1);
     }
 
     .nav-link:hover svg {
       transform: scale(1.1);
     }
 
+    /* Active state */
     .nav-link.active {
       color: #fff !important;
       background: linear-gradient(135deg, #51c8e9 0%, #3ab0d9 100%);
@@ -164,8 +162,6 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
       opacity: 1;
       transform: translateY(0);
     }
-
-    
 
     /* Profile dropdown icon */
     #profileDropdown {
@@ -282,7 +278,7 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
 
         <!-- Icon kanan -->
         <ul class="navbar-nav align-items-center right-icons">
-         
+
 
           <!-- Dropdown Profile -->
           <li class="nav-item dropdown">
@@ -306,12 +302,12 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
     const profileLink = document.getElementById('profileDropdown');
     const dropdownMenu = profileLink.nextElementSibling;
 
-    profileLink.addEventListener('click', function(e) {
+    profileLink.addEventListener('click', function (e) {
       e.preventDefault();
       dropdownMenu.classList.toggle('show');
     });
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       if (!profileLink.contains(e.target) && !dropdownMenu.contains(e.target)) {
         dropdownMenu.classList.remove('show');
       }

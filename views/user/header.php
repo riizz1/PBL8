@@ -82,13 +82,10 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
       transition: transform 0.3s ease;
     }
 
-    /* Ganti bagian ini di ketiga file header */
-
     .nav-link:hover {
-      color: #1a1a1aff !important;
-      /* Black smoke */
+      color: #51c8e9 !important;
       transform: translateY(-2px);
-      background: rgba(26, 26, 26, 0.1);
+      background: rgba(81, 200, 233, 0.1);
     }
 
     .nav-link:hover svg {
@@ -133,6 +130,7 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
       transform: scale(1.1);
     }
 
+    /* Dropdown custom */
     .dropdown-menu {
       right: 0;
       left: auto;
@@ -166,6 +164,7 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
       transform: translateY(0);
     }
 
+    /* Profile dropdown icon */
     #profileDropdown {
       cursor: pointer;
     }
@@ -178,6 +177,7 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
       transform: rotate(10deg) scale(1.1);
     }
 
+    /* Tombol hamburger */
     .navbar-toggler {
       border: none;
       outline: none;
@@ -192,6 +192,7 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
       filter: invert(1);
     }
 
+    /* Saat collapse */
     @media (max-width: 991.98px) {
       .navbar-collapse {
         position: relative;
@@ -229,19 +230,6 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
         width: 3px;
         height: 100%;
         bottom: 0;
-      }
-
-      .navbar-nav .text-dark {
-        white-space: nowrap;
-        margin-right: 10px;
-      }
-
-      .navbar-nav .text-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-weight: 700;
       }
     }
   </style>
@@ -305,13 +293,13 @@ $namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
     // Toggle dropdown manual
     const profileLink = document.getElementById('profileDropdown');
     const profileDropdown = profileLink.nextElementSibling;
-    profileLink.addEventListener('click', function(e) {
+    profileLink.addEventListener('click', function (e) {
       e.preventDefault();
       profileDropdown.classList.toggle('show');
     });
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       if (!profileLink.contains(e.target) && !profileDropdown.contains(e.target)) {
         profileDropdown.classList.remove('show');
       }
