@@ -20,10 +20,8 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
 }
 
 // Load controller ADMIN
-// ... (proteksi halaman tetap sama)
-
 require_once __DIR__ . '/../../app/controllers/admin/mahasiswa_controller.php';
-$mahasiswaController = new MahasiswaControllerAdmin();
+ $mahasiswaController = new MahasiswaControllerAdmin();
 
 // HANDLE AJAX REQUESTS
 if (isset($_POST['action'])) {
@@ -84,25 +82,25 @@ if (isset($_POST['action'])) {
 }
 
 // Pagination settings
-$itemsPerPage = 10;
-$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-$offset = ($currentPage - 1) * $itemsPerPage;
+ $itemsPerPage = 10;
+ $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+ $offset = ($currentPage - 1) * $itemsPerPage;
 
 // Get all mahasiswa (Model getAll sudah difilter otomatis oleh controller admin)
-$allMahasiswa = $mahasiswaController->index();
-$totalData = count($allMahasiswa);
-$totalPages = ceil($totalData / $itemsPerPage);
+ $allMahasiswa = $mahasiswaController->index();
+ $totalData = count($allMahasiswa);
+ $totalPages = ceil($totalData / $itemsPerPage);
 
 // Slice data for current page
-$mahasiswaList = array_slice($allMahasiswa, $offset, $itemsPerPage);
+ $mahasiswaList = array_slice($allMahasiswa, $offset, $itemsPerPage);
 
 // Calculate display range
-$startData = $totalData > 0 ? $offset + 1 : 0;
-$endData = min($offset + $itemsPerPage, $totalData);
+ $startData = $totalData > 0 ? $offset + 1 : 0;
+ $endData = min($offset + $itemsPerPage, $totalData);
 
 // Get jurusan dan prodi untuk dropdown
-$jurusanList = $mahasiswaController->getAllJurusan();
-$prodiList = $mahasiswaController->getAllProdi();
+ $jurusanList = $mahasiswaController->getAllJurusan();
+ $prodiList = $mahasiswaController->getAllProdi();
 ?>
 
 <!DOCTYPE html>
@@ -319,6 +317,24 @@ $prodiList = $mahasiswaController->getAllProdi();
             color: #999999 !important;
         }
 
+        /* Password visibility toggle */
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .password-toggle i:hover {
+            color: #51c8e9;
+        }
+
         /* Loading Spinner */
         .spinner-border-sm {
             width: 1rem;
@@ -499,9 +515,14 @@ $prodiList = $mahasiswaController->getAllProdi();
                         <div class="mb-3"><label class="form-label">Username <span
                                     class="text-danger">*</span></label><input type="text" name="username"
                                 id="tambahUsername" class="form-control" required placeholder="Masukkan Username"></div>
-                        <div class="mb-3"><label class="form-label">Password <span
-                                    class="text-danger">*</span></label><input type="password" name="password"
-                                class="form-control" required placeholder="Masukkan Password"></div>
+                        <div class="mb-3">
+                            <label class="form-label">Password <span class="text-danger">*</span></label>
+                            <div class="password-toggle">
+                                <input type="password" name="password" id="tambahPassword" class="form-control" required
+                                    placeholder="Masukkan Password">
+                                <i class="bi bi-eye-slash" id="toggleTambahPassword"></i>
+                            </div>
+                        </div>
                         <!-- Dropdown Jurusan & Prodi -->
                         <div class="mb-3"><label class="form-label">Jurusan <span
                                     class="text-danger">*</span></label><select name="jurusan_id" id="tambahJurusan"
@@ -601,6 +622,22 @@ $prodiList = $mahasiswaController->getAllProdi();
                 }
             }, 5000);
         }
+
+        // ================= PASSWORD VISIBILITY TOGGLE =================
+        document.getElementById('toggleTambahPassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('tambahPassword');
+            const icon = this;
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        });
 
         // ================= FILTER PRODI BERDASARKAN JURUSAN =================
         const prodiData = <?= json_encode($prodiList) ?>;

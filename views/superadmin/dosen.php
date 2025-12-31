@@ -20,12 +20,12 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
 }
 
 // Load controller
+require_once __DIR__ . '/../../app/controllers/superadmin/dosen_controller.php';
+ $dosenController = new DosenController();
+
 // ================= HANDLE AJAX (WAJIB DI ATAS, SEBELUM HTML) =================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json');
-
-    require_once __DIR__ . '/../../app/controllers/superadmin/dosen_controller.php';
-    $dosenController = new DosenController();
 
     switch ($_POST['action']) {
         case 'create':
@@ -75,23 +75,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     exit; // 🔥 PENTING: STOP TOTAL, JANGAN RENDER HTML
 }
 
-
 // Pagination settings
-$itemsPerPage = 10;
-$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-$offset = ($currentPage - 1) * $itemsPerPage;
+ $itemsPerPage = 10;
+ $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+ $offset = ($currentPage - 1) * $itemsPerPage;
 
 // Get all dosen
-$allDosen = $dosenController->index();
-$totalData = count($allDosen);
-$totalPages = ceil($totalData / $itemsPerPage);
+ $allDosen = $dosenController->index();
+ $totalData = count($allDosen);
+ $totalPages = ceil($totalData / $itemsPerPage);
 
 // Slice data for current page
-$dosenList = array_slice($allDosen, $offset, $itemsPerPage);
+ $dosenList = array_slice($allDosen, $offset, $itemsPerPage);
 
 // Calculate display range
-$startData = $totalData > 0 ? $offset + 1 : 0;
-$endData = min($offset + $itemsPerPage, $totalData);
+ $startData = $totalData > 0 ? $offset + 1 : 0;
+ $endData = min($offset + $itemsPerPage, $totalData);
 ?>
 
 <!DOCTYPE html>
@@ -306,6 +305,24 @@ $endData = min($offset + $itemsPerPage, $totalData);
             color: #999999 !important;
         }
 
+        /* Password visibility toggle */
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .password-toggle i:hover {
+            color: #51c8e9;
+        }
+
         /* Loading Spinner */
         .spinner-border-sm {
             width: 1rem;
@@ -495,8 +512,11 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
                         <div class="mb-3">
                             <label class="form-label">Password <span class="text-danger">*</span></label>
-                            <input type="password" name="password" class="form-control" required
-                                placeholder="Masukkan Password">
+                            <div class="password-toggle">
+                                <input type="password" name="password" id="tambahPassword" class="form-control" required
+                                    placeholder="Masukkan Password">
+                                <i class="bi bi-eye-slash" id="toggleTambahPassword"></i>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -575,8 +595,11 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         <div class="mb-3">
                             <label class="form-label">Password <small class="text-muted">(Kosongkan jika tidak ingin
                                     diubah)</small></label>
-                            <input type="password" name="password" id="editPassword" class="form-control"
-                                placeholder="Masukkan Password Baru (Opsional)">
+                            <div class="password-toggle">
+                                <input type="password" name="password" id="editPassword" class="form-control"
+                                    placeholder="Masukkan Password Baru (Opsional)">
+                                <i class="bi bi-eye-slash" id="toggleEditPassword"></i>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -641,6 +664,37 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 }
             }, 5000);
         }
+
+        // ================= PASSWORD VISIBILITY TOGGLE =================
+        document.getElementById('toggleTambahPassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('tambahPassword');
+            const icon = this;
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        });
+
+        document.getElementById('toggleEditPassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('editPassword');
+            const icon = this;
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        });
 
         // ================= FORM TAMBAH DOSEN =================
         document.getElementById('formTambahDosen').addEventListener('submit', async function (e) {

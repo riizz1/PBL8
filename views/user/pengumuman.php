@@ -221,9 +221,10 @@ $endData = min($offset + $itemsPerPage, $totalData);
         .badge {
             padding: 5px 12px;
             border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 14px !important;
+            font-weight: 400 !important;
             display: inline-block;
+            color: #333 !important;
         }
 
         .badge-akademik {
