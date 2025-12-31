@@ -91,50 +91,5 @@ class EmailService
         return $templateService->generateEmail($recipient, $pengumuman);
     }
 
-    /**
-     * Test koneksi SMTP
-     */
-    public function testConnection()
-    {
-        try {
-            $this->mail->smtpConnect();
-            return [
-                'success' => true,
-                'message' => 'Koneksi SMTP berhasil!'
-            ];
-        } catch (Exception $e) {
-            return [
-                'success' => false,
-                'message' => 'Koneksi SMTP gagal: ' . $this->mail->ErrorInfo
-            ];
-        }
-    }
-
-    /**
-     * Kirim test email sederhana
-     */
-    public function sendTestEmail($to, $name)
-    {
-        try {
-            $this->mail->clearAddresses();
-            $this->mail->addAddress($to, $name);
-            $this->mail->Subject = 'Test Email - Sistem Pengumuman';
-            $this->mail->isHTML(true);
-            $this->mail->Body = "
-                <div style='font-family: Arial, sans-serif; padding: 20px;'>
-                    <h2 style='color: #4F46E5;'>✅ Test Email Berhasil!</h2>
-                    <p>Halo <strong>{$name}</strong>,</p>
-                    <p>Email ini adalah test pengiriman dari sistem pengumuman.</p>
-                    <p>Jika kamu menerima email ini, berarti konfigurasi email sudah <strong style='color: green;'>BENAR</strong>.</p>
-                    <hr>
-                    <p style='font-size: 12px; color: #666;'>Dikirim pada: " . date('d F Y H:i:s') . "</p>
-                </div>
-            ";
-
-            return $this->mail->send();
-        } catch (Exception $e) {
-            error_log("Test Email Error: " . $this->mail->ErrorInfo);
-            return false;
-        }
-    }
+   
 }

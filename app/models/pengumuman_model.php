@@ -56,22 +56,51 @@ class PengumumanModel
         return $data;
     }
 
+    /**
+     * Get pengumuman by ID dengan info admin
+     */
     public function getById($id)
     {
         $query = "SELECT 
                     p.*,
                     k.nama_kategori,
-                    j.nama_jurusan,
-                    pr.nama_prodi
+                    a.nama_lengkap,
+                    a.user_id
                   FROM pengumuman p
                   LEFT JOIN kategori k ON p.kategori_id = k.kategori_id
-                  LEFT JOIN jurusan j ON p.target_jurusan_id = j.jurusan_id
-                  LEFT JOIN prodi pr ON p.target_prodi_id = pr.prodi_id
+                  LEFT JOIN admin a ON p.created_by = a.user_id
                   WHERE p.pengumuman_id = ?";
+
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
+    /**
+     * Create pengumuman dengan created_by (SATU-SATUNYA METHOD CREATE)
+     */
+    public function create($data)
+    {
+        $query = "INSERT INTO pengumuman 
+                  (judul, isi, target_type, target_jurusan_id, target_prodi_id, target_kelas, kategori_id, created_by, created_at) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param(
+            'sssiisii',
+            $data['judul'],
+            $data['isi'],
+            $data['target_type'],
+            $data['target_jurusan_id'],
+            $data['target_prodi_id'],
+            $data['target_kelas'],
+            $data['kategori_id'],
+            $data['created_by']
+        );
+
+        return $stmt->execute();
     }
 
     public function getKategori()
@@ -134,31 +163,6 @@ class PengumumanModel
         return $data;
     }
 
-    public function create($judul, $kategori_id, $isi, $targetData)
-    {
-        $query = "INSERT INTO pengumuman 
-                  (judul, kategori_id, isi, target_type, target_jurusan_id, target_prodi_id, target_kelas) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        $stmt = $this->db->prepare($query);
-
-        // FIX: Perbaikan tipe data binding
-        // target_kelas di database adalah varchar, gunakan 's'. 
-        // Jika null, bind_param tetap aman.
-        $stmt->bind_param(
-            'sisssss', // s(string), i(int), s(string), s(string), s(int/null), s(int/null), s(string/null)
-            $judul,
-            $kategori_id,
-            $isi,
-            $targetData['target_type'],
-            $targetData['target_jurusan_id'],
-            $targetData['target_prodi_id'],
-            $targetData['target_kelas']
-        );
-
-        return $stmt->execute();
-    }
-
     public function update($id, $judul, $kategori_id, $isi, $targetData)
     {
         $query = "UPDATE pengumuman 
@@ -167,8 +171,6 @@ class PengumumanModel
                   WHERE pengumuman_id = ?";
 
         $stmt = $this->db->prepare($query);
-
-        // FIX: Perbaikan tipe data binding
         $stmt->bind_param(
             'sisssssi',
             $judul,
@@ -295,34 +297,29 @@ class PengumumanModel
     public function getEmailMahasiswaByTarget($targetData)
     {
         $query = "SELECT DISTINCT m.email, m.nama_lengkap, m.nim 
-              FROM mahasiswa m
-              WHERE 1=1";
+                  FROM mahasiswa m
+                  WHERE 1=1";
 
         $params = [];
         $types = "";
 
         if ($targetData['target_type'] === 'all') {
-            // Ambil semua email mahasiswa
             $query .= " AND m.email IS NOT NULL AND m.email != ''";
         } elseif ($targetData['target_type'] === 'jurusan') {
             if (!empty($targetData['target_kelas'])) {
-                // Jurusan + Prodi + Kelas spesifik
                 $query .= " AND m.jurusan_id = ? AND m.prodi_id = ? AND m.kelas = ?";
                 $params = [$targetData['target_jurusan_id'], $targetData['target_prodi_id'], $targetData['target_kelas']];
                 $types = "iis";
             } elseif (!empty($targetData['target_prodi_id'])) {
-                // Jurusan + Prodi tertentu
                 $query .= " AND m.jurusan_id = ? AND m.prodi_id = ?";
                 $params = [$targetData['target_jurusan_id'], $targetData['target_prodi_id']];
                 $types = "ii";
             } else {
-                // Jurusan tertentu saja
                 $query .= " AND m.jurusan_id = ?";
                 $params = [$targetData['target_jurusan_id']];
                 $types = "i";
             }
         } elseif ($targetData['target_type'] === 'prodi') {
-            // Logika khusus jika target type hanya prodi (misal select prodi tapi jurusan null)
             if (!empty($targetData['target_kelas'])) {
                 $query .= " AND m.prodi_id = ? AND m.kelas = ?";
                 $params = [$targetData['target_prodi_id'], $targetData['target_kelas']];
@@ -333,9 +330,7 @@ class PengumumanModel
                 $types = "i";
             }
         } elseif ($targetData['target_type'] === 'kelas') {
-            // Logika khusus jika target type hanya kelas
             $query .= " AND m.prodi_id = ? AND m.kelas = ?";
-            // Note: Biasanya kelas butuh prodi context, jadi pakai prodi_id
             $params = [$targetData['target_prodi_id'], $targetData['target_kelas']];
             $types = "is";
         }
@@ -354,3 +349,4 @@ class PengumumanModel
         return $emails;
     }
 }
+?>

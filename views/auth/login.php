@@ -1,3 +1,30 @@
+<?php
+// /PBL8/views/auth/login.php
+session_start();
+
+// Kalau sudah login, redirect
+if (isset($_SESSION['status']) && $_SESSION['status'] === 'login') {
+    switch(strtolower($_SESSION['role_name'])) {
+        case 'superadmin':
+            header('Location: /PBL8/views/superadmin/dashboard.php');
+            break;
+        case 'dosen':
+            header('Location: /PBL8/views/admin/dashboard.php');
+            break;
+        case 'mahasiswa':
+            header('Location: /PBL8/views/user/dashboard.php');
+            break;
+        default:
+            header('Location: /PBL8/public/index.php');
+            break;
+    }
+    exit();
+}
+
+// Ambil error dari session
+$error = isset($_SESSION['login_error']) ? $_SESSION['login_error'] : '';
+unset($_SESSION['login_error']); // Hapus error setelah ditampilkan
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -10,9 +37,8 @@
 </head>
 
 <body>
-    <?php
-    include("../../public/header.php");
-    ?>
+    <?php include("../../public/header.php"); ?>
+    
     <div class="container">
         <div class="row justify-content-center align-items-center min-vh-100">
             <div class="col-md-5 col-lg-4">
@@ -30,7 +56,15 @@
                         <p class="text-muted">Silakan login ke akun Anda</p>
                     </div>
 
-                    <form action="/PBL8/app/controllers/auth/login_aksi.php" method="POST">
+                    <!-- FORM LOGIN -->
+                    <form action="/PBL8/app/controllers/auth/login_controller.php" method="POST">
+                        <?php if (!empty($error)): ?>
+                            <div class="alert alert-danger" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <?= htmlspecialchars($error) ?>
+                            </div>
+                        <?php endif; ?>
+                        
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" name="username" class="form-control form-control-lg" id="username"
@@ -43,19 +77,17 @@
                                 placeholder="Masukkan Password" required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">Masuk</button>
+                        <button type="submit" name="login" class="btn btn-primary btn-lg w-100 mb-3">Masuk</button>
                     </form>
 
                 </div>
             </div>
         </div>
     </div>
-    <?php
-    include("../../public/footer.php");
-    ?>
+    
+    <?php include("../../public/footer.php"); ?>
 
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-<script src="jslogin.js"></script>
 
 </html>

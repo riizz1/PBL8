@@ -7,6 +7,7 @@ class MahasiswaModelAdmin
 
     public function __construct()
     {
+        // PERBAIKAN: Gunakan mysqli langsung seperti Superadmin
         $this->db = new mysqli('localhost', 'root', '', 'db_pbl8');
         if ($this->db->connect_error) {
             die("Koneksi gagal: " . $this->db->connect_error);
@@ -89,15 +90,12 @@ class MahasiswaModelAdmin
     public function create($data)
     {
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-        
+
         $query = "INSERT INTO mahasiswa 
                   (nim, nama_lengkap, username, password, jurusan_id, prodi_id, kelas, email, alamat, role_id) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 3)";
-        
+
         $stmt = $this->db->prepare($query);
-        
-        // Urutan: nim, nama, user, pass, jur, prod, kelas, email, alamat
-        // Tipe:    s    s     s     s     i    i     s      s      s
         $stmt->bind_param(
             'sssssisss',
             $data['nim'],
@@ -110,7 +108,7 @@ class MahasiswaModelAdmin
             $data['email'],
             $data['alamat']
         );
-        
+
         return $stmt->execute();
     }
 
@@ -127,9 +125,6 @@ class MahasiswaModelAdmin
                   WHERE mahasiswa_id = ?";
 
         $stmt = $this->db->prepare($query);
-        
-        // Urutan: nim, nama, jur, prod, kelas, email, alamat, id
-        // Tipe:    s    s     i    i     s      s      s       i
         $stmt->bind_param(
             'ssiisssi',
             $data['nim'],
@@ -295,15 +290,12 @@ class MahasiswaModelSuperadmin
     public function create($data)
     {
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-        
+
         $query = "INSERT INTO mahasiswa 
                   (nim, nama_lengkap, username, password, jurusan_id, prodi_id, kelas, email, alamat, role_id) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 3)";
-        
+
         $stmt = $this->db->prepare($query);
-        
-        // Urutan: nim, nama, user, pass, jur, prod, kelas, email, alamat
-        // Tipe:    s    s     s     s     i    i     s      s      s
         $stmt->bind_param(
             'sssssisss',
             $data['nim'],
@@ -316,7 +308,7 @@ class MahasiswaModelSuperadmin
             $data['email'],
             $data['alamat']
         );
-        
+
         return $stmt->execute();
     }
 
@@ -335,11 +327,8 @@ class MahasiswaModelSuperadmin
                           email = ?, 
                           alamat = ?
                       WHERE mahasiswa_id = ?";
-            
+
             $stmt = $this->db->prepare($query);
-            
-            // Urutan: nim, nama, user, pass, jur, prod, kelas, email, alamat, id
-            // Tipe:    s    s     s     s     i    i     s      s      s       i
             $stmt->bind_param(
                 'sssssisssi',
                 $data['nim'],
@@ -364,11 +353,8 @@ class MahasiswaModelSuperadmin
                           email = ?, 
                           alamat = ?
                       WHERE mahasiswa_id = ?";
-            
+
             $stmt = $this->db->prepare($query);
-            
-            // Urutan: nim, nama, user, jur, prod, kelas, email, alamat, id
-            // Tipe:    s    s     s     i    i     s      s      s       i
             $stmt->bind_param(
                 'sssiisssi',
                 $data['nim'],

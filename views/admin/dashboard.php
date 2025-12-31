@@ -10,7 +10,7 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] !== 'login') {
   exit();
 }
 
-// Proteksi role - hanya mahasiswa yang bisa akses
+// Proteksi role - hanya dosen yang bisa akses
 if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
   echo "<script>
         alert('Akses ditolak! Halaman ini hanya untuk Dosen.');
@@ -40,34 +40,15 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
-    /* ================= DASHBOARD ================= */
-    :root {
-      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --success-gradient: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
-    }
-
+    /* ================= DASHBOARD SIMPLE & CLEAN ================= */
     body {
-      background: #ffffff;
-      /* Diubah menjadi putih */
-      min-height: 100vh;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
     }
 
     .main-content {
       padding: 40px;
-      animation: fadeIn 0.6s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      min-height: calc(100vh - 150px);
     }
 
     /* ===== HEADER ===== */
@@ -87,200 +68,191 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
       margin: 0;
     }
 
-    /* ===== STAT CARD ===== */
+    /* ===== STAT CARD SIMPLE ===== */
     .stat-card {
-      border-radius: 16px;
-      padding: 20px;
-      color: #fff;
-      position: relative;
-      overflow: hidden;
-      transition: all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      border: 1px solid #e2e8f0;
+      height: 100%;
     }
 
     .stat-card:hover {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, .2);
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, .1);
-      opacity: 0;
-      transition: opacity .3s ease;
-    }
-
-    .stat-card:hover::before {
-      opacity: 1;
-    }
-
-    .stat-card::after {
-      content: '';
-      position: absolute;
-      top: -50px;
-      right: -50px;
-      width: 150px;
-      height: 150px;
-      background: rgba(255, 255, 255, .15);
-      border-radius: 50%;
-      transition: all .5s ease;
-    }
-
-    .stat-card:hover::after {
-      transform: scale(1.5);
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
 
     .stat-icon {
       width: 50px;
       height: 50px;
-      background: rgba(255, 255, 255, .2);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      backdrop-filter: blur(10px);
-    }
-
-    .stat-number {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin: 10px 0 5px 0;
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-size: 0.85rem;
-      opacity: 0.95;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .stat-trend {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.75rem;
-      margin-top: 8px;
-      padding: 3px 8px;
-      background: rgba(255, 255, 255, .25);
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-    }
-
-    /* Warna Gradients */
-    .bg-pengumuman {
-      background: var(--primary-gradient);
-    }
-
-    .bg-kategori {
-      background: var(--success-gradient);
-    }
-
-    /* ===== PENGUMUMAN TERBARU ===== */
-    .dashboard-box {
-      background: #fff;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
-      animation: slideUp 0.6s ease-out 0.2s both;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .dashboard-box h5 {
-      font-weight: 700;
-      color: #2d3748;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .dashboard-box h5::before {
-      content: '';
-      width: 4px;
-      height: 24px;
-      background: var(--primary-gradient);
-      border-radius: 4px;
-    }
-
-    .announcement-item {
-      padding: 18px;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-      margin-bottom: 12px;
-      transition: all .3s ease;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .announcement-item:hover {
-      border-color: #cbd5e0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
-      transform: translateX(5px);
-    }
-
-    .announcement-icon {
-      width: 40px;
-      height: 40px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      flex-shrink: 0;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
     }
 
-    .icon-beasiswa {
-      background: linear-gradient(135deg, #43cea220, #185a9d20);
-      color: #43cea2;
+    .stat-icon.icon-pengumuman {
+      background-color: #e3f2fd;
+      color: #1976d2;
     }
 
-    .icon-ujian {
-      background: linear-gradient(135deg, #667eea20, #764ba220);
-      color: #667eea;
+    .stat-icon.icon-kategori {
+      background-color: #f3e5f5;
+      color: #7b1fa2;
     }
 
-    .icon-lainnya {
-      background: linear-gradient(135deg, #a8a8a820, #71717120);
-      color: #6b7280;
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin: 10px 0 5px 0;
     }
 
-    .announcement-content {
-      flex: 1;
-    }
-
-    .announcement-date {
-      font-size: 0.8rem;
+    .stat-label {
+      font-size: 0.9rem;
       color: #718096;
-      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    /* ===== QUICK ACCESS ===== */
+    .quick-access-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 30px;
+    }
+
+    .quick-access-card h5 {
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+
+    .quick-btn {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: block;
+      color: #2d3748;
+    }
+
+    .quick-btn:hover {
+      border-color: #cbd5e0;
+      background-color: #f7fafc;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      color: #2d3748;
+    }
+
+    .quick-btn i {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .quick-btn .btn-pengumuman i {
+      color: #1976d2;
+    }
+
+    .quick-btn .btn-kategori i {
+      color: #7b1fa2;
+    }
+
+    .quick-btn span {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    /* ===== PENGUMUMAN TERBARU ===== */
+    .announcement-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+
+    .announcement-card h5 {
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .announcement-item {
+      padding: 18px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+      background: #fff;
+    }
+
+    .announcement-item:hover {
+      border-color: #cbd5e0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transform: translateX(3px);
+    }
+
+    .announcement-item:last-child {
+      margin-bottom: 0;
     }
 
     .announcement-title {
       font-weight: 600;
       color: #2d3748;
+      margin-bottom: 5px;
+      font-size: 0.95rem;
+    }
+
+    .announcement-meta {
+      font-size: 0.8rem;
+      color: #718096;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .announcement-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background-color: #e2e8f0;
+      color: #4a5568;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #a0aec0;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
       margin: 0;
+      font-size: 0.9rem;
     }
 
     /* ===== RESPONSIVE ===== */
@@ -289,11 +261,15 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
         padding: 20px;
       }
 
-      .stat-number {
-        font-size: 2rem;
+      .dashboard-header h2 {
+        font-size: 1.5rem;
       }
 
-      .dashboard-header h2 {
+      .stat-number {
+        font-size: 1.5rem;
+      }
+
+      .quick-btn i {
         font-size: 1.5rem;
       }
     }
@@ -309,48 +285,60 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
     <!-- ===== HEADER ===== -->
     <div class="dashboard-header">
       <h2><i class="bi bi-speedometer2 me-2"></i>Dashboard Admin</h2>
+      <p>Selamat datang, <?= htmlspecialchars($_SESSION['username']) ?>!</p>
     </div>
 
     <!-- ===== STATISTIK ===== -->
-    <div class="row g-4 mb-4">
-
-      <div class="col-md-6">
-        <div class="stat-card bg-pengumuman">
-          <div class="stat-icon">
-            <i class="bi bi-megaphone-fill"></i>
+    <div class="row g-3 mb-4">
+      <div class="col-lg-6 col-md-6">
+        <div class="stat-card">
+          <div class="stat-icon icon-pengumuman">
+            <i class="bi bi-megaphone"></i>
           </div>
-          <div class="stat-number"><?= $total_pengumuman ?></div>
+          <div class="stat-number"><?= number_format($total_pengumuman) ?></div>
           <div class="stat-label">Total Pengumuman</div>
-          <div class="stat-trend">
-            <i class="bi bi-arrow-up-short"></i>
-            <span>Aktif</span>
-          </div>
         </div>
       </div>
 
-      <div class="col-md-6">
-        <div class="stat-card bg-kategori">
-          <div class="stat-icon">
-            <i class="bi bi-tags-fill"></i>
+      <div class="col-lg-6 col-md-6">
+        <div class="stat-card">
+          <div class="stat-icon icon-kategori">
+            <i class="bi bi-tags"></i>
           </div>
-          <div class="stat-number"><?= $total_kategori ?></div>
+          <div class="stat-number"><?= number_format($total_kategori) ?></div>
           <div class="stat-label">Total Kategori</div>
-          <div class="stat-trend">
-            <i class="bi bi-arrow-up-short"></i>
-            <span>Tersedia</span>
-          </div>
         </div>
       </div>
+    </div>
 
+    <!-- ===== QUICK ACCESS ===== -->
+    <div class="quick-access-card">
+      <h5>Akses Cepat</h5>
+      <div class="row g-3">
+        <div class="col-lg-6 col-md-6">
+          <a href="pengumuman.php" class="quick-btn">
+            <div class="btn-pengumuman">
+              <i class="bi bi-megaphone"></i>
+              <span>Kelola Pengumuman</span>
+            </div>
+          </a>
+        </div>
+        <div class="col-lg-6 col-md-6">
+          <a href="kategori.php" class="quick-btn">
+            <div class="btn-kategori">
+              <i class="bi bi-tags"></i>
+              <span>Kelola Kategori</span>
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- ===== PENGUMUMAN TERBARU ===== -->
-    <div class="dashboard-box">
+    <div class="announcement-card">
       <h5>
-        Pengumuman Terbaru
-        <span class="badge bg-primary ms-auto" style="font-size: 0.75rem;">
-          <?= mysqli_num_rows($pengumuman_terbaru) ?> Items
-        </span>
+        <span><i class="bi bi-clock-history me-2"></i>Pengumuman Terbaru</span>
+        <a href="pengumuman.php" class="btn btn-sm btn-outline-secondary">Lihat Semua</a>
       </h5>
 
       <?php
@@ -358,45 +346,25 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
       while ($row = mysqli_fetch_assoc($pengumuman_terbaru)) {
         $count++;
         if ($count > 5)
-          break; // Batasi hanya 5 pengumuman
+          break;
       ?>
         <div class="announcement-item">
-          <div class="announcement-icon 
-          <?php
-          if ($row['kategori_id'] == 2)
-            echo 'icon-ujian';
-          else if ($row['kategori_id'] == 1)
-            echo 'icon-beasiswa';
-          else
-            echo 'icon-lainnya';
-          ?>">
-            <i class="
-            <?php
-            if ($row['kategori_id'] == 2)
-              echo 'bi bi-calendar-event';
-            else if ($row['kategori_id'] == 1)
-              echo 'bi bi-award';
-            else
-              echo 'bi bi-megaphone';
-            ?>"></i>
+          <div class="announcement-title">
+            <?= htmlspecialchars($row['judul']) ?>
           </div>
-
-          <div class="announcement-content">
-            <div class="announcement-date">
-              <i class="bi bi-clock me-1"></i>
-              <?= date('d M Y, H:i', strtotime($row['created_at'])) ?>
-            </div>
-            <div class="announcement-title">
-              <?= htmlspecialchars($row['judul']) ?>
-            </div>
+          <div class="announcement-meta">
+            <span><i class="bi bi-calendar3 me-1"></i><?= date('d M Y', strtotime($row['created_at'])) ?></span>
+            <span class="announcement-badge">
+              <i class="bi bi-tag me-1"></i>Kategori
+            </span>
           </div>
         </div>
       <?php } ?>
 
       <?php if ($count == 0) { ?>
-        <div class="text-center py-5">
-          <i class="bi bi-inbox" style="font-size: 3rem; color: #cbd5e0;"></i>
-          <p class="text-muted mt-3">Belum ada pengumuman terbaru</p>
+        <div class="empty-state">
+          <i class="bi bi-inbox"></i>
+          <p>Belum ada pengumuman</p>
         </div>
       <?php } ?>
     </div>
@@ -406,28 +374,6 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
   <?php include "footer.php"; ?>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    // Animasi counter untuk statistik
-    document.addEventListener('DOMContentLoaded', function() {
-      const statNumbers = document.querySelectorAll('.stat-number');
-
-      statNumbers.forEach(stat => {
-        const target = parseInt(stat.textContent);
-        let current = 0;
-        const increment = target / 50;
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= target) {
-            stat.textContent = target;
-            clearInterval(timer);
-          } else {
-            stat.textContent = Math.floor(current);
-          }
-        }, 20);
-      });
-    });
-  </script>
 
 </body>
 

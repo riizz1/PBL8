@@ -20,50 +20,61 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
 }
 
 // Load controller
-require_once __DIR__ . '/../../app/controllers/superadmin/dosen_controller.php';
-$dosenController = new DosenController();
-
-// Handle AJAX requests
-if (isset($_POST['action'])) {
+// ================= HANDLE AJAX (WAJIB DI ATAS, SEBELUM HTML) =================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json');
+
+    require_once __DIR__ . '/../../app/controllers/superadmin/dosen_controller.php';
+    $dosenController = new DosenController();
 
     switch ($_POST['action']) {
         case 'create':
             echo json_encode($dosenController->create());
-            exit();
+            break;
 
         case 'update':
             echo json_encode($dosenController->update());
-            exit();
+            break;
 
         case 'delete':
             echo json_encode($dosenController->delete());
-            exit();
+            break;
 
         case 'get':
-            $id = intval($_POST['dosen_id']);
-            echo json_encode($dosenController->getById($id));
-            exit();
+            echo json_encode($dosenController->getById((int)$_POST['dosen_id']));
+            break;
 
         case 'checkUsername':
-            $username = $_POST['username'];
-            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
-            echo json_encode(['exists' => $dosenController->checkUsernameExists($username, $excludeId)]);
-            exit();
+            echo json_encode([
+                'exists' => $dosenController->checkUsernameExists(
+                    $_POST['username'],
+                    $_POST['exclude_id'] ?? null
+                )
+            ]);
+            break;
 
         case 'checkNidn':
-            $nidn = $_POST['nidn'];
-            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
-            echo json_encode(['exists' => $dosenController->checkNidnExists($nidn, $excludeId)]);
-            exit();
+            echo json_encode([
+                'exists' => $dosenController->checkNidnExists(
+                    $_POST['nidn'],
+                    $_POST['exclude_id'] ?? null
+                )
+            ]);
+            break;
 
         case 'checkEmail':
-            $email = $_POST['email'];
-            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
-            echo json_encode(['exists' => $dosenController->checkEmailExists($email, $excludeId)]);
-            exit();
+            echo json_encode([
+                'exists' => $dosenController->checkEmailExists(
+                    $_POST['email'],
+                    $_POST['exclude_id'] ?? null
+                )
+            ]);
+            break;
     }
+
+    exit; // 🔥 PENTING: STOP TOTAL, JANGAN RENDER HTML
 }
+
 
 // Pagination settings
 $itemsPerPage = 10;

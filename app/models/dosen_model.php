@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../config/config.php';
+// app/models/dosen_model.php
 
 class DosenModel
 {
@@ -7,14 +7,13 @@ class DosenModel
 
     public function __construct()
     {
-        global $config;
-        $this->db = $config;
+        // PERBAIKAN: Gunakan mysqli langsung
+        $this->db = new mysqli('localhost', 'root', '', 'db_pbl8');
+        if ($this->db->connect_error) {
+            die("Koneksi gagal: " . $this->db->connect_error);
+        }
     }
 
-    /**
-     * Get all dosen accounts (role_id = 2)
-     * Exclude username 'admin' dan 'superadmin'
-     */
     public function getAll()
     {
         $sql = "SELECT 
@@ -37,9 +36,6 @@ class DosenModel
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
-    /**
-     * Get dosen by ID
-     */
     public function getById($id)
     {
         $sql = "SELECT 
@@ -60,15 +56,12 @@ class DosenModel
             error_log("Prepare failed: " . $this->db->error);
             return null;
         }
-        
+
         $stmt->bind_param("i", $id);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
 
-    /**
-     * Create new dosen account
-     */
     public function create($data)
     {
         $sql = "INSERT INTO admin 
@@ -77,13 +70,12 @@ class DosenModel
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 2)";
 
         $stmt = $this->db->prepare($sql);
-        
+
         if (!$stmt) {
             error_log("Prepare failed: " . $this->db->error);
             return false;
         }
 
-        // Handle nullable fields
         $jenis_kelamin = isset($data['jenis_kelamin']) && $data['jenis_kelamin'] !== '' ? $data['jenis_kelamin'] : null;
         $jabatan = isset($data['jabatan']) && $data['jabatan'] !== '' ? $data['jabatan'] : null;
         $no_telepon = isset($data['no_telepon']) && $data['no_telepon'] !== '' ? $data['no_telepon'] : null;
@@ -102,19 +94,17 @@ class DosenModel
             $data['password']
         );
 
+
         $result = $stmt->execute();
-        
+
         if (!$result) {
             error_log("Execute failed: " . $stmt->error);
             return false;
         }
-        
+
         return true;
     }
 
-    /**
-     * Update dosen account
-     */
     public function update($id, $data)
     {
         $sql = "UPDATE admin SET 
@@ -129,13 +119,12 @@ class DosenModel
                 WHERE user_id = ? AND role_id = 2";
 
         $stmt = $this->db->prepare($sql);
-        
+
         if (!$stmt) {
             error_log("Prepare failed: " . $this->db->error);
             return false;
         }
 
-        // Handle nullable fields
         $jenis_kelamin = isset($data['jenis_kelamin']) && $data['jenis_kelamin'] !== '' ? $data['jenis_kelamin'] : null;
         $jabatan = isset($data['jabatan']) && $data['jabatan'] !== '' ? $data['jabatan'] : null;
         $no_telepon = isset($data['no_telepon']) && $data['no_telepon'] !== '' ? $data['no_telepon'] : null;
@@ -155,88 +144,74 @@ class DosenModel
         );
 
         $result = $stmt->execute();
-        
+
         if (!$result) {
             error_log("Execute failed: " . $stmt->error);
             return false;
         }
-        
+
         return true;
     }
 
-    /**
-     * Update password dosen (digunakan saat edit jika password diisi)
-     */
     public function updatePassword($id, $hashedPassword)
     {
         $sql = "UPDATE admin SET password = ? WHERE user_id = ? AND role_id = 2";
-        
+
         $stmt = $this->db->prepare($sql);
-        
+
         if (!$stmt) {
             error_log("Prepare failed: " . $this->db->error);
             return false;
         }
-        
+
         $stmt->bind_param("si", $hashedPassword, $id);
         $result = $stmt->execute();
-        
+
         if (!$result) {
             error_log("Execute failed: " . $stmt->error);
             return false;
         }
-        
+
         return true;
     }
 
-    /**
-     * Delete dosen account
-     */
     public function delete($id)
     {
-        // Cek apakah user adalah superadmin (tidak boleh dihapus)
         $checkSql = "SELECT role_id, username FROM admin WHERE user_id = ?";
         $checkStmt = $this->db->prepare($checkSql);
         $checkStmt->bind_param("i", $id);
         $checkStmt->execute();
         $result = $checkStmt->get_result()->fetch_assoc();
-        
+
         if ($result && $result['role_id'] == 1) {
             error_log("Cannot delete superadmin account");
             return false;
         }
 
-        // Tidak boleh hapus akun master 'admin'
         if ($result && $result['username'] === 'admin') {
             error_log("Cannot delete master admin account");
             return false;
         }
 
-        // Delete hanya jika role_id = 2 (dosen)
         $sql = "DELETE FROM admin WHERE user_id = ? AND role_id = 2";
         $stmt = $this->db->prepare($sql);
-        
+
         if (!$stmt) {
             error_log("Prepare failed: " . $this->db->error);
             return false;
         }
-        
+
         $stmt->bind_param("i", $id);
         $result = $stmt->execute();
-        
+
         if (!$result) {
             error_log("Execute failed: " . $stmt->error);
             return false;
         }
-        
+
         return true;
     }
 
-    /* ===== VALIDASI ===== */
-
-    /**
-     * Cek apakah username sudah dipakai
-     */
     public function usernameExists($username, $excludeId = null)
     {
         if ($excludeId) {
@@ -256,15 +231,12 @@ class DosenModel
             }
             $stmt->bind_param("s", $username);
         }
-        
+
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->num_rows > 0;
     }
 
-    /**
-     * Cek apakah NIDN sudah dipakai
-     */
     public function nidnExists($nidn, $excludeId = null)
     {
         if ($excludeId) {
@@ -284,15 +256,12 @@ class DosenModel
             }
             $stmt->bind_param("s", $nidn);
         }
-        
+
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->num_rows > 0;
     }
 
-    /**
-     * Cek apakah Email sudah dipakai
-     */
     public function emailExists($email, $excludeId = null)
     {
         if ($excludeId) {
@@ -312,9 +281,10 @@ class DosenModel
             }
             $stmt->bind_param("s", $email);
         }
-        
+
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->num_rows > 0;
     }
 }
+?>

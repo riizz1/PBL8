@@ -32,7 +32,7 @@ class DosenController
      */
     public function create()
     {
-        // Validasi field required
+        // Validasi field required DULU
         $required = ['nama_lengkap', 'nidn', 'username', 'password', 'email'];
         foreach ($required as $field) {
             if (empty($_POST[$field])) {
@@ -48,42 +48,40 @@ class DosenController
             return ['success' => false, 'message' => 'Format email tidak valid'];
         }
 
-        // Validasi panjang password minimal 6 karakter
-        if (strlen($_POST['password']) < 6) {
-            return ['success' => false, 'message' => 'Password minimal 6 karakter'];
+        // CEK USERNAME DI SEMUA TABEL (mahasiswa & admin)
+        require_once __DIR__ . '/../../helpers/auth_helper.php';
+        require_once __DIR__ . '/../../config/config.php';
+
+        $auth = new AuthHelper($config);
+
+        if ($auth->isUsernameExists(trim($_POST['username']))) {
+            return [
+                'success' => false,
+                'message' => 'Username sudah digunakan oleh pengguna lain (mahasiswa/dosen/admin)'
+            ];
         }
 
-        // Validasi username (hanya huruf, angka, underscore, minimal 4 karakter)
-        if (!preg_match('/^[a-zA-Z0-9_]{4,}$/', $_POST['username'])) {
-            return ['success' => false, 'message' => 'Username minimal 4 karakter (huruf, angka, underscore)'];
-        }
-
-        // Validasi: Cek duplikasi username
-        if ($this->model->usernameExists(trim($_POST['username']))) {
-            return ['success' => false, 'message' => 'Username sudah digunakan'];
-        }
-
-        // Validasi: Cek duplikasi NIDN
+        // Validasi: Cek duplikasi NIDN (hanya di tabel admin)
         if ($this->model->nidnExists(trim($_POST['nidn']))) {
             return ['success' => false, 'message' => 'NIDN sudah terdaftar'];
         }
 
-        // Validasi: Cek duplikasi Email
+        // Validasi: Cek duplikasi Email (hanya di tabel admin)
         if ($this->model->emailExists(trim($_POST['email']))) {
             return ['success' => false, 'message' => 'Email sudah terdaftar'];
         }
 
         // Siapkan data untuk insert
         $data = [
-            'username'      => trim($_POST['username']),
-            'nama_lengkap'  => trim($_POST['nama_lengkap']),
-            'nidn'          => trim($_POST['nidn']),
-            'email'         => trim($_POST['email']),
-            'password'      => password_hash($_POST['password'], PASSWORD_DEFAULT),
-            'no_telepon'    => isset($_POST['no_telepon']) ? trim($_POST['no_telepon']) : null,
-            'alamat'        => isset($_POST['alamat']) ? trim($_POST['alamat']) : null,
+            'username' => trim($_POST['username']),
+            'nama_lengkap' => trim($_POST['nama_lengkap']),
+            'nidn' => trim($_POST['nidn']),
+            'email' => trim($_POST['email']),
+            'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
+            'no_telepon' => isset($_POST['no_telepon']) ? trim($_POST['no_telepon']) : null,
+            'alamat' => isset($_POST['alamat']) ? trim($_POST['alamat']) : null,
             'jenis_kelamin' => isset($_POST['jenis_kelamin']) ? $_POST['jenis_kelamin'] : null,
-            'jabatan'       => isset($_POST['jabatan']) ? trim($_POST['jabatan']) : null
+            'jabatan' => isset($_POST['jabatan']) ? trim($_POST['jabatan']) : null
         ];
 
         // Simpan ke database
@@ -128,45 +126,46 @@ class DosenController
             return ['success' => false, 'message' => 'Format email tidak valid'];
         }
 
-        // Validasi username (hanya huruf, angka, underscore, minimal 4 karakter)
-        if (!preg_match('/^[a-zA-Z0-9_]{4,}$/', $_POST['username'])) {
-            return ['success' => false, 'message' => 'Username minimal 4 karakter (huruf, angka, underscore)'];
+        // CEK USERNAME DI SEMUA TABEL (kecuali ID dosen ini sendiri)
+        require_once __DIR__ . '/../../helpers/auth_helper.php';
+        require_once __DIR__ . '/../../config/config.php';
+
+        $auth = new AuthHelper($config);
+
+        if ($auth->isUsernameExists(trim($_POST['username']), $id, 'admin')) {
+            return [
+                'success' => false,
+                'message' => 'Username sudah digunakan oleh pengguna lain'
+            ];
         }
 
-        // Validasi duplikasi (kecuali ID sendiri)
-        if ($this->model->usernameExists(trim($_POST['username']), $id)) {
-            return ['success' => false, 'message' => 'Username sudah digunakan oleh dosen lain'];
-        }
-
+        // Validasi duplikasi NIDN (kecuali ID sendiri)
         if ($this->model->nidnExists(trim($_POST['nidn']), $id)) {
             return ['success' => false, 'message' => 'NIDN sudah terdaftar pada dosen lain'];
         }
 
+        // Validasi duplikasi Email (kecuali ID sendiri)
         if ($this->model->emailExists(trim($_POST['email']), $id)) {
             return ['success' => false, 'message' => 'Email sudah terdaftar pada dosen lain'];
         }
 
         // Siapkan data untuk update (tanpa password)
         $data = [
-            'username'      => trim($_POST['username']),
-            'nama_lengkap'  => trim($_POST['nama_lengkap']),
-            'nidn'          => trim($_POST['nidn']),
-            'email'         => trim($_POST['email']),
-            'no_telepon'    => isset($_POST['no_telepon']) ? trim($_POST['no_telepon']) : null,
-            'alamat'        => isset($_POST['alamat']) ? trim($_POST['alamat']) : null,
+            'username' => trim($_POST['username']),
+            'nama_lengkap' => trim($_POST['nama_lengkap']),
+            'nidn' => trim($_POST['nidn']),
+            'email' => trim($_POST['email']),
+            'no_telepon' => isset($_POST['no_telepon']) ? trim($_POST['no_telepon']) : null,
+            'alamat' => isset($_POST['alamat']) ? trim($_POST['alamat']) : null,
             'jenis_kelamin' => isset($_POST['jenis_kelamin']) ? $_POST['jenis_kelamin'] : null,
-            'jabatan'       => isset($_POST['jabatan']) ? trim($_POST['jabatan']) : null
+            'jabatan' => isset($_POST['jabatan']) ? trim($_POST['jabatan']) : null
         ];
 
         // Update data
         if ($this->model->update($id, $data)) {
             // Jika password diisi, update password juga
             if (!empty($_POST['password'])) {
-                // Validasi panjang password
-                if (strlen($_POST['password']) < 6) {
-                    return ['success' => false, 'message' => 'Password minimal 6 karakter'];
-                }
-                
+
                 $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 $this->model->updatePassword($id, $hashedPassword);
             }

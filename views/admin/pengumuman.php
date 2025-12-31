@@ -32,7 +32,7 @@ if (isset($_POST['action'])) {
     try {
         switch ($_POST['action']) {
             case 'create':
-                echo json_encode($controller->tambah($_POST));
+                echo json_encode($controller->create($_POST));
                 break;
 
             case 'update':
@@ -195,6 +195,12 @@ $endData = min($offset + $itemsPerPage, $totalData);
             white-space: pre-wrap;
             word-wrap: break-word;
             max-width: 400px;
+        }
+
+        td.action-cell {
+            white-space: nowrap;
+            /* Paksa tombol tetap 1 baris */
+            vertical-align: middle;
         }
 
         /* ================= EMPTY STATE ================= */
@@ -451,7 +457,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                                     <td class="text-center"><?= htmlspecialchars($p['nama_kategori']) ?></td>
                                     <td class="text-center"><?= htmlspecialchars($p['target_display'] ?? 'Semua Mahasiswa') ?>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center action-cell">
                                         <button class="btn btn-info btn-sm email-btn" data-id="<?= $p['pengumuman_id'] ?>"
                                             data-judul="<?= htmlspecialchars($p['judul']) ?>"
                                             data-target="<?= htmlspecialchars($p['target_display'] ?? 'Semua Mahasiswa') ?>"
@@ -459,11 +465,11 @@ $endData = min($offset + $itemsPerPage, $totalData);
                                             <i class="bi bi-envelope-fill"></i>
                                         </button>
                                         <button class="btn btn-warning btn-sm edit-btn" data-id="<?= $p['pengumuman_id'] ?>"
-                                            data-bs-toggle="modal" data-bs-target="#modalEditPengumuman">
+                                            data-bs-toggle="modal" data-bs-target="#modalEditPengumuman" title="Edit">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
                                         <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $p['pengumuman_id'] ?>"
-                                            data-judul="<?= htmlspecialchars($p['judul']) ?>">
+                                            data-judul="<?= htmlspecialchars($p['judul']) ?>" title="Hapus">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
                                     </td>
@@ -898,7 +904,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         // TAMBAH PENGUMUMAN
-        document.getElementById('formTambahPengumuman').addEventListener('submit', async function(e) {
+        document.getElementById('formTambahPengumuman').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             if (!this.checkValidity()) {
@@ -943,7 +949,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // EDIT PENGUMUMAN - Setup button click
         document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', async function() {
+            button.addEventListener('click', async function () {
                 const pengumumanId = this.getAttribute('data-id');
 
                 try {
@@ -1007,7 +1013,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         });
 
         // EDIT PENGUMUMAN - Form submit
-        document.getElementById('formEditPengumuman').addEventListener('submit', async function(e) {
+        document.getElementById('formEditPengumuman').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             if (!this.checkValidity()) {
@@ -1051,7 +1057,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // DELETE PENGUMUMAN
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', async function() {
+            button.addEventListener('click', async function () {
                 const pengumumanId = this.getAttribute('data-id');
                 const judulPengumuman = this.getAttribute('data-judul');
 
@@ -1085,7 +1091,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // KIRIM EMAIL - Setup button click
         document.querySelectorAll('.email-btn').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const pengumumanId = this.getAttribute('data-id');
                 const judul = this.getAttribute('data-judul');
                 const target = this.getAttribute('data-target');
@@ -1096,8 +1102,49 @@ $endData = min($offset + $itemsPerPage, $totalData);
             });
         });
 
+        // KIRIM EMAIL - Setup button click
+        document.querySelectorAll('.email-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const pengumumanId = this.getAttribute('data-id');
+                const judul = this.getAttribute('data-judul');
+                const target = this.getAttribute('data-target');
+
+                document.getElementById('emailPengumumanId').value = pengumumanId;
+                document.getElementById('emailJudul').textContent = judul;
+                document.getElementById('emailTarget').textContent = target;
+            });
+        });
+
+        // Helper function untuk force cleanup modal
+        function forceCleanupModal() {
+            // Tutup semua modal Bootstrap
+            document.querySelectorAll('.modal').forEach(modalEl => {
+                const instance = bootstrap.Modal.getInstance(modalEl);
+                if (instance) {
+                    instance.hide();
+                }
+                modalEl.classList.remove('show');
+                modalEl.style.display = 'none';
+                modalEl.setAttribute('aria-hidden', 'true');
+                modalEl.removeAttribute('aria-modal');
+                modalEl.removeAttribute('role');
+            });
+
+            // Hapus semua backdrop
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+                backdrop.remove();
+            });
+
+            // Reset body - INI YANG PALING PENTING!
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            document.body.removeAttribute('data-bs-overflow');
+            document.body.removeAttribute('data-bs-padding-right');
+        }
+
         // KIRIM EMAIL - Form submit
-        document.getElementById('formKirimEmail').addEventListener('submit', async function(e) {
+        document.getElementById('formKirimEmail').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const btn = document.getElementById('btnKirimEmail');
@@ -1119,44 +1166,49 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     body: formData
                 });
 
-                // Check if response is ok
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Get response text first untuk debug
                 const responseText = await response.text();
-
-                // Coba parse JSON
                 let result;
+
                 try {
                     result = JSON.parse(responseText);
                 } catch (parseError) {
                     console.error('Response text:', responseText);
-                    throw new Error('Server mengembalikan response yang tidak valid. Cek console untuk detail.');
+                    throw new Error('Server mengembalikan response yang tidak valid.');
                 }
 
-                if (result.success) {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalKirimEmail'));
-                    modal.hide();
+                // Cleanup modal
+                forceCleanupModal();
 
-                    let message = result.message;
-                    if (result.detail) {
-                        message += `<br><small class="d-block mt-2">
+                // Tampilkan alert
+                setTimeout(() => {
+                    if (result.success) {
+                        let message = result.message;
+                        if (result.detail) {
+                            message += `<br><small class="d-block mt-2">
                         <strong>Detail Pengiriman:</strong><br>
                         📧 Total Penerima: ${result.detail.total}<br>
                         ✅ Berhasil: ${result.detail.success}<br>
                         ${result.detail.failed > 0 ? `❌ Gagal: ${result.detail.failed}` : ''}
                     </small>`;
+                        }
+                        showAlert(message, 'success');
+                    } else {
+                        showAlert(result.message || 'Terjadi kesalahan saat mengirim email', 'danger');
                     }
+                }, 300);
 
-                    showAlert(message, 'success');
-                } else {
-                    showAlert(result.message || 'Terjadi kesalahan saat mengirim email', 'danger');
-                }
             } catch (error) {
                 console.error('Error detail:', error);
-                showAlert('Terjadi kesalahan: ' + error.message, 'danger');
+                forceCleanupModal();
+
+                setTimeout(() => {
+                    showAlert('Terjadi kesalahan: ' + error.message, 'danger');
+                }, 300);
+
             } finally {
                 btn.disabled = false;
                 btnText.textContent = 'Kirim Email Sekarang';
@@ -1165,18 +1217,17 @@ $endData = min($offset + $itemsPerPage, $totalData);
         });
 
         // Reset modal saat ditutup
-        document.getElementById('modalTambahPengumuman').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('modalTambahPengumuman').addEventListener('hidden.bs.modal', function () {
             const form = document.getElementById('formTambahPengumuman');
             form.reset();
             document.querySelectorAll('.conditional-field').forEach(field => field.style.display = 'none');
         });
 
-        document.getElementById('modalEditPengumuman').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('modalEditPengumuman').addEventListener('hidden.bs.modal', function () {
             document.querySelectorAll('.conditional-field').forEach(field => field.style.display = 'none');
         });
 
-        document.getElementById('modalKirimEmail').addEventListener('hidden.bs.modal', function() {
-            // Reset form kirim email
+        document.getElementById('modalKirimEmail').addEventListener('hidden.bs.modal', function () {
             const form = document.getElementById('formKirimEmail');
             form.reset();
         });

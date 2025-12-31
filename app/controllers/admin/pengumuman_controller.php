@@ -1,4 +1,5 @@
 <?php
+// app/controllers/admin/pengumuman_controller.php
 
 require_once __DIR__ . '/../../../config/config.php';
 require_once __DIR__ . '/../../models/pengumuman_model.php';
@@ -13,9 +14,6 @@ class PengumumanControllerAdmin
         $this->model = new PengumumanModel($config);
     }
 
-    /**
-     * LIST DATA
-     */
     public function index()
     {
         return [
@@ -26,71 +24,58 @@ class PengumumanControllerAdmin
         ];
     }
 
-    /**
-     * GET BY ID
-     */
     public function getById($id)
     {
         return $this->model->getById($id);
     }
 
-    /**
-     * GET KELAS BY PRODI
-     */
     public function getKelasByProdi($prodi_id)
     {
         return $this->model->getKelasByProdi($prodi_id);
     }
 
     /**
-     * TAMBAH DATA
+     * function create
      */
-    public function tambah($post)
+    public function create($post)
     {
-        if (!isset($post['judul'], $post['kategori_id'], $post['isi'], $post['target_type'])) {
-            return [
-                'success' => false,
-                'message' => 'Data tidak lengkap'
-            ];
+        // Validasi input
+        $required = ['judul', 'isi', 'target_type', 'kategori_id'];
+        foreach ($required as $field) {
+            if (empty($post[$field])) {
+                return ['success' => false, 'message' => "Field $field harus diisi"];
+            }
         }
 
-        // FIX: Normalisasi data target
-        // Ubah string kosong menjadi NULL agar sesuai tipe database
-        $targetJurusan = (!empty($post['target_jurusan_id'])) ? $post['target_jurusan_id'] : null;
-        $targetProdi = (!empty($post['target_prodi_id'])) ? $post['target_prodi_id'] : null;
-        $targetKelas = (!empty($post['target_kelas'])) ? $post['target_kelas'] : null;
+        // Ambil user_id dari session
+        if (!isset($_SESSION['user_id'])) {
+            session_start();
+        }
+        
+        $createdBy = $_SESSION['user_id'] ?? null;
 
-        // Prepare target data
-        $targetData = [
+        if (!$createdBy) {
+            return ['success' => false, 'message' => 'User tidak teridentifikasi'];
+        }
+
+        $data = [
+            'judul' => trim($post['judul']),
+            'isi' => trim($post['isi']),
             'target_type' => $post['target_type'],
-            'target_jurusan_id' => $targetJurusan,
-            'target_prodi_id' => $targetProdi,
-            'target_kelas' => $targetKelas
+            'target_jurusan_id' => !empty($post['target_jurusan_id']) ? intval($post['target_jurusan_id']) : null,
+            'target_prodi_id' => !empty($post['target_prodi_id']) ? intval($post['target_prodi_id']) : null,
+            'target_kelas' => !empty($post['target_kelas']) ? trim($post['target_kelas']) : null,
+            'kategori_id' => intval($post['kategori_id']),
+            'created_by' => $createdBy
         ];
 
-        $result = $this->model->create(
-            $post['judul'],
-            $post['kategori_id'],
-            $post['isi'],
-            $targetData
-        );
-
-        if ($result) {
-            return [
-                'success' => true,
-                'message' => 'Pengumuman berhasil ditambahkan'
-            ];
+        if ($this->model->create($data)) {
+            return ['success' => true, 'message' => 'Pengumuman berhasil dibuat'];
         } else {
-            return [
-                'success' => false,
-                'message' => 'Gagal menambahkan pengumuman. Periksa kembali inputan Anda.'
-            ];
+            return ['success' => false, 'message' => 'Gagal membuat pengumuman'];
         }
     }
 
-    /**
-     * EDIT DATA
-     */
     public function edit($post)
     {
         if (!isset($post['pengumuman_id'], $post['judul'], $post['kategori_id'], $post['isi'], $post['target_type'])) {
@@ -100,12 +85,10 @@ class PengumumanControllerAdmin
             ];
         }
 
-        // FIX: Normalisasi data target (Sama seperti tambah)
         $targetJurusan = (!empty($post['target_jurusan_id'])) ? $post['target_jurusan_id'] : null;
         $targetProdi = (!empty($post['target_prodi_id'])) ? $post['target_prodi_id'] : null;
         $targetKelas = (!empty($post['target_kelas'])) ? $post['target_kelas'] : null;
 
-        // Prepare target data
         $targetData = [
             'target_type' => $post['target_type'],
             'target_jurusan_id' => $targetJurusan,
@@ -134,9 +117,6 @@ class PengumumanControllerAdmin
         }
     }
 
-    /**
-     * HAPUS DATA
-     */
     public function hapus($id)
     {
         if (!isset($id) || empty($id)) {
@@ -161,12 +141,6 @@ class PengumumanControllerAdmin
         }
     }
 
-    /**
-     * KIRIM EMAIL
-     */
-    /**
-     * KIRIM EMAIL - UPDATED dengan PHPMailer
-     */
     public function kirimEmail($post)
     {
         if (!isset($post['pengumuman_id'])) {
@@ -176,13 +150,11 @@ class PengumumanControllerAdmin
             ];
         }
 
-        // Load PHPMailer & Email Service
         require_once __DIR__ . '/../../../vendor/phpmailer/src/Exception.php';
         require_once __DIR__ . '/../../../vendor/phpmailer/src/PHPMailer.php';
         require_once __DIR__ . '/../../../vendor/phpmailer/src/SMTP.php';
         require_once __DIR__ . '/../../services/email_service.php';
 
-        // Get detail pengumuman
         $pengumuman = $this->model->getById($post['pengumuman_id']);
 
         if (!$pengumuman) {
@@ -192,7 +164,6 @@ class PengumumanControllerAdmin
             ];
         }
 
-        // Prepare target data
         $targetData = [
             'target_type' => $pengumuman['target_type'],
             'target_jurusan_id' => $pengumuman['target_jurusan_id'],
@@ -200,7 +171,6 @@ class PengumumanControllerAdmin
             'target_kelas' => $pengumuman['target_kelas']
         ];
 
-        // Get email mahasiswa
         $recipients = $this->model->getEmailMahasiswaByTarget($targetData);
 
         if (empty($recipients)) {
@@ -210,7 +180,6 @@ class PengumumanControllerAdmin
             ];
         }
 
-        // Filter recipients yang punya email valid
         $validRecipients = array_filter($recipients, function ($r) {
             return !empty($r['email']) && filter_var($r['email'], FILTER_VALIDATE_EMAIL);
         });
@@ -222,10 +191,8 @@ class PengumumanControllerAdmin
             ];
         }
 
-        // Initialize Email Service
         $emailService = new EmailService();
 
-        // Kirim email
         $successCount = 0;
         $failCount = 0;
         $errors = [];
@@ -239,8 +206,7 @@ class PengumumanControllerAdmin
                     $errors[] = $recipient['email'];
                 }
 
-                // Delay kecil untuk menghindari spam detection
-                usleep(100000); // 0.1 detik
+                usleep(100000);
 
             } catch (Exception $e) {
                 $failCount++;
@@ -249,7 +215,6 @@ class PengumumanControllerAdmin
             }
         }
 
-        // Response
         if ($successCount > 0) {
             $message = "✅ Email berhasil dikirim ke {$successCount} mahasiswa";
             if ($failCount > 0) {

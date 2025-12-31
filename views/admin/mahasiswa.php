@@ -20,49 +20,67 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
 }
 
 // Load controller ADMIN
+// ... (proteksi halaman tetap sama)
+
 require_once __DIR__ . '/../../app/controllers/admin/mahasiswa_controller.php';
 $mahasiswaController = new MahasiswaControllerAdmin();
 
-// Handle AJAX requests
+// HANDLE AJAX REQUESTS
 if (isset($_POST['action'])) {
+    ob_clean();
     header('Content-Type: application/json');
 
-    switch ($_POST['action']) {
-        case 'create':
-            echo json_encode($mahasiswaController->create());
-            exit();
+    try {
+        switch ($_POST['action']) {
+            case 'create':
+                echo json_encode($mahasiswaController->create($_POST));  
+                break;
 
-        case 'update':
-            echo json_encode($mahasiswaController->update());
-            exit();
+            case 'update':
+                echo json_encode($mahasiswaController->update($_POST));  
+                break;
 
-        case 'delete':
-            echo json_encode($mahasiswaController->delete());
-            exit();
+            case 'delete':
+                echo json_encode($mahasiswaController->delete($_POST));  
+                break;
 
-        case 'get':
-            $id = intval($_POST['mahasiswa_id']);
-            echo json_encode($mahasiswaController->getById($id));
-            exit();
+            case 'get':
+                $id = intval($_POST['mahasiswa_id']);
+                echo json_encode($mahasiswaController->getById($id));
+                break;
 
-        case 'checkNim':
-            $nim = $_POST['nim'];
-            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
-            echo json_encode(['exists' => $mahasiswaController->checkNimExists($nim, $excludeId)]);
-            exit();
+            case 'checkNim':
+                $nim = $_POST['nim'];
+                $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+                echo json_encode(['exists' => $mahasiswaController->checkNimExists($nim, $excludeId)]);
+                break;
 
-        case 'checkUsername':
-            $username = $_POST['username'];
-            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
-            echo json_encode(['exists' => $mahasiswaController->checkUsernameExists($username, $excludeId)]);
-            exit();
+            case 'checkUsername':
+                $username = $_POST['username'];
+                $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+                echo json_encode(['exists' => $mahasiswaController->checkUsernameExists($username, $excludeId)]);
+                break;
 
-        case 'checkEmail':
-            $email = $_POST['email'];
-            $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
-            echo json_encode(['exists' => $mahasiswaController->checkEmailExists($email, $excludeId)]);
-            exit();
+            case 'checkEmail':
+                $email = $_POST['email'];
+                $excludeId = isset($_POST['exclude_id']) ? intval($_POST['exclude_id']) : null;
+                echo json_encode(['exists' => $mahasiswaController->checkEmailExists($email, $excludeId)]);
+                break;
+
+            default:
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Action tidak valid'
+                ]);
+        }
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ]);
     }
+
+    exit();  // ✅ PENTING: Exit setelah AJAX
 }
 
 // Pagination settings

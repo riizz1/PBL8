@@ -23,8 +23,6 @@ require_once __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
 $controller = new PengumumanControllerUser();
 $data = $controller->index();
 
-// Ambil data mentah dari controller (bukan yang sudah dipaginasi oleh controller lama)
-// Menggunakan key yang sama seperti di admin
 $allPengumuman = $data['pengumuman'] ?? [];
 $kategoriList = $data['kategori'] ?? [];
 $bulanList = $data['bulanList'] ?? [];
@@ -34,7 +32,7 @@ $kategoriDipilih = $data['kategoriDipilih'] ?? null;
 $bulanDipilih = $data['bulanDipilih'] ?? null;
 $tahunDipilih = $data['tahunDipilih'] ?? null;
 
-// ================= PAGINATION LOGIC (PERSIS ADMIN) =================
+// ================= PAGINATION LOGIC =================
 $itemsPerPage = 10;
 $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $offset = ($currentPage - 1) * $itemsPerPage;
@@ -42,13 +40,10 @@ $offset = ($currentPage - 1) * $itemsPerPage;
 $totalData = count($allPengumuman);
 $totalPages = ceil($totalData / $itemsPerPage);
 
-// Slice data untuk current page
 $pengumuman = array_slice($allPengumuman, $offset, $itemsPerPage);
 
-// Calculate display range
 $startData = $totalData > 0 ? $offset + 1 : 0;
 $endData = min($offset + $itemsPerPage, $totalData);
-// =========================================================================
 ?>
 
 <!DOCTYPE html>
@@ -58,6 +53,8 @@ $endData = min($offset + $itemsPerPage, $totalData);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mahasiswa | Pengumuman</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
         /* ================= PENGUMUMAN ================= */
@@ -226,10 +223,8 @@ $endData = min($offset + $itemsPerPage, $totalData);
             border-radius: 20px;
             font-size: 14px;
             font-weight: 500;
-            display: flex;
-            color: #777 !important;
+            display: inline-block;
         }
-
 
         .badge-akademik {
             background: #e3f2fd;
@@ -273,7 +268,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
             transform: scale(1.04);
         }
 
-        /* PAGINATION (COPY PASTE DARI ADMIN) */
+        /* PAGINATION */
         .pagination {
             padding: 20px 25px;
             display: flex;
@@ -307,7 +302,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         .page-btn:hover:not(:disabled) {
             background: #51c8e9;
-            /* Warna biru cerah */
             color: white;
             border-color: #51c8e9;
         }
@@ -319,7 +313,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         .page-btn.active {
             background: #51c8e9;
-            /* Warna biru cerah */
             color: white;
             border-color: #51c8e9;
         }
@@ -330,123 +323,51 @@ $endData = min($offset + $itemsPerPage, $totalData);
             font-weight: bold;
         }
 
-        /* MODAL STYLES */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6);
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 3% auto;
-            width: 90%;
-            max-width: 900px;
-            border-radius: 12px;
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
-            animation: slideDown 0.3s;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        @keyframes slideDown {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
+        /* MODAL CUSTOM STYLING */
         .modal-header {
             background: linear-gradient(135deg, #51c8e9 0%, #3ab0d9 100%);
-            padding: 25px 30px;
             color: white;
-            border-radius: 12px 12px 0 0;
-            position: relative;
+            border-bottom: none;
         }
 
         .modal-title {
-            font-size: 24px;
             font-weight: 700;
-            margin-bottom: 15px;
-            padding-right: 60px;
-            line-height: 1.3;
-        }
-
-        .modal-meta {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            font-size: 13px;
-            opacity: 0.95;
-            padding-right: 60px;
-        }
-
-        .modal-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .modal-kategori-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 600;
-            background: white;
-            color: #51c8e9;
-        }
-
-        .close-modal {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            line-height: 1;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transition: background 0.2s;
-        }
-
-        .close-modal:hover {
-            background: rgba(255, 255, 255, 0.3);
         }
 
         .modal-body {
-            padding: 30px;
+            padding: 25px;
         }
 
-        .modal-label {
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .info-item i {
+            color: #51c8e9;
+            font-size: 18px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            min-width: 100px;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(to right, #51c8e9, transparent);
+            margin: 20px 0;
+        }
+
+        .content-label {
             font-size: 14px;
             font-weight: 600;
             color: #666;
@@ -456,70 +377,13 @@ $endData = min($offset + $itemsPerPage, $totalData);
             display: block;
         }
 
-        .modal-text {
+        .content-text {
             font-size: 15px;
             line-height: 1.8;
             color: #333;
             text-align: justify;
             white-space: pre-wrap;
             word-wrap: break-word;
-        }
-
-        .modal-divider {
-            height: 2px;
-            background: linear-gradient(to right, #51c8e9, transparent);
-            margin: 25px 0;
-        }
-
-        .modal-footer {
-            padding: 20px 30px;
-            background: #f8f9fa;
-            border-radius: 0 0 12px 12px;
-            text-align: right;
-        }
-
-        .modal-btn-print {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .modal-btn-print:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-
-        /* Loading spinner */
-        .modal-loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #51c8e9;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
         }
 
         /* Responsive */
@@ -530,28 +394,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
             .table-wrapper {
                 overflow-x: scroll;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 5% auto;
-            }
-
-            .modal-header {
-                padding: 20px;
-            }
-
-            .modal-title {
-                font-size: 20px;
-            }
-
-            .modal-body {
-                padding: 20px;
-            }
-
-            .modal-meta {
-                flex-direction: column;
-                gap: 10px;
             }
 
             .pagination {
@@ -676,8 +518,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                 </table>
             </div>
 
-            <!-- PAGINATION (MENGGUNAKAN LOGIKA PHP DARI ADMIN) -->
-            <!-- PAGINATION (MENGGUNAKAN LOGIKA PHP DARI ADMIN) -->
+            <!-- PAGINATION -->
             <?php if ($totalData > 0): ?>
                 <div class="pagination">
                     <div class="page-info">
@@ -686,7 +527,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
                     <div class="page-buttons">
                         <?php
-                        // Build query string untuk pagination
                         $queryParams = [];
                         if (!empty($kategoriDipilih))
                             $queryParams[] = 'kategori=' . urlencode($kategoriDipilih);
@@ -697,14 +537,12 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         $baseQuery = !empty($queryParams) ? '&' . implode('&', $queryParams) : '';
                         ?>
 
-                        <!-- Previous Button -->
                         <?php if ($currentPage > 1): ?>
                             <a href="?page=<?= $currentPage - 1; ?><?= $baseQuery; ?>" class="page-btn">← Sebelumnya</a>
                         <?php else: ?>
                             <button class="page-btn" disabled>← Sebelumnya</button>
                         <?php endif; ?>
 
-                        <!-- Page Numbers -->
                         <?php
                         $range = 2;
                         $start = max(1, $currentPage - $range);
@@ -728,7 +566,6 @@ $endData = min($offset + $itemsPerPage, $totalData);
                         }
                         ?>
 
-                        <!-- Next Button -->
                         <?php if ($currentPage < $totalPages): ?>
                             <a href="?page=<?= $currentPage + 1; ?><?= $baseQuery; ?>" class="page-btn">Selanjutnya →</a>
                         <?php else: ?>
@@ -740,35 +577,43 @@ $endData = min($offset + $itemsPerPage, $totalData);
         </div>
     </div>
 
-    <!-- MODAL DETAIL -->
-    <div id="detailModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="close-modal" onclick="closeModal()">&times;</span>
-                <h2 class="modal-title" id="modalTitle">Loading...</h2>
-                <div class="modal-meta" id="modalMeta"></div>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <div class="modal-loading">
-                    <div class="spinner"></div>
-                    <p>Memuat data...</p>
+    <!-- BOOTSTRAP MODAL -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Loading...</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button onclick="printModal()" class="modal-btn-print">🖨️ Cetak</button>
+                <div class="modal-body" id="modalBody">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Memuat data...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const modalInstance = new bootstrap.Modal(document.getElementById('detailModal'));
+
         function openModal(id) {
-            const modal = document.getElementById('detailModal');
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
+            modalInstance.show();
 
             document.getElementById('modalTitle').textContent = 'Loading...';
-            document.getElementById('modalMeta').innerHTML = '';
-            document.getElementById('modalBody').innerHTML = '<div class="modal-loading"><div class="spinner"></div><p>Memuat data...</p></div>';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Memuat data...</p>
+                </div>
+            `;
 
             fetch('get_detail.php?id=' + id)
                 .then(response => response.json())
@@ -776,59 +621,42 @@ $endData = min($offset + $itemsPerPage, $totalData);
                     if (data.success) {
                         const p = data.pengumuman;
                         document.getElementById('modalTitle').textContent = p.judul;
-                        document.getElementById('modalMeta').innerHTML = `
-                            <div class="modal-meta-item">
-                                <span>📅</span>
-                                <span>${p.tanggal_lengkap}</span>
-                            </div>
-                            <div class="modal-meta-item">
-                                <span>📂</span>
-                                <span class="modal-kategori-badge">${p.kategori}</span>
-                            </div>
-                        `;
                         document.getElementById('modalBody').innerHTML = `
-                            <span class="modal-label">📋 Isi Pengumuman</span>
-                            <div class="modal-divider"></div>
-                            <div class="modal-text">${p.isi}</div>
+                            <div class="info-item">
+                                <i class="bi bi-calendar-event"></i>
+                                <span class="info-label">Tanggal:</span>
+                                <span class="info-value">${p.tanggal_lengkap}</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-folder"></i>
+                                <span class="info-label">Kategori:</span>
+                                <span class="info-value badge badge-${p.kategori.toLowerCase()}">${p.kategori}</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-person-circle"></i>
+                                <span class="info-label">Diupload oleh:</span>
+                                <span class="info-value">${p.nama_admin}</span>
+                            </div>
+                            <div class="divider"></div>
+                            <span class="content-label"><i class="bi bi-file-text"></i> Isi Pengumuman</span>
+                            <div class="content-text">${p.isi}</div>
                         `;
                     } else {
-                        document.getElementById('modalBody').innerHTML = '<p style="text-align:center; padding:40px; color:#ff6b6b;">Data tidak ditemukan.</p>';
+                        document.getElementById('modalBody').innerHTML = `
+                            <div class="alert alert-danger" role="alert">
+                                <i class="bi bi-exclamation-triangle"></i> ${data.message || 'Data tidak ditemukan'}
+                            </div>
+                        `;
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    document.getElementById('modalBody').innerHTML = '<p style="text-align:center; padding:40px; color:#ff6b6b;">Terjadi kesalahan saat memuat data.</p>';
+                    document.getElementById('modalBody').innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> Terjadi kesalahan saat memuat data
+                        </div>
+                    `;
                 });
-        }
-
-        function closeModal() {
-            document.getElementById('detailModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        window.onclick = function (event) {
-            if (event.target == document.getElementById('detailModal')) {
-                closeModal();
-            }
-        }
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') closeModal();
-        });
-
-        function printModal() {
-            const modalContent = document.querySelector('.modal-content').cloneNode(true);
-            modalContent.querySelector('.close-modal').remove();
-            modalContent.querySelector('.modal-footer').remove();
-
-            const printWindow = window.open('', '', 'height=600,width=800');
-            printWindow.document.write('<html><head><title>Print Pengumuman</title>');
-            printWindow.document.write('<style>body{font-family:Arial,sans-serif;padding:20px}.modal-header{background:#2193b0;color:white;padding:20px;margin-bottom:20px}.modal-title{font-size:24px;margin-bottom:10px}.modal-meta{display:flex;gap:15px;font-size:14px}.modal-body{padding:20px}.modal-text{line-height:1.8;white-space:pre-wrap}.modal-divider{height:2px;background:#2193b0;margin:15px 0}</style>');
-            printWindow.document.write('</head><body>');
-            printWindow.document.write(modalContent.innerHTML);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.print();
         }
     </script>
 

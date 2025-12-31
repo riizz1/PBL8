@@ -1,23 +1,19 @@
 <?php
-
-// Aktifkan error reporting untuk debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header('Content-Type: application/json');
 
 try {
-    // Cek apakah ada parameter ID
     if (!isset($_GET['id']) || empty($_GET['id'])) {
         echo json_encode(['success' => false, 'message' => 'ID tidak ditemukan']);
         exit;
     }
 
-    // Path absolut untuk require
     $controllerPath = __DIR__ . '/../../app/controllers/user/pengumuman_controller.php';
     
     if (!file_exists($controllerPath)) {
-        echo json_encode(['success' => false, 'message' => 'Controller file tidak ditemukan: ' . $controllerPath]);
+        echo json_encode(['success' => false, 'message' => 'Controller file tidak ditemukan']);
         exit;
     }
 
@@ -26,7 +22,6 @@ try {
     $controller = new PengumumanControllerUser();
     $data = $controller->detail($_GET['id']);
 
-    // Jika data tidak ditemukan
     if ($data === null || !isset($data['pengumuman'])) {
         echo json_encode(['success' => false, 'message' => 'Data tidak ditemukan di database']);
         exit;
@@ -34,7 +29,6 @@ try {
 
     $pengumuman = $data['pengumuman'];
 
-    // Validasi data
     if (empty($pengumuman['judul']) || empty($pengumuman['isi'])) {
         echo json_encode(['success' => false, 'message' => 'Data pengumuman tidak lengkap']);
         exit;
@@ -61,6 +55,7 @@ try {
             'judul' => htmlspecialchars($pengumuman['judul']),
             'isi' => nl2br(htmlspecialchars($pengumuman['isi'])),
             'kategori' => htmlspecialchars(ucfirst($pengumuman['nama_kategori'] ?? 'Umum')),
+            'nama_admin' => htmlspecialchars($pengumuman['nama_lengkap'] ?? 'Admin'),
             'tanggal_lengkap' => "$tanggal $bulan $tahun, $waktu WIB"
         ]
     ];
@@ -70,8 +65,7 @@ try {
 } catch (Exception $e) {
     echo json_encode([
         'success' => false, 
-        'message' => 'Error: ' . $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine()
+        'message' => 'Error: ' . $e->getMessage()
     ]);
 }
+?>
