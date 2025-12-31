@@ -21,6 +21,9 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
     </script>";
   exit();
 }
+
+// Ambil nama dari session
+$namaUser = $_SESSION['nama_lengkap'] ?? $_SESSION['username'] ?? 'User';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -279,6 +282,15 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
         <!-- Icon kanan -->
         <ul class="navbar-nav align-items-center right-icons">
 
+          <!-- Selamat Datang Text -->
+          <li class="nav-item me-3 d-none d-lg-block">
+            <span class="text-dark fw-semibold" style="font-size: 0.95rem;">
+              Selamat Datang,
+              <span class="text-primary">
+                <?= htmlspecialchars($namaUser); ?>
+              </span>
+            </span>
+          </li>
 
           <!-- Dropdown Profile -->
           <li class="nav-item dropdown">
@@ -286,10 +298,15 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'superadmin') {
               <i data-lucide="user"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li><a class="dropdown-item" href="../../app/controllers/auth/logout.php">Log Out</a></li>
+              <li>
+                <a class="dropdown-item" href="/PBL8/app/controllers/auth/logout.php">
+                  Log Out
+                </a>
+              </li>
             </ul>
           </li>
         </ul>
+
       </div>
     </div>
   </nav>
