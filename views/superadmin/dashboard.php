@@ -26,7 +26,6 @@ $dashboardController = new DashboardController();
 
 // Get data dari controller
 $stats = $dashboardController->getStatistics();
-$recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
 ?>
 
 <!DOCTYPE html>
@@ -104,16 +103,6 @@ $recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
             color: #7b1fa2;
         }
 
-        .stat-icon.icon-pengumuman {
-            background-color: #e8f5e9;
-            color: #388e3c;
-        }
-
-        .stat-icon.icon-kategori {
-            background-color: #fff3e0;
-            color: #f57c00;
-        }
-
         .stat-number {
             font-size: 2rem;
             font-weight: 700;
@@ -178,98 +167,9 @@ $recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
             color: #7b1fa2;
         }
 
-        .quick-btn .btn-pengumuman i {
-            color: #388e3c;
-        }
-
-        .quick-btn .btn-kategori i {
-            color: #f57c00;
-        }
-
         .quick-btn span {
             font-weight: 600;
             font-size: 0.95rem;
-        }
-
-        /* ===== PENGUMUMAN TERBARU ===== */
-        .announcement-card {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e2e8f0;
-        }
-
-        .announcement-card h5 {
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .announcement-item {
-            padding: 18px;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 12px;
-            transition: all 0.3s ease;
-            background: #fff;
-        }
-
-        .announcement-item:hover {
-            border-color: #cbd5e0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transform: translateX(3px);
-        }
-
-        .announcement-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .announcement-title {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 5px;
-            font-size: 0.95rem;
-        }
-
-        .announcement-meta {
-            font-size: 0.8rem;
-            color: #718096;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .announcement-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background-color: #e2e8f0;
-            color: #4a5568;
-        }
-
-        /* ===== EMPTY STATE ===== */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #a0aec0;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .empty-state p {
-            margin: 0;
-            font-size: 0.9rem;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -305,7 +205,7 @@ $recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
 
         <!-- ===== STATISTIK ===== -->
         <div class="row g-3 mb-4">
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-6 col-md-6">
                 <div class="stat-card">
                     <div class="stat-icon icon-dosen">
                         <i class="bi bi-person-badge"></i>
@@ -315,7 +215,7 @@ $recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-6 col-md-6">
                 <div class="stat-card">
                     <div class="stat-icon icon-mahasiswa">
                         <i class="bi bi-people"></i>
@@ -324,33 +224,13 @@ $recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
                     <div class="stat-label">Total Mahasiswa</div>
                 </div>
             </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon icon-pengumuman">
-                        <i class="bi bi-megaphone"></i>
-                    </div>
-                    <div class="stat-number"><?= number_format($stats['total_pengumuman']) ?></div>
-                    <div class="stat-label">Total Pengumuman</div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon icon-kategori">
-                        <i class="bi bi-tags"></i>
-                    </div>
-                    <div class="stat-number"><?= number_format($stats['total_kategori']) ?></div>
-                    <div class="stat-label">Total Kategori</div>
-                </div>
-            </div>
         </div>
 
         <!-- ===== QUICK ACCESS ===== -->
         <div class="quick-access-card">
             <h5>Akses Cepat</h5>
             <div class="row g-3">
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-6 col-md-6">
                     <a href="dosen.php" class="quick-btn">
                         <div class="btn-dosen">
                             <i class="bi bi-person-plus"></i>
@@ -358,7 +238,7 @@ $recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
                         </div>
                     </a>
                 </div>
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-6 col-md-6">
                     <a href="mahasiswa.php" class="quick-btn">
                         <div class="btn-mahasiswa">
                             <i class="bi bi-people"></i>
@@ -366,52 +246,7 @@ $recentAnnouncements = $dashboardController->getRecentAnnouncements(5);
                         </div>
                     </a>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <a href="pengumuman.php" class="quick-btn">
-                        <div class="btn-pengumuman">
-                            <i class="bi bi-megaphone"></i>
-                            <span>Kelola Pengumuman</span>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <a href="kategori.php" class="quick-btn">
-                        <div class="btn-kategori">
-                            <i class="bi bi-tags"></i>
-                            <span>Kelola Kategori</span>
-                        </div>
-                    </a>
-                </div>
             </div>
-        </div>
-
-        <!-- ===== PENGUMUMAN TERBARU ===== -->
-        <div class="announcement-card">
-            <h5>
-                <span><i class="bi bi-clock-history me-2"></i>Pengumuman Terbaru</span>
-                <a href="pengumuman.php" class="btn btn-sm btn-outline-secondary">Lihat Semua</a>
-            </h5>
-
-            <?php if (empty($recentAnnouncements)): ?>
-                <div class="empty-state">
-                    <i class="bi bi-inbox"></i>
-                    <p>Belum ada pengumuman</p>
-                </div>
-            <?php else: ?>
-                <?php foreach ($recentAnnouncements as $announcement): ?>
-                    <div class="announcement-item">
-                        <div class="announcement-title">
-                            <?= htmlspecialchars($announcement['judul']) ?>
-                        </div>
-                        <div class="announcement-meta">
-                            <span><i class="bi bi-calendar3 me-1"></i><?= date('d M Y', strtotime($announcement['created_at'])) ?></span>
-                            <span class="announcement-badge">
-                                <i class="bi bi-tag me-1"></i><?= htmlspecialchars($announcement['nama_kategori'] ?? 'Umum') ?>
-                            </span>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
         </div>
     </div>
 

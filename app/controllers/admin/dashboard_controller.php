@@ -13,6 +13,7 @@ class DashboardController
         return [
             'total_pengumuman'   => $this->getCount("pengumuman"),
             'total_kategori'     => $this->getCount("kategori"),
+            'total_mahasiswa'     => $this->getCount("mahasiswa"),
             'pengumuman_terbaru' => $this->getLatest()
         ];
     }

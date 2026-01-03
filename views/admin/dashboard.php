@@ -26,6 +26,7 @@ $data = $controller->index();
 
 $total_pengumuman = $data['total_pengumuman'];
 $total_kategori = $data['total_kategori'];
+$total_mahasiswa = $data['total_mahasiswa'];
 $pengumuman_terbaru = $data['pengumuman_terbaru'];
 ?>
 
@@ -105,6 +106,11 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
       color: #7b1fa2;
     }
 
+    .stat-icon.icon-mahasiswa {
+      background-color: #e8f5e9;
+      color: #388e3c;
+    }
+
     .stat-number {
       font-size: 2rem;
       font-weight: 700;
@@ -167,6 +173,10 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
 
     .quick-btn .btn-kategori i {
       color: #7b1fa2;
+    }
+
+    .quick-btn .btn-mahasiswa i {
+      color: #388e3c;
     }
 
     .quick-btn span {
@@ -290,7 +300,7 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
 
     <!-- ===== STATISTIK ===== -->
     <div class="row g-3 mb-4">
-      <div class="col-lg-6 col-md-6">
+      <div class="col-lg-4 col-md-6">
         <div class="stat-card">
           <div class="stat-icon icon-pengumuman">
             <i class="bi bi-megaphone"></i>
@@ -300,7 +310,7 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
         </div>
       </div>
 
-      <div class="col-lg-6 col-md-6">
+      <div class="col-lg-4 col-md-6">
         <div class="stat-card">
           <div class="stat-icon icon-kategori">
             <i class="bi bi-tags"></i>
@@ -309,13 +319,23 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
           <div class="stat-label">Total Kategori</div>
         </div>
       </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="stat-card">
+          <div class="stat-icon icon-mahasiswa">
+            <i class="bi bi-people"></i>
+          </div>
+          <div class="stat-number"><?= number_format($total_mahasiswa) ?></div>
+          <div class="stat-label">Total Mahasiswa</div>
+        </div>
+      </div>
     </div>
 
     <!-- ===== QUICK ACCESS ===== -->
     <div class="quick-access-card">
       <h5>Akses Cepat</h5>
       <div class="row g-3">
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-4 col-md-6">
           <a href="pengumuman.php" class="quick-btn">
             <div class="btn-pengumuman">
               <i class="bi bi-megaphone"></i>
@@ -323,11 +343,19 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
             </div>
           </a>
         </div>
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-4 col-md-6">
           <a href="kategori.php" class="quick-btn">
             <div class="btn-kategori">
               <i class="bi bi-tags"></i>
               <span>Kelola Kategori</span>
+            </div>
+          </a>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <a href="mahasiswa.php" class="quick-btn">
+            <div class="btn-mahasiswa">
+              <i class="bi bi-people"></i>
+              <span>Kelola Mahasiswa</span>
             </div>
           </a>
         </div>
@@ -355,7 +383,7 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
           <div class="announcement-meta">
             <span><i class="bi bi-calendar3 me-1"></i><?= date('d M Y', strtotime($row['created_at'])) ?></span>
             <span class="announcement-badge">
-              <i class="bi bi-tag me-1"></i>Kategori
+              <i class="bi bi-tag me-1"></i><?= htmlspecialchars($row['nama_kategori'] ?? 'Umum') ?>
             </span>
           </div>
         </div>
