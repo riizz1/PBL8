@@ -39,6 +39,7 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
   <title>Admin | Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="/PBL8/public/assets/img/hat.svg">
 
   <style>
     /* ================= DASHBOARD SIMPLE & CLEAN ================= */
@@ -375,7 +376,7 @@ $pengumuman_terbaru = $data['pengumuman_terbaru'];
         $count++;
         if ($count > 5)
           break;
-      ?>
+        ?>
         <div class="announcement-item">
           <div class="announcement-title">
             <?= htmlspecialchars($row['judul']) ?>

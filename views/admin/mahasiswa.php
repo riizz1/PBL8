@@ -21,7 +21,7 @@ if (!isset($_SESSION['role_name']) || $_SESSION['role_name'] !== 'dosen') {
 
 // Load controller ADMIN
 require_once __DIR__ . '/../../app/controllers/admin/mahasiswa_controller.php';
- $mahasiswaController = new MahasiswaControllerAdmin();
+$mahasiswaController = new MahasiswaControllerAdmin();
 
 // HANDLE AJAX REQUESTS
 if (isset($_POST['action'])) {
@@ -31,15 +31,15 @@ if (isset($_POST['action'])) {
     try {
         switch ($_POST['action']) {
             case 'create':
-                echo json_encode($mahasiswaController->create($_POST));  
+                echo json_encode($mahasiswaController->create($_POST));
                 break;
 
             case 'update':
-                echo json_encode($mahasiswaController->update($_POST));  
+                echo json_encode($mahasiswaController->update($_POST));
                 break;
 
             case 'delete':
-                echo json_encode($mahasiswaController->delete($_POST));  
+                echo json_encode($mahasiswaController->delete($_POST));
                 break;
 
             case 'get':
@@ -82,25 +82,25 @@ if (isset($_POST['action'])) {
 }
 
 // Pagination settings
- $itemsPerPage = 10;
- $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
- $offset = ($currentPage - 1) * $itemsPerPage;
+$itemsPerPage = 10;
+$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($currentPage - 1) * $itemsPerPage;
 
 // Get all mahasiswa (Model getAll sudah difilter otomatis oleh controller admin)
- $allMahasiswa = $mahasiswaController->index();
- $totalData = count($allMahasiswa);
- $totalPages = ceil($totalData / $itemsPerPage);
+$allMahasiswa = $mahasiswaController->index();
+$totalData = count($allMahasiswa);
+$totalPages = ceil($totalData / $itemsPerPage);
 
 // Slice data for current page
- $mahasiswaList = array_slice($allMahasiswa, $offset, $itemsPerPage);
+$mahasiswaList = array_slice($allMahasiswa, $offset, $itemsPerPage);
 
 // Calculate display range
- $startData = $totalData > 0 ? $offset + 1 : 0;
- $endData = min($offset + $itemsPerPage, $totalData);
+$startData = $totalData > 0 ? $offset + 1 : 0;
+$endData = min($offset + $itemsPerPage, $totalData);
 
 // Get jurusan dan prodi untuk dropdown
- $jurusanList = $mahasiswaController->getAllJurusan();
- $prodiList = $mahasiswaController->getAllProdi();
+$jurusanList = $mahasiswaController->getAllJurusan();
+$prodiList = $mahasiswaController->getAllProdi();
 ?>
 
 <!DOCTYPE html>
@@ -112,6 +112,8 @@ if (isset($_POST['action'])) {
     <title>Admin | Mahasiswa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="/PBL8/public/assets/img/hat.svg">
+
     <style>
         /* ================= MAHASISWA ================= */
         .table-section {
@@ -624,10 +626,10 @@ if (isset($_POST['action'])) {
         }
 
         // ================= PASSWORD VISIBILITY TOGGLE =================
-        document.getElementById('toggleTambahPassword').addEventListener('click', function() {
+        document.getElementById('toggleTambahPassword').addEventListener('click', function () {
             const passwordInput = document.getElementById('tambahPassword');
             const icon = this;
-            
+
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 icon.classList.remove('bi-eye-slash');

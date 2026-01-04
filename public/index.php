@@ -7,6 +7,7 @@
     <title>Pengumuman Akademik Online</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/PBL8/public/assets/img/hat.svg">
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -68,12 +69,12 @@
     </div>
 
     <!-- Footer -->
-  <?php
+    <?php
     include("footer.php");
-  ?>
+    ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
                 navbar.classList.add('scrolled');

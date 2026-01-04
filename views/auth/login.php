@@ -33,6 +33,7 @@ unset($_SESSION['login_error']); // Hapus error setelah ditampilkan
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="/PBL8/public/assets/img/hat.svg">
     <link rel="stylesheet" href="login.css">
 </head>
 

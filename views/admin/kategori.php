@@ -51,6 +51,8 @@ $endData = min($offset + $itemsPerPage, $totalData);
     <title>Admin | Kategori</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="/PBL8/public/assets/img/hat.svg">
+
     <style>
         /* ================= KATEGORI ================= */
         .table-section {
@@ -402,8 +404,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
                                             onclick='editKategori(<?= json_encode($row, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
-                                        <button class="btn btn-danger btn-sm delete-btn"
-                                            data-id="<?= $row['kategori_id'] ?>"
+                                        <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $row['kategori_id'] ?>"
                                             data-nama="<?= htmlspecialchars($row['nama_kategori']) ?>">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
@@ -439,7 +440,8 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
                             if ($start > 1) {
                                 echo '<a href="?page=1" class="page-btn">1</a>';
-                                if ($start > 2) echo '<span class="page-dots">...</span>';
+                                if ($start > 2)
+                                    echo '<span class="page-dots">...</span>';
                             }
 
                             for ($i = $start; $i <= $end; $i++) {
@@ -448,7 +450,8 @@ $endData = min($offset + $itemsPerPage, $totalData);
                             }
 
                             if ($end < $totalPages) {
-                                if ($end < $totalPages - 1) echo '<span class="page-dots">...</span>';
+                                if ($end < $totalPages - 1)
+                                    echo '<span class="page-dots">...</span>';
                                 echo '<a href="?page=' . $totalPages . '" class="page-btn">' . $totalPages . '</a>';
                             }
                             ?>
@@ -469,17 +472,20 @@ $endData = min($offset + $itemsPerPage, $totalData);
     </main>
 
     <!-- Modal Tambah Kategori -->
-    <div class="modal fade" id="modalTambahKategori" tabindex="-1" aria-labelledby="modalTambahKategoriLabel" aria-hidden="true">
+    <div class="modal fade" id="modalTambahKategori" tabindex="-1" aria-labelledby="modalTambahKategoriLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title w-100 text-center" id="modalTambahKategoriLabel">
                         Penambahan Kategori Pengumuman
                     </h5>
-                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formTambahKategori" action="../../app/controllers/admin/kategori_controller.php" method="POST">
+                    <form id="formTambahKategori" action="../../app/controllers/admin/kategori_controller.php"
+                        method="POST">
                         <div class="mb-3 form-group">
                             <label class="form-label">Nama Kategori <span class="text-danger">*</span></label>
                             <input type="text" name="nama_kategori" id="tambahNamaKategori" class="form-control"
@@ -502,29 +508,31 @@ $endData = min($offset + $itemsPerPage, $totalData);
     </div>
 
     <!-- Modal Edit Kategori -->
-    <div class="modal fade" id="modalEditKategori" tabindex="-1" aria-labelledby="modalEditKategoriLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditKategori" tabindex="-1" aria-labelledby="modalEditKategoriLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0">
                     <h5 class="modal-title w-100 text-center" id="modalEditKategoriLabel">
                         Edit Kategori
                     </h5>
-                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formEditKategori" action="../../app/controllers/admin/kategori_controller.php" method="POST">
+                    <form id="formEditKategori" action="../../app/controllers/admin/kategori_controller.php"
+                        method="POST">
                         <input type="hidden" name="_method" value="PUT">
                         <input type="hidden" name="kategori_id" id="edit_kategori_id">
                         <div class="mb-3 form-group">
                             <label class="form-label">Nama Kategori <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_kategori" id="edit_nama_kategori"
-                                class="form-control" required>
+                            <input type="text" name="nama_kategori" id="edit_nama_kategori" class="form-control"
+                                required>
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3 form-group">
                             <label class="form-label">Deskripsi</label>
-                            <textarea name="deskripsi" id="edit_deskripsi"
-                                class="form-control" rows="2"></textarea>
+                            <textarea name="deskripsi" id="edit_deskripsi" class="form-control" rows="2"></textarea>
                         </div>
                         <button type="submit" class="btn btn-success w-100" id="btnEdit">
                             <span class="btn-text">Simpan Perubahan</span>
@@ -604,7 +612,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         // ================= EVENT LISTENERS UNTUK FORM TAMBAH =================
-        document.getElementById('tambahNamaKategori').addEventListener('blur', async function() {
+        document.getElementById('tambahNamaKategori').addEventListener('blur', async function () {
             const feedbackElement = this.nextElementSibling;
             const isValid = await validateNamaKategori(this.value, null, feedbackElement, this);
 
@@ -631,7 +639,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         }
 
         // ================= EVENT LISTENERS UNTUK FORM EDIT =================
-        document.getElementById('edit_nama_kategori').addEventListener('blur', async function() {
+        document.getElementById('edit_nama_kategori').addEventListener('blur', async function () {
             const feedbackElement = this.nextElementSibling;
             const originalValue = this.getAttribute('data-original');
             const excludeId = document.getElementById('edit_kategori_id').value;
@@ -651,7 +659,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         });
 
         // ================= TAMBAH KATEGORI =================
-        document.querySelector('#modalTambahKategori form').addEventListener('submit', async function(e) {
+        document.querySelector('#modalTambahKategori form').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             let hasError = false;
@@ -727,7 +735,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
         });
 
         // ================= EDIT KATEGORI =================
-        document.querySelector('#modalEditKategori form').addEventListener('submit', async function(e) {
+        document.querySelector('#modalEditKategori form').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             let hasError = false;
@@ -804,7 +812,7 @@ $endData = min($offset + $itemsPerPage, $totalData);
 
         // ================= DELETE KATEGORI =================
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', async function() {
+            button.addEventListener('click', async function () {
                 const kategoriId = this.getAttribute('data-id');
                 const kategoriNama = this.getAttribute('data-nama');
 
@@ -835,13 +843,13 @@ $endData = min($offset + $itemsPerPage, $totalData);
         });
 
         // ================= RESET VALIDATION SAAT MODAL DITUTUP =================
-        document.getElementById('modalTambahKategori').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('modalTambahKategori').addEventListener('hidden.bs.modal', function () {
             const form = document.getElementById('formTambahKategori');
             form.reset();
             form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         });
 
-        document.getElementById('modalEditKategori').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('modalEditKategori').addEventListener('hidden.bs.modal', function () {
             const form = document.getElementById('formEditKategori');
             form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         });

@@ -37,6 +37,8 @@ $pengumumanTerbaru = $data['pengumumanTerbaru'] ?? [];
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="/PBL8/public/assets/img/hat.svg">
+
   <style>
     /* ================= DASHBOARD ================= */
     .main-content {
@@ -283,7 +285,8 @@ $pengumumanTerbaru = $data['pengumumanTerbaru'] ?? [];
     </h4>
 
     <div id="pengumumanCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-      <div class="carousel-inner position-relative rounded-4 shadow-sm mx-auto" style="background-color:#ffffff; max-width:900px;">
+      <div class="carousel-inner position-relative rounded-4 shadow-sm mx-auto"
+        style="background-color:#ffffff; max-width:900px;">
 
         <?php if (empty($pengumumanTerbaru)): ?>
           <!-- Jika tidak ada pengumuman -->
@@ -331,11 +334,13 @@ $pengumumanTerbaru = $data['pengumumanTerbaru'] ?? [];
 
         <!-- Tombol navigasi -->
         <?php if (count($pengumumanTerbaru) > 1): ?>
-          <button class="carousel-control-prev" type="button" data-bs-target="#pengumumanCarousel" data-bs-slide="prev" style="width: 5%;">
+          <button class="carousel-control-prev" type="button" data-bs-target="#pengumumanCarousel" data-bs-slide="prev"
+            style="width: 5%;">
             <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
             <span class="visually-hidden">Sebelumnya</span>
           </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#pengumumanCarousel" data-bs-slide="next" style="width: 5%;">
+          <button class="carousel-control-next" type="button" data-bs-target="#pengumumanCarousel" data-bs-slide="next"
+            style="width: 5%;">
             <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
             <span class="visually-hidden">Berikutnya</span>
           </button>
@@ -347,10 +352,8 @@ $pengumumanTerbaru = $data['pengumumanTerbaru'] ?? [];
         <div class="carousel-indicators" style="position: relative; margin-top: 15px;">
           <?php foreach ($pengumumanTerbaru as $index => $pengumuman): ?>
             <button type="button" data-bs-target="#pengumumanCarousel" data-bs-slide-to="<?= $index; ?>"
-              class="<?= $index === 0 ? 'active' : '' ?>"
-              aria-current="<?= $index === 0 ? 'true' : 'false' ?>"
-              aria-label="Slide <?= $index + 1; ?>"
-              style="background-color: #2193b0;"></button>
+              class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>"
+              aria-label="Slide <?= $index + 1; ?>" style="background-color: #2193b0;"></button>
           <?php endforeach; ?>
         </div>
       <?php endif; ?>
